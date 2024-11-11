@@ -15,7 +15,7 @@ return new class extends Migration
       $table->char('uuid')->index()->after('id');
       $table->string('photo_profile_path')->nullable()->after('password');
       $table->boolean('status')->default(true)->after('photo_profile_path');
-      $table->string('phone', 50)->unique()->after('email');
+      $table->string('phone', 50)->nullable()->unique()->after('email');
     });
   }
 
@@ -27,6 +27,7 @@ return new class extends Migration
     Schema::table('users', function (Blueprint $table) {
       $table->dropColumn('uuid');
       $table->dropColumn('photo_profile_path');
+      $table->dropColumn('phone');
       $table->dropColumn('status');
     });
   }
