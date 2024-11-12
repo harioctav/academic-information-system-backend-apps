@@ -52,7 +52,7 @@ class AuthController extends Controller
 
   public function refreshToken(RefreshTokenRequest $request): JsonResponse
   {
-    $client = Client::where('password_client', 1)->first();
+    $client = Client::where('id', env('PASSPORT_CLIENT_ID'))->first();
 
     $response = Http::asForm()->post(env('APP_URL') . '/oauth/token', [
       'grant_type' => 'refresh_token',
