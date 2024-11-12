@@ -3,48 +3,69 @@
 namespace App\Http\Controllers\Api\Locations;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Locations\ProvinceRequest;
+use App\Http\Resources\Locations\ProvinceResource;
 use App\Models\Province;
+use App\Services\Province\ProvinceService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 class ProvinceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
+  /**
+   * The ProvinceService instance used by this controller.
+   */
+  protected $provinceService;
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+  /**
+   * Create a new controller instance.
+   *
+   * @return void
+   */
+  public function __construct(ProvinceService $provinceService)
+  {
+    $this->provinceService = $provinceService;
+  }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Province $province)
-    {
-        //
-    }
+  /**
+   * Display a listing of the resource.
+   */
+  public function index()
+  {
+    $query = $this->provinceService->query();
+    return ProvinceResource::collection($query->latest()->paginate(5));
+  }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Province $province)
-    {
-        //
-    }
+  /**
+   * Store a newly created resource in storage.
+   */
+  public function store(ProvinceRequest $request): JsonResponse
+  {
+    return $this->provinceService->handleStore($request);
+  }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Province $province)
-    {
-        //
-    }
+  /**
+   * Display the specified resource.
+   */
+  public function show(Province $province)
+  {
+    return new ProvinceResource($province);
+  }
+
+  /**
+   * Update the specified resource in storage.
+   */
+  public function update(ProvinceRequest $request, Province $province): JsonResponse
+  {
+    return $this->provinceService->handleUpdate($request, $province);
+  }
+
+  /**
+   * Remove the specified resource from storage.
+   */
+  public function destroy(Province $province): JsonResponse
+  {
+    return $this->provinceService->handleDelete($province);
+  }
 }

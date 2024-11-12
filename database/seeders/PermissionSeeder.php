@@ -20,46 +20,46 @@ class PermissionSeeder extends Seeder
    */
   protected array $permissions = [
     // API Users
-    'api.users.index',
-    'api.users.store',
-    'api.users.show',
-    'api.users.update',
-    'api.users.destroy',
+    'users.index',
+    'users.store',
+    'users.show',
+    'users.update',
+    'users.destroy',
 
     // API Roles
-    'api.roles.index',
-    'api.roles.store',
-    'api.roles.show',
-    'api.roles.update',
-    'api.roles.destroy',
+    'roles.index',
+    'roles.store',
+    'roles.show',
+    'roles.update',
+    'roles.destroy',
 
     // API Provinces
-    'api.provinces.index',
-    'api.provinces.store',
-    'api.provinces.show',
-    'api.provinces.update',
-    'api.provinces.destroy',
+    'provinces.index',
+    'provinces.store',
+    'provinces.show',
+    'provinces.update',
+    'provinces.destroy',
 
     // API Regencies
-    'api.regencies.index',
-    'api.regencies.store',
-    'api.regencies.show',
-    'api.regencies.update',
-    'api.regencies.destroy',
+    'regencies.index',
+    'regencies.store',
+    'regencies.show',
+    'regencies.update',
+    'regencies.destroy',
 
     // API Districts
-    'api.districts.index',
-    'api.districts.store',
-    'api.districts.show',
-    'api.districts.update',
-    'api.districts.destroy',
+    'districts.index',
+    'districts.store',
+    'districts.show',
+    'districts.update',
+    'districts.destroy',
 
     // API Villages
-    'api.villages.index',
-    'api.villages.store',
-    'api.villages.show',
-    'api.villages.update',
-    'api.villages.destroy',
+    'villages.index',
+    'villages.store',
+    'villages.show',
+    'villages.update',
+    'villages.destroy',
   ];
 
   /**
@@ -67,12 +67,12 @@ class PermissionSeeder extends Seeder
    * This is used to associate each permission with a specific category when creating the permissions.
    */
   protected array $permissionCategoryId = [
-    'api.users' => 1,
-    'api.roles' => 2,
-    'api.provinces' => 3,
-    'api.regencies' => 4,
-    'api.districts' => 5,
-    'api.villages' => 6,
+    'users' => 1,
+    'roles' => 2,
+    'provinces' => 3,
+    'regencies' => 4,
+    'districts' => 5,
+    'villages' => 6,
   ];
 
   /**
@@ -80,7 +80,6 @@ class PermissionSeeder extends Seeder
    */
   public function run(): void
   {
-    // reset cahced roles and permission
     app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
     $this->command->warn(PHP_EOL . 'Creating permissions...');
@@ -90,11 +89,12 @@ class PermissionSeeder extends Seeder
       function () {
         static $index = 0;
         $permission = $this->permissions[$index++];
+        $category = explode('.', $permission)[0];
 
         return collect([[
           'uuid' => Str::uuid(),
           'name' => $permission,
-          'permission_category_id' => $this->permissionCategoryId[explode('.', $permission)[0] . '.' . explode('.', $permission)[1]],
+          'permission_category_id' => $this->permissionCategoryId[$category],
           'guard_name' => 'api',
           'created_at' => now(),
           'updated_at' => now(),

@@ -2,33 +2,89 @@
 
 namespace App\Services\Province;
 
+use App\Models\Province;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Province\ProvinceRepository;
 
-class ProvinceServiceImplement extends ServiceApi implements ProvinceService{
+class ProvinceServiceImplement extends ServiceApi implements ProvinceService
+{
+  /**
+   * set title message api for CRUD
+   * @param string $title
+   */
+  protected string $title = "Province";
+  protected string $create_message = "Successfully created Province Data";
+  protected string $update_message = "Successfully updated Province Data";
+  protected string $delete_message = "Successfully deleted Province Data";
 
-    /**
-     * set title message api for CRUD
-     * @param string $title
-     */
-     protected string $title = "";
-     /**
-     * uncomment this to override the default message
-     * protected string $create_message = "";
-     * protected string $update_message = "";
-     * protected string $delete_message = "";
-     */
+  /**
+   * don't change $this->mainRepository variable name
+   * because used in extends service class
+   */
+  protected ProvinceRepository $mainRepository;
 
-     /**
-     * don't change $this->mainRepository variable name
-     * because used in extends service class
-     */
-     protected ProvinceRepository $mainRepository;
+  public function __construct(
+    ProvinceRepository $mainRepository
+  ) {
+    $this->mainRepository = $mainRepository;
+  }
 
-    public function __construct(ProvinceRepository $mainRepository)
-    {
-      $this->mainRepository = $mainRepository;
+  public function query()
+  {
+    return $this->mainRepository->query();
+  }
+
+  public function getWhere(
+    $wheres = [],
+    $columns = '*',
+    $comparisons = '=',
+    $orderBy = null,
+    $orderByType = null
+  ) {
+    return $this->mainRepository->getWhere(
+      wheres: $wheres,
+      columns: $columns,
+      comparisons: $comparisons,
+      orderBy: $orderBy,
+      orderByType: $orderByType
+    );
+  }
+
+  public function handleStore($request)
+  {
+    try {
+      $result = $this->mainRepository->create($request->validated());
+      return $this->setMessage($this->create_message)
+        ->setData($result)
+        ->toJson();
+    } catch (\Exception $exception) {
+      $this->exceptionResponse($exception);
+      return null;
     }
+  }
 
-    // Define your custom methods :)
+  public function handleUpdate($request, Province $province)
+  {
+    try {
+      $province->update($request->validated());
+      return $this->setMessage($this->update_message)
+        ->setData($province)
+        ->toJson();
+    } catch (\Exception $exception) {
+      $this->exceptionResponse($exception);
+      return null;
+    }
+  }
+
+  public function handleDelete(Province $province)
+  {
+    try {
+      $province->delete();
+      return $this->setMessage($this->delete_message)
+        ->toJson();
+    } catch (\Exception $exception) {
+      $this->exceptionResponse($exception);
+      return null;
+    }
+  }
 }
