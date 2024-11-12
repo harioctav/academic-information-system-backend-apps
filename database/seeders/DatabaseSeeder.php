@@ -16,7 +16,11 @@ class DatabaseSeeder extends Seeder
       PermissionCategorySeeder::class,
       PermissionSeeder::class,
       RoleSeeder::class,
-      UserSeeder::class
+      UserSeeder::class,
+      ProvinceSeeder::class,
+      RegencySeeder::class,
+      DistrictSeeder::class,
+      VillageSeeder::class,
     ]);
   }
 }
