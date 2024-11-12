@@ -2,7 +2,6 @@
 
 namespace App\Repositories\Province;
 
-use Illuminate\Database\Eloquent\Collection;
 use LaravelEasyRepository\Repository;
 
 interface ProvinceRepository extends Repository
@@ -14,5 +13,5 @@ interface ProvinceRepository extends Repository
     $comparisons = '=',
     $orderBy = null,
     $orderByType = null
-  ): Collection;
+  );
 }

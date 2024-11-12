@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Locations;
 
+use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Locations\ProvinceRequest;
 use App\Http\Resources\Locations\ProvinceResource;
@@ -31,10 +32,18 @@ class ProvinceController extends Controller
   /**
    * Display a listing of the resource.
    */
-  public function index()
+  public function index(Request $request)
   {
-    $query = $this->provinceService->query();
-    return ProvinceResource::collection($query->latest()->paginate(5));
+    $query = SearchHelper::applySearchQuery(
+      $this->provinceService->query(),
+      $request,
+      searchableFields: ['name', 'code'],
+      sortableFields: ['name', 'code', 'created_at']
+    );
+
+    return ProvinceResource::collection(
+      $query->paginate($request->input('per_page', 5))
+    );
   }
 
   /**
