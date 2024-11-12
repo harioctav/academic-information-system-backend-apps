@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
 use App\Helpers\SeederProgressBar;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -10,21 +11,28 @@ use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
+  /**
+   * Defines an array of user data to be seeded into the database.
+   * Each element in the array represents a user with a name, email, and status.
+   */
   protected array $users = [
     [
       'name' => 'Administrator',
       'email' => 'admin@example.com',
       'status' => true,
+      'role' => UserRole::SuperAdmin->value
     ],
     [
       'name' => 'User Pertama',
       'email' => 'user1@example.com',
       'status' => true,
+      'role' => UserRole::StudentRegisTeam->value
     ],
     [
       'name' => 'User Kedua',
       'email' => 'user2@example.com',
       'status' => false,
+      'role' => UserRole::FinanceTeam->value
     ]
   ];
 
@@ -33,29 +41,21 @@ class UserSeeder extends Seeder
    */
   public function run(): void
   {
-    $this->command->warn(PHP_EOL, 'Creating users...');
-    $items = SeederProgressBar::withProgressBar(
-      $this->command,
-      count($this->users),
-      function () {
-        static $index = 0;
+    $this->command->warn(PHP_EOL . 'Creating users...');
+    foreach ($this->users as $userData) {
+      $user = User::create([
+        'uuid' => Str::uuid(),
+        'name' => $userData['name'],
+        'email' => $userData['email'],
+        'email_verified_at' => now(),
+        'password' => bcrypt('password'),
+        'status' => $userData['status']
+      ]);
 
-        $user = $this->users[$index++];
+      $user->assignRole($userData['role']);
+      $this->command->info("Created user: {$userData['name']} with role: {$userData['role']}");
+    }
 
-        return collect([[
-          'uuid' => Str::uuid(),
-          'name' => $user['name'],
-          'email' => $user['email'],
-          'email_verified_at' => now(),
-          'password' => bcrypt('password'),
-          'status' => $user['status'],
-          'created_at' => now(),
-          'updated_at' => now(),
-        ]]);
-      }
-    );
-
-    User::insert($items->toArray());
     $this->command->info('Users created successfully!');
   }
 }

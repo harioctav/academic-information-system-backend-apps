@@ -13,6 +13,9 @@ class DatabaseSeeder extends Seeder
   public function run(): void
   {
     $this->callSilent([
+      PermissionCategorySeeder::class,
+      PermissionSeeder::class,
+      RoleSeeder::class,
       UserSeeder::class
     ]);
   }

@@ -11,11 +11,19 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
   /** @use HasFactory<\Database\Factories\UserFactory> */
-  use HasFactory, Notifiable, HasApiTokens, HasUuid;
+  use HasFactory, Notifiable, HasApiTokens, HasUuid, HasRoles;
+
+  /**
+   * The guard name used for authentication.
+   *
+   * @var string
+   */
+  protected string $guard_name = 'api';
 
   /**
    * The attributes that are mass assignable.
