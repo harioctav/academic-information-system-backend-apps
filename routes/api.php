@@ -17,7 +17,6 @@ Route::prefix('auth')
   });
 
 Route::group(['middleware' => ['auth:api']], function () {
-  // Provinces
   Route::prefix('locations')->group(function () {
     Route::apiResource('provinces', ProvinceController::class);
   });

@@ -23,7 +23,9 @@ class AuthController extends Controller
    */
   public function login(LoginRequest $request): JsonResponse
   {
-    if (!Auth::attempt($request->only('email', 'password'))) {
+    $remember = $request->boolean('remember', false);
+
+    if (!Auth::attempt($request->only('email', 'password'), $remember)) {
       return Response::json([
         'errors' => [
           'email' => ['The provided credentials are incorrect.']
@@ -31,7 +33,12 @@ class AuthController extends Controller
       ], 401);
     }
 
-    $token = $this->getOAuthToken($request->email, $request->password);
+    $token = $this->getOAuthToken(
+      $request->email,
+      $request->password,
+      $remember
+    );
+
     $user = Auth::user();
 
     return Response::json([
@@ -95,7 +102,7 @@ class AuthController extends Controller
    * @param string $password The password to use for authentication.
    * @return array The OAuth token response.
    */
-  private function getOAuthToken(string $email, string $password): array
+  private function getOAuthToken(string $email, string $password, bool $remember = false): array
   {
     $response = Http::post(config('app.url') . '/oauth/token', [
       'grant_type' => 'password',
@@ -103,7 +110,8 @@ class AuthController extends Controller
       'client_secret' => config('passport.client_secret'),
       'username' => $email,
       'password' => $password,
-      'scope' => ''
+      'scope' => '',
+      'remember' => $remember
     ]);
 
     return $response->json();

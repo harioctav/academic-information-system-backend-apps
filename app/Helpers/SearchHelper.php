@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class SearchHelper
 {
-  public static function applySearchQuery(
+    public static function applySearchQuery(
     Builder $query,
     Request $request,
     array $searchableFields,
