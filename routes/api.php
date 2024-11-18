@@ -16,7 +16,7 @@ Route::prefix('auth')
     });
   });
 
-Route::group(['middleware' => ['auth:api']], function () {
+Route::group(['middleware' => ['auth:api', 'permission']], function () {
   Route::prefix('locations')->group(function () {
     Route::delete('provinces/bulk-delete', [ProvinceController::class, 'bulkDestroy'])->name('provinces.bulk');
     Route::apiResource('provinces', ProvinceController::class);

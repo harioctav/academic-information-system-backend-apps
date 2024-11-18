@@ -20,6 +20,9 @@ class PermissionCategorySeeder extends Seeder
     'regencies.name',
     'districts.name',
     'villages.name',
+    'majors.name',
+    'subjects.name',
+    'students.name',
   ];
 
   /**

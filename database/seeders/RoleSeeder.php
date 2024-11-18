@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\UserRole;
 use App\Helpers\SeederProgressBar;
+use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -21,25 +22,32 @@ class RoleSeeder extends Seeder
     app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
     $roles = UserRole::toArray();
+    $roleRecords = [];
 
     $this->command->warn(PHP_EOL . 'Creating roles...');
-    $items = SeederProgressBar::withProgressBar(
-      $this->command,
-      count($roles),
-      function () use ($roles) {
-        static $index = 0;
 
-        return collect([[
-          'uuid' => Str::uuid(),
-          'name' => $roles[$index++],
-          'guard_name' => 'api',
-          'created_at' => now(),
-          'updated_at' => now(),
-        ]]);
-      }
-    );
+    foreach ($roles as $role) {
+      $roleRecords[] = [
+        'uuid' => Str::uuid(),
+        'name' => $role,
+        'guard_name' => 'api',
+        'created_at' => now(),
+        'updated_at' => now(),
+      ];
+    }
 
-    Role::insert($items->toArray());
+    Role::insert($roleRecords);
+
+    // Assign permissions to specific roles
+    $adminRole = Role::where('name', UserRole::SuperAdmin->value)->first();
+    $adminRole->syncPermissions(Permission::all());
+
+    $regisRole = Role::where('name', UserRole::SubjectRegisTeam->value)->first();
+    $regisRole->syncPermissions([
+      'provinces.index',
+      'provinces.show',
+    ]);
+
     $this->command->info('Roles created successfully!');
   }
 }

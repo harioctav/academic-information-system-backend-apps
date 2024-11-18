@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Enums\UserRole;
-use App\Helpers\SeederProgressBar;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -33,7 +32,13 @@ class UserSeeder extends Seeder
       'email' => 'user2@example.com',
       'status' => false,
       'role' => UserRole::FinanceTeam->value
-    ]
+    ],
+    [
+      'name' => 'User Ketiga',
+      'email' => 'user3@example.com',
+      'status' => true,
+      'role' => UserRole::SubjectRegisTeam->value
+    ],
   ];
 
   /**

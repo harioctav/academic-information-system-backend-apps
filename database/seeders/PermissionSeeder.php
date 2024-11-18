@@ -60,6 +60,27 @@ class PermissionSeeder extends Seeder
     'villages.show',
     'villages.update',
     'villages.destroy',
+
+    // API Majors
+    'majors.index',
+    'majors.store',
+    'majors.show',
+    'majors.update',
+    'majors.destroy',
+
+    // API Subjects
+    'subjects.index',
+    'subjects.store',
+    'subjects.show',
+    'subjects.update',
+    'subjects.destroy',
+
+    // API Students
+    'students.index',
+    'students.store',
+    'students.show',
+    'students.update',
+    'students.destroy',
   ];
 
   /**
@@ -73,6 +94,9 @@ class PermissionSeeder extends Seeder
     'regencies' => 4,
     'districts' => 5,
     'villages' => 6,
+    'majors' => 7,
+    'subjects' => 8,
+    'students' => 9,
   ];
 
   /**
