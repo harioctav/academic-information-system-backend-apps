@@ -36,17 +36,35 @@ class ProvinceRepositoryImplement extends Eloquent implements ProvinceRepository
     $query = $this->model->select($columns);
 
     if (!empty($wheres)) {
-      foreach ($wheres as $key => $value) {
-        if (is_array($value)) {
-          $query = $query->whereIn($key, $value);
+      foreach ($wheres as $key => $where) {
+        if (is_array($where)) {
+          $operator = $where['operator'] ?? 'in';
+          $value = $where['value'] ?? $where;
+
+          switch (strtolower($operator)) {
+            case 'in':
+              $query->whereIn($key, $value);
+              break;
+            case 'not in':
+              $query->whereNotIn($key, $value);
+              break;
+            case 'between':
+              $query->whereBetween($key, $value);
+              break;
+            case 'not between':
+              $query->whereNotBetween($key, $value);
+              break;
+            default:
+              $query->where($key, $operator, $value);
+          }
         } else {
-          $query = $query->where($key, $comparisons, $value);
+          $query->where($key, $comparisons, $where);
         }
       }
     }
 
     if ($orderBy) {
-      $query = $query->orderBy($orderBy, $orderByType);
+      $query->orderBy($orderBy, $orderByType);
     }
 
     return $query;

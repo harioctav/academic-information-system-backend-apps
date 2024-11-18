@@ -77,4 +77,17 @@ class ProvinceController extends Controller
   {
     return $this->provinceService->handleDelete($province);
   }
+
+  /**
+   * Remove multiple resources from storage.
+   */
+  public function bulkDestroy(Request $request): JsonResponse
+  {
+    $request->validate([
+      'ids' => 'required|array',
+      'ids.*' => 'exists:provinces,uuid'
+    ]);
+
+    return $this->provinceService->handleBulkDelete($request->ids);
+  }
 }

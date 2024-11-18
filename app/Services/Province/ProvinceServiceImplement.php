@@ -80,8 +80,30 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
   {
     try {
       $province->delete();
-      return $this->setMessage($this->delete_message)
-        ->toJson();
+      return $this->setMessage($this->delete_message)->toJson();
+    } catch (\Exception $exception) {
+      $this->exceptionResponse($exception);
+      return null;
+    }
+  }
+
+  public function handleBulkDelete(array $uuid)
+  {
+    try {
+      $provinces = $this->getWhere(
+        wheres: [
+          'uuid' => [
+            'operator' => 'in',
+            'value' => $uuid
+          ]
+        ]
+      )->get();
+
+      foreach ($provinces as $province) {
+        $province->delete();
+      }
+
+      return $this->setMessage($this->delete_message)->toJson();
     } catch (\Exception $exception) {
       $this->exceptionResponse($exception);
       return null;

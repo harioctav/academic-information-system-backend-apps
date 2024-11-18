@@ -18,4 +18,5 @@ interface ProvinceService extends BaseService
   public function handleStore($request);
   public function handleUpdate($request, Province $province);
   public function handleDelete(Province $province);
+  public function handleBulkDelete(array $uuid);
 }
