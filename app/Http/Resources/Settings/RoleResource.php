@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Settings;
 
+use App\Enums\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,7 +16,7 @@ class RoleResource extends JsonResource
   public function toArray(Request $request): array
   {
     return [
-      'name' => $this->name,
+      'name' => UserRole::from($this->name)->label(),
       'permissions' => $this->permissions->pluck('name')
     ];
   }

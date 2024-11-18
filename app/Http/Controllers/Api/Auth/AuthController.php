@@ -28,7 +28,7 @@ class AuthController extends Controller
     if (!Auth::attempt($request->only('email', 'password'), $remember)) {
       return Response::json([
         'errors' => [
-          'email' => ['The provided credentials are incorrect.']
+          'email' => ['Kredensial ini tidak cocok dengan catatan kami.']
         ]
       ], 401);
     }

@@ -38,11 +38,11 @@ class ProvinceController extends Controller
       $this->provinceService->query(),
       $request,
       searchableFields: ['name', 'code'],
-      sortableFields: ['name', 'code', 'created_at']
+      sortableFields: ['name', 'code', 'created_at', 'updated_at']
     );
 
     return ProvinceResource::collection(
-      $query->paginate($request->input('per_page', 5))
+      $query->latest()->paginate($request->input('per_page', 5))
     );
   }
 
