@@ -7,18 +7,25 @@ use Illuminate\Database\Eloquent\Builder;
 
 class SearchHelper
 {
-    public static function applySearchQuery(
+  public static function applySearchQuery(
     Builder $query,
     Request $request,
     array $searchableFields,
     array $sortableFields = []
   ): Builder {
-    // Apply Search
     $search = $request->input('search');
+
     $query->when($search, function ($query) use ($search, $searchableFields) {
-      foreach ($searchableFields as $field) {
-        $query->orWhere($field, 'LIKE', "%{$search}%");
-      }
+      $query->where(function ($query) use ($search, $searchableFields) {
+        // Regular field search
+        foreach ($searchableFields as $field) {
+          $query->orWhere($field, 'LIKE', "%{$search}%");
+        }
+
+        // Combined type and name search (both orders)
+        $query->orWhereRaw("CONCAT(type, ' ', name) LIKE ?", ["%{$search}%"])
+          ->orWhereRaw("CONCAT(name, ' ', type) LIKE ?", ["%{$search}%"]);
+      });
     });
 
     // Apply Sorting

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Locations\ProvinceController;
+use App\Http\Controllers\Api\Locations\RegencyController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')
@@ -18,7 +19,20 @@ Route::prefix('auth')
 
 Route::group(['middleware' => ['auth:api', 'permission']], function () {
   Route::prefix('locations')->group(function () {
-    Route::delete('provinces/bulk-delete', [ProvinceController::class, 'bulkDestroy'])->name('provinces.bulk');
+    // Province
+    Route::prefix('provinces')
+      ->name('provinces.')
+      ->group(function () {
+        Route::delete('bulk-delete', [ProvinceController::class, 'bulkDestroy'])->name('bulk');
+      });
     Route::apiResource('provinces', ProvinceController::class);
+
+    // Regency
+    Route::prefix('regencies')
+      ->name('regencies.')
+      ->group(function () {
+        Route::delete('bulk-delete', [RegencyController::class, 'bulkDestroy'])->name('bulk');
+      });
+    Route::apiResource('regencies', RegencyController::class);
   });
 });
