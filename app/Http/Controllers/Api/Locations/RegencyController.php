@@ -34,6 +34,8 @@ class RegencyController extends Controller
    */
   public function index(Request $request)
   {
+    $combinedFields = [['type', 'name']];
+
     $query = SearchHelper::applySearchQuery(
       $this->regencyService->query(),
       $request,
@@ -47,7 +49,8 @@ class RegencyController extends Controller
         'code',
         'created_at',
         'updated_at'
-      ]
+      ],
+      combinedFields: $combinedFields,
     );
 
     return RegencyResource::collection(
@@ -94,7 +97,7 @@ class RegencyController extends Controller
   {
     $request->validate([
       'ids' => 'required|array',
-      'ids.*' => 'exists:provinces,uuid'
+      'ids.*' => 'exists:regencies,uuid'
     ]);
 
     return $this->regencyService->handleBulkDelete($request->ids);

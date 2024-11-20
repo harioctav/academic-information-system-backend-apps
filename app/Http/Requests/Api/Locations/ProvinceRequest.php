@@ -24,7 +24,7 @@ class ProvinceRequest extends FormRequest
     return [
       'code' => [
         'required',
-        'string',
+        'numeric',
       ],
       'name' => [
         'required',
@@ -41,6 +41,7 @@ class ProvinceRequest extends FormRequest
     return [
       '*.required' => ':attribute harus tidak boleh dikosongkan',
       '*.unique' => ':attribute sudah digunakan, silahkan pilih yang lain',
+      '*.numeric' => ':attribute tidak valid, harus berupa angka',
     ];
   }
 

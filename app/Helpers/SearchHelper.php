@@ -11,20 +11,34 @@ class SearchHelper
     Builder $query,
     Request $request,
     array $searchableFields,
-    array $sortableFields = []
+    array $sortableFields = [],
+    array $combinedFields = []
   ): Builder {
     $search = $request->input('search');
 
-    $query->when($search, function ($query) use ($search, $searchableFields) {
-      $query->where(function ($query) use ($search, $searchableFields) {
+    $query->when($search, function ($query) use ($search, $searchableFields, $combinedFields) {
+      $query->where(function ($query) use ($search, $searchableFields, $combinedFields) {
         // Regular field search
         foreach ($searchableFields as $field) {
           $query->orWhere($field, 'LIKE', "%{$search}%");
         }
 
-        // Combined type and name search (both orders)
-        $query->orWhereRaw("CONCAT(type, ' ', name) LIKE ?", ["%{$search}%"])
-          ->orWhereRaw("CONCAT(name, ' ', type) LIKE ?", ["%{$search}%"]);
+        // Combined fields search if provided
+        if (!empty($combinedFields)) {
+          foreach ($combinedFields as $fields) {
+            $query->orWhereRaw(
+              "CONCAT(" . implode(", ' ', ", $fields) . ") LIKE ?",
+              ["%{$search}%"]
+            );
+
+            // Reverse order combination
+            $reversedFields = array_reverse($fields);
+            $query->orWhereRaw(
+              "CONCAT(" . implode(", ' ', ", $reversedFields) . ") LIKE ?",
+              ["%{$search}%"]
+            );
+          }
+        }
       });
     });
 

@@ -29,7 +29,7 @@ class RegencyRequest extends FormRequest
       ],
       'code' => [
         'required',
-        'string',
+        'numeric',
       ],
       'name' => [
         'required',
@@ -51,6 +51,7 @@ class RegencyRequest extends FormRequest
     return [
       '*.required' => ':attribute harus tidak boleh dikosongkan',
       '*.unique' => ':attribute sudah digunakan, silahkan pilih yang lain',
+      '*.numeric' => ':attribute tidak valid, harus berupa angka',
       '*.exists' => ':attribute tidak ditemukan atau tidak valid',
       '*.in' => ':attribute tidak sesuai dengan data kami',
     ];
@@ -67,6 +68,7 @@ class RegencyRequest extends FormRequest
       'provinces' => 'Provinsi',
       'code' => 'Kode Kabupaten atau Kota',
       'name' => 'Nama Kabupaten atau Kota',
+      'type' => 'Tipe Kabupaten atau Kota',
     ];
   }
 }
