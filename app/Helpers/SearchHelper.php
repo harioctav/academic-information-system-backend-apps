@@ -12,9 +12,18 @@ class SearchHelper
     Request $request,
     array $searchableFields,
     array $sortableFields = [],
-    array $combinedFields = []
+    array $combinedFields = [],
+    array $relationFields = []
   ): Builder {
     $search = $request->input('search');
+
+    // Handle dynamic relation fields
+    foreach ($relationFields as $relationField) {
+      $relationId = $request->input($relationField);
+      $query->when($relationId, function ($query) use ($relationField, $relationId) {
+        $query->where($relationField, $relationId);
+      });
+    }
 
     $query->when($search, function ($query) use ($search, $searchableFields, $combinedFields) {
       $query->where(function ($query) use ($search, $searchableFields, $combinedFields) {

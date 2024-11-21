@@ -34,15 +34,13 @@ class RegencyController extends Controller
    */
   public function index(Request $request)
   {
-    $combinedFields = [['type', 'name']];
-
     $query = SearchHelper::applySearchQuery(
       $this->regencyService->query(),
       $request,
       searchableFields: [
         'name',
         'code',
-        'type'
+        'type',
       ],
       sortableFields: [
         'name',
@@ -50,7 +48,10 @@ class RegencyController extends Controller
         'created_at',
         'updated_at'
       ],
-      combinedFields: $combinedFields,
+      combinedFields: [
+        ['type', 'name']
+      ],
+      relationFields: ['province_id']
     );
 
     return RegencyResource::collection(
