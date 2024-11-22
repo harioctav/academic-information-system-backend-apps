@@ -27,4 +27,30 @@ class LoginRequest extends FormRequest
       'remember' => 'boolean',
     ];
   }
+
+  /**
+   * Get the error messages for the defined validation rules.
+   */
+  public function messages(): array
+  {
+    return [
+      '*.required' => ':attribute tidak boleh dikosongkan',
+      '*.email' => ':attribute tidak valid, harus berupa email',
+      '*.unique' => ':attribute sudah digunakan, silahkan pilih yang lain',
+      '*.numeric' => ':attribute tidak valid, harus berupa angka',
+    ];
+  }
+
+  /**
+   * Get the validation attribute names that apply to the request.
+   *
+   * @return array<string, string>
+   */
+  public function attributes(): array
+  {
+    return [
+      'email' => 'Email',
+      'password' => 'Password',
+    ];
+  }
 }
