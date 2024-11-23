@@ -49,7 +49,7 @@ class RegencyRequest extends FormRequest
   public function messages(): array
   {
     return [
-      '*.required' => ':attribute harus tidak boleh dikosongkan',
+      '*.required' => ':attribute tidak boleh dikosongkan',
       '*.unique' => ':attribute sudah digunakan, silahkan pilih yang lain',
       '*.numeric' => ':attribute tidak valid, harus berupa angka',
       '*.exists' => ':attribute tidak ditemukan atau tidak valid',

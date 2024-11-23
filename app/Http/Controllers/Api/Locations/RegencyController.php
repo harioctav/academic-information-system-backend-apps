@@ -51,7 +51,7 @@ class RegencyController extends Controller
       combinedFields: [
         ['type', 'name']
       ],
-      relationFields: ['province_id']
+      relationFields: ['province_id', 'type']
     );
 
     return RegencyResource::collection(
