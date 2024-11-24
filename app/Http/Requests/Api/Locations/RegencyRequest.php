@@ -66,9 +66,9 @@ class RegencyRequest extends FormRequest
   {
     return [
       'provinces' => 'Provinsi',
-      'code' => 'Kode Kabupaten atau Kota',
-      'name' => 'Nama Kabupaten atau Kota',
-      'type' => 'Tipe Kabupaten atau Kota',
+      'code' => 'Kode Kota atau Kabupaten',
+      'name' => 'Nama Kota atau Kabupaten',
+      'type' => 'Tipe Kota atau Kabupaten',
     ];
   }
 }

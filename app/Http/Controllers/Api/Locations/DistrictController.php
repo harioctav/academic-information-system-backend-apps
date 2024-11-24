@@ -4,19 +4,19 @@ namespace App\Http\Controllers\Api\Locations;
 
 use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Locations\RegencyRequest;
-use App\Http\Resources\Locations\RegencyResource;
-use App\Models\Regency;
-use App\Services\Regency\RegencyService;
+use App\Http\Requests\Api\Locations\DistrictRequest;
+use App\Http\Resources\Locations\DistrictResource;
+use App\Models\District;
+use App\Services\District\DistrictService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class RegencyController extends Controller
+class DistrictController extends Controller
 {
   /**
-   * The regencyService instance used by this controller.
+   * The instance used by this controller.
    */
-  protected $regencyService;
+  protected $districtService;
 
   /**
    * Create a new controller instance.
@@ -24,9 +24,9 @@ class RegencyController extends Controller
    * @return void
    */
   public function __construct(
-    RegencyService $regencyService
+    DistrictService $districtService
   ) {
-    $this->regencyService = $regencyService;
+    $this->districtService = $districtService;
   }
 
   /**
@@ -35,12 +35,11 @@ class RegencyController extends Controller
   public function index(Request $request)
   {
     $query = SearchHelper::applySearchQuery(
-      $this->regencyService->query(),
-      $request,
+      query: $this->districtService->query(),
+      request: $request,
       searchableFields: [
         'name',
         'code',
-        'type',
         'full_code'
       ],
       sortableFields: [
@@ -49,13 +48,12 @@ class RegencyController extends Controller
         'created_at',
         'updated_at'
       ],
-      combinedFields: [
-        ['type', 'name']
-      ],
-      relationFields: ['province_id', 'type']
+      relationFields: [
+        'regency_id'
+      ]
     );
 
-    return RegencyResource::collection(
+    return DistrictResource::collection(
       $query->latest()->paginate($request->input('per_page', 5))
     );
   }
@@ -63,33 +61,33 @@ class RegencyController extends Controller
   /**
    * Store a newly created resource in storage.
    */
-  public function store(RegencyRequest $request): JsonResponse
+  public function store(DistrictRequest $request): JsonResponse
   {
-    return $this->regencyService->handleStore($request);
+    return $this->districtService->handleStore($request);
   }
 
   /**
    * Display the specified resource.
    */
-  public function show(Regency $regency)
+  public function show(District $district): DistrictResource
   {
-    return new RegencyResource($regency);
+    return new DistrictResource($district);
   }
 
   /**
    * Update the specified resource in storage.
    */
-  public function update(RegencyRequest $request, Regency $regency): JsonResponse
+  public function update(DistrictRequest $request, District $district): JsonResponse
   {
-    return $this->regencyService->handleUpdate($request, $regency);
+    return $this->districtService->handleUpdate($request, $district);
   }
 
   /**
    * Remove the specified resource from storage.
    */
-  public function destroy(Regency $regency): JsonResponse
+  public function destroy(District $district): JsonResponse
   {
-    return $this->regencyService->handleDelete($regency);
+    return $this->districtService->handleDelete($district);
   }
 
   /**
@@ -99,9 +97,9 @@ class RegencyController extends Controller
   {
     $request->validate([
       'ids' => 'required|array',
-      'ids.*' => 'exists:regencies,uuid'
+      'ids.*' => 'exists:districts,uuid'
     ]);
 
-    return $this->regencyService->handleBulkDelete($request->ids);
+    return $this->districtService->handleBulkDelete($request->ids);
   }
 }

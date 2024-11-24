@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\Locations\DistrictController;
 use App\Http\Controllers\Api\Locations\ProvinceController;
 use App\Http\Controllers\Api\Locations\RegencyController;
 use Illuminate\Support\Facades\Route;
@@ -34,5 +35,13 @@ Route::group(['middleware' => ['auth:api', 'permission']], function () {
         Route::delete('bulk-delete', [RegencyController::class, 'bulkDestroy'])->name('bulk');
       });
     Route::apiResource('regencies', RegencyController::class);
+
+    // District
+    Route::prefix('districts')
+      ->name('districts.')
+      ->group(function () {
+        Route::delete('bulk-delete', [DistrictController::class, 'bulkDestroy'])->name('bulk');
+      });
+    Route::apiResource('districts', DistrictController::class);
   });
 });

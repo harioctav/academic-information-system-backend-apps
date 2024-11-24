@@ -68,12 +68,16 @@ class RegencyServiceImplement extends ServiceApi implements RegencyService
         return $this->setMessage($this->error_message)->toJson();
       }
 
+      # Execute to Database
       $payload['full_code'] = $province->code . $payload['code'];
       $payload['province_id'] = $province->id;
 
-      $result = $this->mainRepository->create($payload);
+      # Create and load relations
+      $regency = $this->mainRepository->create($payload);
+      $regency->load('province');
+
       return $this->setMessage($this->create_message)
-        ->setData($result)
+        ->setData($regency)
         ->toJson();
     } catch (\Exception $e) {
       $this->exceptionResponse($e);
@@ -94,7 +98,10 @@ class RegencyServiceImplement extends ServiceApi implements RegencyService
 
       $payload['full_code'] = $province->code . $payload['code'];
       $payload['province_id'] = $province->id;
+
+      # Update Data
       $regency->update($payload);
+      $regency->refresh();
 
       return $this->setMessage($this->update_message)
         ->setData($regency)
