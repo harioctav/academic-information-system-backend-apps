@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Locations\DistrictController;
 use App\Http\Controllers\Api\Locations\ProvinceController;
 use App\Http\Controllers\Api\Locations\RegencyController;
 use App\Http\Controllers\Api\Locations\VillageController;
+use App\Http\Controllers\Api\Settings\RoleController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')
@@ -52,5 +53,15 @@ Route::group(['middleware' => ['auth:api', 'permission']], function () {
         Route::delete('bulk-delete', [VillageController::class, 'bulkDestroy'])->name('bulk');
       });
     Route::apiResource('villages', VillageController::class);
+  });
+
+  Route::prefix('settings')->group(function () {
+    // Role Management
+    Route::prefix('roles')
+      ->name('roles')
+      ->group(function () {
+        Route::delete('bulk-delete', [RoleController::class, 'bulkDestroy'])->name('bulk');
+      });
+    Route::apiResource('roles', RoleController::class);
   });
 });

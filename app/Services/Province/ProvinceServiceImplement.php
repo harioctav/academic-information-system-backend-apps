@@ -2,6 +2,7 @@
 
 namespace App\Services\Province;
 
+use App\Enums\WhereOperator;
 use App\Models\Province;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Province\ProvinceRepository;
@@ -93,7 +94,7 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
       $provinces = $this->getWhere(
         wheres: [
           'uuid' => [
-            'operator' => 'in',
+            'operator' => WhereOperator::In->value,
             'value' => $uuid
           ]
         ]

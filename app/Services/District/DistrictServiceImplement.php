@@ -2,6 +2,7 @@
 
 namespace App\Services\District;
 
+use App\Enums\WhereOperator;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\District\DistrictRepository;
 use App\Repositories\Regency\RegencyRepository;
@@ -135,7 +136,7 @@ class DistrictServiceImplement extends ServiceApi implements DistrictService
       $districts = $this->getWhere(
         wheres: [
           'uuid' => [
-            'operator' => 'in',
+            'operator' => WhereOperator::In->value,
             'value' => $uuid
           ]
         ]

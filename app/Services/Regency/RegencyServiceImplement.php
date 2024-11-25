@@ -2,6 +2,7 @@
 
 namespace App\Services\Regency;
 
+use App\Enums\WhereOperator;
 use App\Models\Regency;
 use App\Repositories\Province\ProvinceRepository;
 use LaravelEasyRepository\ServiceApi;
@@ -129,7 +130,7 @@ class RegencyServiceImplement extends ServiceApi implements RegencyService
       $regencies = $this->getWhere(
         wheres: [
           'uuid' => [
-            'operator' => 'in',
+            'operator' => WhereOperator::In->value,
             'value' => $uuid
           ]
         ]

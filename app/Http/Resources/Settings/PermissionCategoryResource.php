@@ -2,12 +2,11 @@
 
 namespace App\Http\Resources\Settings;
 
-use App\Enums\UserRole;
 use App\Http\Resources\Utils\DateTimeResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class RoleResource extends JsonResource
+class PermissionCategoryResource extends JsonResource
 {
   /**
    * Transform the resource into an array.
@@ -19,11 +18,7 @@ class RoleResource extends JsonResource
     return [
       'id' => $this->id,
       'uuid' => $this->uuid,
-      // 'name' => UserRole::from($this->name)->label(),
       'name' => $this->name,
-      'permissions' => $this->permissions->pluck('name'),
-      // 'permissions' => PermissionResource::collection($this->permissions),
-      'permissions_total' => $this->permissions->count(),
       'created_at' => DateTimeResource::make($this->created_at),
       'updated_at' => DateTimeResource::make($this->updated_at),
     ];

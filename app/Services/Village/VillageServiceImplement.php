@@ -2,6 +2,7 @@
 
 namespace App\Services\Village;
 
+use App\Enums\WhereOperator;
 use App\Repositories\District\DistrictRepository;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Village\VillageRepository;
@@ -135,7 +136,7 @@ class VillageServiceImplement extends ServiceApi implements VillageService
       $villages = $this->getWhere(
         wheres: [
           'uuid' => [
-            'operator' => 'in',
+            'operator' => WhereOperator::In->value,
             'value' => $uuid
           ]
         ]

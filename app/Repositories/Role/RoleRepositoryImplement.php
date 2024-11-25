@@ -1,21 +1,18 @@
 <?php
 
-namespace App\Repositories\Village;
+namespace App\Repositories\Role;
 
 use App\Enums\WhereOperator;
 use LaravelEasyRepository\Implementations\Eloquent;
-use App\Models\Village;
+use App\Models\Role;
 
-class VillageRepositoryImplement extends Eloquent implements VillageRepository
+class RoleRepositoryImplement extends Eloquent implements RoleRepository
 {
-  /**
-   * Model class to be used in this repository for the common methods inside Eloquent
-   * Don't remove or change $this->model variable name
-   */
-  protected Village $model;
+  protected Role $model;
 
-  public function __construct(Village $model)
-  {
+  public function __construct(
+    Role $model
+  ) {
     $this->model = $model;
   }
 

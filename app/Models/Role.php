@@ -17,4 +17,13 @@ class Role extends ModelRole
   {
     return 'uuid';
   }
+
+  // /**
+  //  * The relationships that should always be loaded.
+  //  *
+  //  * @var array<string>
+  //  */
+  // protected $with = [
+  //   'permissions.permissionCategory',
+  // ];
 }

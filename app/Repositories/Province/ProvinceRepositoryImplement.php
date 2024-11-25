@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Province;
 
+use App\Enums\WhereOperator;
 use LaravelEasyRepository\Implementations\Eloquent;
 use App\Models\Province;
 
@@ -38,20 +39,20 @@ class ProvinceRepositoryImplement extends Eloquent implements ProvinceRepository
     if (!empty($wheres)) {
       foreach ($wheres as $key => $where) {
         if (is_array($where)) {
-          $operator = $where['operator'] ?? 'in';
+          $operator = $where['operator'] ?? WhereOperator::In->value;
           $value = $where['value'] ?? $where;
 
           switch (strtolower($operator)) {
-            case 'in':
+            case WhereOperator::In->value:
               $query->whereIn($key, $value);
               break;
-            case 'not in':
+            case WhereOperator::NotIn->value:
               $query->whereNotIn($key, $value);
               break;
-            case 'between':
+            case WhereOperator::Between->value:
               $query->whereBetween($key, $value);
               break;
-            case 'not between':
+            case WhereOperator::NotBetween->value:
               $query->whereNotBetween($key, $value);
               break;
             default:

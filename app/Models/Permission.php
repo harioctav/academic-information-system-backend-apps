@@ -20,6 +20,15 @@ class Permission extends ModelPermission
   }
 
   /**
+   * The relationships that should always be loaded.
+   *
+   * @var array<string>
+   */
+  protected $with = [
+    'permissionCategory',
+  ];
+
+  /**
    * Get the permission category that this permission belongs to.
    *
    * @return BelongsTo

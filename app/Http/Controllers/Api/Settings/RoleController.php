@@ -2,49 +2,98 @@
 
 namespace App\Http\Controllers\Api\Settings;
 
+use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Settings\RoleRequest;
+use App\Http\Resources\Settings\RoleResource;
 use App\Models\Role;
+use App\Services\Role\RoleService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
   /**
+   * The instance used by this controller.
+   */
+  protected $roleService;
+
+  /**
+   * Create a new controller instance.
+   *
+   * @return void
+   */
+  public function __construct(
+    RoleService $roleService
+  ) {
+    $this->roleService = $roleService;
+  }
+
+  /**
    * Display a listing of the resource.
    */
-  public function index()
+  public function index(Request $request)
   {
-    //
+    $query = SearchHelper::applySearchQuery(
+      query: $this->roleService->query(),
+      request: $request,
+      searchableFields: [
+        'name',
+      ],
+      sortableFields: [
+        'name',
+        'created_at',
+        'updated_at'
+      ],
+    );
+
+    return RoleResource::collection(
+      $query->latest()->paginate($request->input('per_page', 5))
+    );
   }
 
   /**
    * Store a newly created resource in storage.
    */
-  public function store(Request $request)
+  public function store(RoleRequest $request)
   {
-    //
+    return $this->roleService->handleStore($request);
   }
 
   /**
    * Display the specified resource.
    */
-  public function show(Role $role)
+  public function show(Role $role): RoleResource
   {
-    //
+    return new RoleResource($role);
   }
 
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, Role $role)
+  public function update(RoleRequest $request, Role $role): JsonResponse
   {
-    //
+    return $this->roleService->handleUpdate($request, $role);
   }
 
   /**
    * Remove the specified resource from storage.
    */
-  public function destroy(Role $role)
+  public function destroy(Role $role): JsonResponse
   {
-    //
+    return $this->roleService->handleDelete($role);
+  }
+
+  /**
+   * Remove multiple resources from storage.
+   */
+  public function bulkDestroy(Request $request): JsonResponse
+  {
+    $request->validate([
+      'ids' => 'required|array',
+      'ids.*' => 'exists:roles,uuid'
+    ]);
+
+    return $this->roleService->handleBulkDelete($request->ids);
   }
 }
