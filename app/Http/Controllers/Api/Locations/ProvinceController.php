@@ -57,7 +57,7 @@ class ProvinceController extends Controller
   /**
    * Display the specified resource.
    */
-  public function show(Province $province)
+  public function show(Province $province): ProvinceResource
   {
     return new ProvinceResource($province);
   }

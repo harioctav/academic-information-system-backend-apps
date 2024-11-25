@@ -53,6 +53,12 @@ class DistrictController extends Controller
       ]
     );
 
+    if ($request->has('province_id')) {
+      $query->whereHas('regency', function ($sub) use ($request) {
+        $sub->where('province_id', $request->province_id);
+      });
+    }
+
     return DistrictResource::collection(
       $query->latest()->paginate($request->input('per_page', 5))
     );

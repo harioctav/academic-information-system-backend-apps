@@ -1,36 +1,36 @@
 <?php
 
-namespace App\Services\District;
+namespace App\Services\Village;
 
-use LaravelEasyRepository\ServiceApi;
 use App\Repositories\District\DistrictRepository;
-use App\Repositories\Regency\RegencyRepository;
+use LaravelEasyRepository\ServiceApi;
+use App\Repositories\Village\VillageRepository;
 
-class DistrictServiceImplement extends ServiceApi implements DistrictService
+class VillageServiceImplement extends ServiceApi implements VillageService
 {
   /**
    * set title message api for CRUD
    * @param string $title
    */
-  protected string $title = "District";
-  protected string $create_message = "Successfully created District Data";
-  protected string $update_message = "Successfully updated District Data";
-  protected string $delete_message = "Successfully deleted District Data";
+  protected string $title = "Village";
+  protected string $create_message = "Successfully created Village Data";
+  protected string $update_message = "Successfully updated Village Data";
+  protected string $delete_message = "Successfully deleted Village Data";
   protected string $error_message = "Error while performing action, please check log";
 
   /**
    * don't change $this->mainRepository variable name
    * because used in extends service class
    */
-  protected DistrictRepository $mainRepository;
-  protected RegencyRepository $regencyRepository;
+  protected VillageRepository $mainRepository;
+  protected DistrictRepository $districtRepository;
 
   public function __construct(
-    DistrictRepository $mainRepository,
-    RegencyRepository $regencyRepository
+    VillageRepository $mainRepository,
+    DistrictRepository $districtRepository
   ) {
     $this->mainRepository = $mainRepository;
-    $this->regencyRepository = $regencyRepository;
+    $this->districtRepository = $districtRepository;
   }
 
   public function query()
@@ -60,24 +60,24 @@ class DistrictServiceImplement extends ServiceApi implements DistrictService
       # request
       $payload = $request->validated();
 
-      # Find Regency
-      $regency = $this->regencyRepository->findOrFail($payload['regencies']);
+      # Find District
+      $district = $this->districtRepository->findOrFail($payload['districts']);
 
-      # Check if Regency not found
-      if (!$regency) {
+      # Check if District not found
+      if (!$district) {
         return $this->setMessage($this->error_message)->toJson();
       }
 
       # Execute to Database
-      $payload['full_code'] = $regency->full_code . $payload['code'];
-      $payload['regency_id'] = $regency->id;
+      $payload['full_code'] = $district->full_code . $payload['code'];
+      $payload['district_id'] = $district->id;
 
       # Create and load relations
-      $district = $this->mainRepository->create($payload);
-      $district->load('regency.province');
+      $village = $this->mainRepository->create($payload);
+      $village->load('district.regency.province');
 
       return $this->setMessage($this->create_message)
-        ->setData($district)
+        ->setData($village)
         ->toJson();
     } catch (\Exception $e) {
       $this->exceptionResponse($e);
@@ -85,32 +85,32 @@ class DistrictServiceImplement extends ServiceApi implements DistrictService
     }
   }
 
-  public function handleUpdate($request, \App\Models\District $district)
+  public function handleUpdate($request, \App\Models\Village $village)
   {
     try {
       # request
       $payload = $request->validated();
 
-      # Find Regency
-      $regency = $this->regencyRepository->findOrFail($payload['regencies']);
+      # Find District
+      $district = $this->districtRepository->findOrFail($payload['districts']);
 
-      # Check if Regency not found
-      if (!$regency) {
+      # Check if District not found
+      if (!$district) {
         return $this->setMessage($this->error_message)->toJson();
       }
 
       # Execute to Database
-      $payload['full_code'] = $regency->full_code . $payload['code'];
-      $payload['regency_id'] = $regency->id;
+      $payload['full_code'] = $district->full_code . $payload['code'];
+      $payload['district_id'] = $district->id;
 
       # Update Database
-      $district->update($payload);
+      $village->update($payload);
 
       # Refresh model untuk mendapatkan relasi yang terupdate
-      $district->refresh();
+      $village->refresh();
 
       return $this->setMessage($this->update_message)
-        ->setData($district)
+        ->setData($village)
         ->toJson();
     } catch (\Exception $e) {
       $this->exceptionResponse($e);
@@ -118,10 +118,10 @@ class DistrictServiceImplement extends ServiceApi implements DistrictService
     }
   }
 
-  public function handleDelete(\App\Models\District $district)
+  public function handleDelete(\App\Models\Village $village)
   {
     try {
-      $district->delete();
+      $village->delete();
       return $this->setMessage($this->delete_message)->toJson();
     } catch (\Exception $e) {
       $this->exceptionResponse($e);
@@ -132,7 +132,7 @@ class DistrictServiceImplement extends ServiceApi implements DistrictService
   public function handleBulkDelete(array $uuid)
   {
     try {
-      $districts = $this->getWhere(
+      $villages = $this->getWhere(
         wheres: [
           'uuid' => [
             'operator' => 'in',
@@ -141,8 +141,8 @@ class DistrictServiceImplement extends ServiceApi implements DistrictService
         ]
       )->get();
 
-      foreach ($districts as $district) {
-        $district->delete();
+      foreach ($villages as $village) {
+        $village->delete();
       }
 
       return $this->setMessage($this->delete_message)->toJson();
