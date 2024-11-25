@@ -20,7 +20,6 @@ class PermissionResource extends JsonResource
       'uuid' => $this->uuid,
       'name' => $this->name,
       'guard_name' => $this->guard_name,
-      'permissionCategory' => PermissionCategoryResource::make($this->permissionCategory),
       'created_at' => DateTimeResource::make($this->created_at),
       'updated_at' => DateTimeResource::make($this->updated_at),
     ];
