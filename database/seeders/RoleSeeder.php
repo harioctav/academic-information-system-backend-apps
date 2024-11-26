@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Enums\UserRole;
-use App\Helpers\SeederProgressBar;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -18,7 +17,6 @@ class RoleSeeder extends Seeder
    */
   public function run(): void
   {
-    // reset cahced roles and permission
     app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
     $roles = UserRole::toArray();
@@ -38,15 +36,21 @@ class RoleSeeder extends Seeder
 
     Role::insert($roleRecords);
 
-    // Assign permissions to specific roles
+    // Default permissions untuk semua role
+    $defaultPermissions = [
+      'users.profile',
+      'users.password'
+    ];
+
+    // Berikan semua permission ke SuperAdmin
     $adminRole = Role::where('name', UserRole::SuperAdmin->value)->first();
     $adminRole->syncPermissions(Permission::all());
 
-    $regisRole = Role::where('name', UserRole::SubjectRegisTeam->value)->first();
-    $regisRole->syncPermissions([
-      'provinces.index',
-      'provinces.show',
-    ]);
+    // Berikan default permissions ke role lainnya
+    $otherRoles = Role::where('name', '!=', UserRole::SuperAdmin->value)->get();
+    foreach ($otherRoles as $role) {
+      $role->syncPermissions($defaultPermissions);
+    }
 
     $this->command->info('Roles created successfully!');
   }

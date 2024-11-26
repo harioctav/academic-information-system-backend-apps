@@ -34,6 +34,20 @@ class RoleServiceImplement extends ServiceApi implements RoleService
     $this->mainRepository = $mainRepository;
   }
 
+  /**
+   * Check if role is protected from modification
+   * @param \App\Models\Role $role
+   * @return string|null
+   */
+  private function checkProtectedRole(\App\Models\Role $role): ?string
+  {
+    if ($role->name === UserRole::SuperAdmin->value) {
+      $name = UserRole::from($role->name)->label();
+      return "Gagal: Peran {$name} tidak bisa Dimodifikasi";
+    }
+    return null;
+  }
+
   public function query()
   {
     return $this->mainRepository->query();
@@ -81,7 +95,10 @@ class RoleServiceImplement extends ServiceApi implements RoleService
   public function handleUpdate($request, \App\Models\Role $role)
   {
     try {
-      // Get Payload
+      if ($message = $this->checkProtectedRole($role)) {
+        return $this->setMessage($message)->toJson();
+      }
+
       $payload = $request->validated();
 
       DB::beginTransaction();
@@ -102,12 +119,10 @@ class RoleServiceImplement extends ServiceApi implements RoleService
   public function handleDelete(\App\Models\Role $role)
   {
     try {
-      $name = UserRole::from($role->name)->label();
+      if ($message = $this->checkProtectedRole($role)) {
+        return $this->setMessage($message)->toJson();
+      }
 
-      // Cek if Super Admin can't delete data
-      if ($role->name === UserRole::SuperAdmin->value) return $this->setMessage("Gagal: Peran {$name} tidak bisa Dihapus")->toJson();
-
-      // Delete Role
       $role->delete();
       return $this->setMessage($this->delete_message)->toJson();
     } catch (\Exception $e) {
@@ -129,8 +144,9 @@ class RoleServiceImplement extends ServiceApi implements RoleService
       )->get();
 
       foreach ($roles as $role) {
-        if ($role->name === UserRole::SuperAdmin->value) continue;
-        $role->delete();
+        if (!$this->checkProtectedRole($role)) {
+          $role->delete();
+        }
       }
 
       return $this->setMessage($this->delete_message)->toJson();

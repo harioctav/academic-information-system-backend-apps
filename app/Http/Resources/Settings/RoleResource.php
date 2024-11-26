@@ -19,9 +19,10 @@ class RoleResource extends JsonResource
     return [
       'id' => $this->id,
       'uuid' => $this->uuid,
-      'name' => UserRole::from($this->name)->label(),
+      'name' => $this->name,
       'permissions' => $this->permissions->pluck('name'),
       'permissions_total' => $this->permissions->count(),
+      'users_total' => $this->users->count(),
       'created_at' => DateTimeResource::make($this->created_at),
       'updated_at' => DateTimeResource::make($this->updated_at),
     ];
