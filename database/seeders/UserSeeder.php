@@ -22,22 +22,28 @@ class UserSeeder extends Seeder
       'role' => UserRole::SuperAdmin->value
     ],
     [
-      'name' => 'User Pertama',
-      'email' => 'user1@example.com',
+      'name' => 'User PPDB',
+      'email' => 'user.ppdb@example.com',
       'status' => true,
       'role' => UserRole::StudentRegisTeam->value
     ],
     [
-      'name' => 'User Kedua',
-      'email' => 'user2@example.com',
+      'name' => 'User Finance',
+      'email' => 'user.finance@example.com',
       'status' => false,
       'role' => UserRole::FinanceTeam->value
     ],
     [
-      'name' => 'User Ketiga',
-      'email' => 'user3@example.com',
+      'name' => 'User Registration Subject',
+      'email' => 'user.regis@example.com',
       'status' => true,
       'role' => UserRole::SubjectRegisTeam->value
+    ],
+    [
+      'name' => 'User Filling',
+      'email' => 'user.filling@example.com',
+      'status' => true,
+      'role' => UserRole::FilingTeam->value
     ],
   ];
 
@@ -47,18 +53,18 @@ class UserSeeder extends Seeder
   public function run(): void
   {
     $this->command->warn(PHP_EOL . 'Creating users...');
-    foreach ($this->users as $userData) {
+    foreach ($this->users as $data) {
       $user = User::create([
         'uuid' => Str::uuid(),
-        'name' => $userData['name'],
-        'email' => $userData['email'],
+        'name' => $data['name'],
+        'email' => $data['email'],
         'email_verified_at' => now(),
         'password' => bcrypt('password'),
-        'status' => $userData['status']
+        'status' => $data['status']
       ]);
 
-      $user->assignRole($userData['role']);
-      $this->command->info("Created user: {$userData['name']} with role: {$userData['role']}");
+      $user->assignRole($data['role']);
+      $this->command->info("Created user: {$data['name']} with role: {$data['role']}");
     }
 
     $this->command->info('Users created successfully!');
