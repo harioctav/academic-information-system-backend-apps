@@ -9,14 +9,18 @@ use App\Http\Resources\Settings\UserResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
 use Laravel\Passport\Client;
 
 class AuthController extends Controller
 {
+  /**
+   * Authenticate a user and return a JWT token.
+   *
+   * @param LoginRequest $request
+   * @return JsonResponse
+   */
   public function login(LoginRequest $request): JsonResponse
   {
     $remember = $request->boolean('remember', false);
@@ -39,28 +43,11 @@ class AuthController extends Controller
 
     return Response::json([
       'message' => 'User has been logged successfully.',
-      'user' => new UserResource($user)
-    ])->withCookie(
-      'access_token',
-      $token['access_token'],
-      60, // 1 hour
-      '/',
-      null,
-      true, // secure
-      true, // httpOnly
-      false,
-      'Strict'
-    )->withCookie(
-      'refresh_token',
-      $token['refresh_token'],
-      1440, // 24 hours
-      '/',
-      null,
-      true,
-      true,
-      false,
-      'Strict'
-    );
+      'user' => array_merge(
+        (new UserResource($user))->toArray($request),
+        ['token' => $token]
+      )
+    ]);
   }
 
   /**
@@ -69,54 +56,13 @@ class AuthController extends Controller
    * @param RefreshTokenRequest $request
    * @return JsonResponse
    */
-  public function refreshToken(Request $request): JsonResponse
+  public function refreshToken(RefreshTokenRequest $request): JsonResponse
   {
-    $refreshToken = $request->cookie('refresh_token');
-
-    if (!$refreshToken) {
-      return Response::json([
-        'message' => 'Refresh token not found'
-      ], 401);
-    }
-
-    try {
-      $token = $this->refreshOAuthToken($refreshToken);
-      $user = Auth::user();
-
-      // Invalidate old refresh token
-      DB::table('oauth_refresh_tokens')
-        ->where('refresh_token', hash('sha256', $refreshToken))
-        ->update(['revoked' => true]);
-
-      return Response::json([
-        'message' => 'Token refreshed successfully.',
-        'user' => new UserResource($user)
-      ])->withCookie(
-        'access_token',
-        $token['access_token'],
-        60,
-        '/',
-        null,
-        true,
-        true,
-        false,
-        'Strict'
-      )->withCookie(
-        'refresh_token',
-        $token['refresh_token'],
-        1440,
-        '/',
-        null,
-        true,
-        true,
-        false,
-        'Strict'
-      );
-    } catch (\Exception $e) {
-      return Response::json([
-        'message' => 'Invalid refresh token'
-      ], 401);
-    }
+    $token = $this->refreshOAuthToken($request->refresh_token);
+    return Response::json([
+      'message' => 'Refreshed token.',
+      'token' => $token,
+    ]);
   }
 
   /**
@@ -140,16 +86,20 @@ class AuthController extends Controller
    */
   public function logout(Request $request): JsonResponse
   {
+    // $request->user()->token()->revoke();
     $request->user()->tokens()->delete();
-
-    $cookie = Cookie::forget('access_token');
-    $refreshCookie = Cookie::forget('refresh_token');
-
     return Response::json([
       'message' => 'Logged out successfully.'
-    ])->withCookie($cookie)->withCookie($refreshCookie);
+    ]);
   }
 
+  /**
+   * Get an OAuth token using the provided email and password.
+   *
+   * @param string $email The email address to use for authentication.
+   * @param string $password The password to use for authentication.
+   * @return array The OAuth token response.
+   */
   private function getOAuthToken(string $email, string $password, bool $remember = false): array
   {
     $response = Http::post(config('app.url') . '/oauth/token', [
@@ -165,6 +115,12 @@ class AuthController extends Controller
     return $response->json();
   }
 
+  /**
+   * Refresh an OAuth token using the provided refresh token.
+   *
+   * @param string $refreshToken The refresh token to use for refreshing the OAuth token.
+   * @return array The refreshed OAuth token response.
+   */
   private function refreshOAuthToken(string $refreshToken): array
   {
     $client = Client::findOrFail(config('passport.client_id'));
