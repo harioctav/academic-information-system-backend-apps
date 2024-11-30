@@ -9,21 +9,25 @@ use App\Http\Controllers\Api\Settings\PermissionCategoryController;
 use App\Http\Controllers\Api\Settings\RoleController;
 use Illuminate\Support\Facades\Route;
 
+// Auth routes with rate limiting
 Route::prefix('auth')
   ->controller(AuthController::class)
+  ->middleware('auth.rate')
   ->group(function () {
     Route::post('login', 'login');
     Route::post('refresh', 'refreshToken');
 
-    Route::group(['middleware' => ['auth:api']], function () {
+    Route::middleware(['auth:api', 'session.check'])->group(function () {
       Route::get('user', 'user');
       Route::post('logout', 'logout');
     });
   });
 
-Route::group(['middleware' => ['auth:api', 'permission']], function () {
+// Protected routes with enhanced security
+Route::middleware(['auth:api', 'permission', 'session.check'])->group(function () {
+  // Locations routes
   Route::prefix('locations')->group(function () {
-    // Province
+    // Province routes
     Route::prefix('provinces')
       ->name('provinces.')
       ->group(function () {
@@ -31,7 +35,7 @@ Route::group(['middleware' => ['auth:api', 'permission']], function () {
       });
     Route::apiResource('provinces', ProvinceController::class);
 
-    // Regency
+    // Your existing location routes remain the same
     Route::prefix('regencies')
       ->name('regencies.')
       ->group(function () {
@@ -39,7 +43,6 @@ Route::group(['middleware' => ['auth:api', 'permission']], function () {
       });
     Route::apiResource('regencies', RegencyController::class);
 
-    // District
     Route::prefix('districts')
       ->name('districts.')
       ->group(function () {
@@ -47,7 +50,6 @@ Route::group(['middleware' => ['auth:api', 'permission']], function () {
       });
     Route::apiResource('districts', DistrictController::class);
 
-    // Village
     Route::prefix('villages')
       ->name('villages.')
       ->group(function () {
@@ -56,8 +58,8 @@ Route::group(['middleware' => ['auth:api', 'permission']], function () {
     Route::apiResource('villages', VillageController::class);
   });
 
+  // Settings routes
   Route::prefix('settings')->group(function () {
-    // Role Management
     Route::prefix('roles')
       ->name('roles')
       ->group(function () {
@@ -65,9 +67,8 @@ Route::group(['middleware' => ['auth:api', 'permission']], function () {
       });
     Route::apiResource('roles', RoleController::class)->except('store');
 
-    // Permission Categories
-    Route::apiResource('permission-categories', PermissionCategoryController::class)->parameters([
-      'permission-categories' => 'permissionCategory'
-    ])->only('index');
+    Route::apiResource('permission-categories', PermissionCategoryController::class)
+      ->parameters(['permission-categories' => 'permissionCategory'])
+      ->only('index');
   });
 });

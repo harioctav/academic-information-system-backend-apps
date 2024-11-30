@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\GeneralConstant;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
@@ -38,6 +39,9 @@ class User extends Authenticatable
     'password',
     'photo_profile_path',
     'status',
+    'last_activity',
+    'failed_login_attempts',
+    'locked_until'
   ];
 
   /**
@@ -60,7 +64,9 @@ class User extends Authenticatable
     return [
       'email_verified_at' => 'datetime',
       'password' => 'hashed',
-      'status' => GeneralConstant::class
+      'status' => GeneralConstant::class,
+      'last_activity' => 'datetime',
+      'locked_until' => 'datetime'
     ];
   }
 
@@ -70,5 +76,25 @@ class User extends Authenticatable
   public function validateForPassportPasswordGrant(string $password): bool
   {
     return Hash::check($password, $this->password);
+  }
+
+  /**
+   * Get the login activities associated with the user.
+   *
+   * @return \Illuminate\Database\Eloquent\Relations\HasMany
+   */
+  public function loginActivities(): HasMany
+  {
+    return $this->hasMany(LoginActivity::class);
+  }
+
+  /**
+   * Determines if the user's account is currently locked.
+   *
+   * @return bool True if the user's account is locked, false otherwise.
+   */
+  public function isLocked(): bool
+  {
+    return $this->locked_until && $this->locked_until->isFuture();
   }
 }

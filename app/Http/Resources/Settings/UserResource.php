@@ -22,6 +22,7 @@ class UserResource extends JsonResource
       'email' => $this->email,
       'status' => $this->status,
       'photo_profile_path' => $this->photo_profile_path,
+      'last_activity' => DateTimeResource::make($this->last_activity),
       'roles' => RoleResource::collection($this->roles),
       'created_at' => DateTimeResource::make($this->created_at),
       'updated_at' => DateTimeResource::make($this->updated_at),

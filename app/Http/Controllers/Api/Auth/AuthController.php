@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Auth\LoginRequest;
 use App\Http\Requests\Api\Auth\RefreshTokenRequest;
 use App\Http\Resources\Settings\UserResource;
+use App\Models\User;
+use App\Services\Security\SecurityService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +18,21 @@ use Laravel\Passport\Client;
 class AuthController extends Controller
 {
   /**
+   * The instance used by this controller.
+   */
+  protected $securityService;
+
+  /**
+   * Create a new controller instance.
+   *
+   * @return void
+   */
+  public function __construct(SecurityService $securityService)
+  {
+    $this->securityService = $securityService;
+  }
+
+  /**
    * Authenticate a user and return a JWT token.
    *
    * @param LoginRequest $request
@@ -23,9 +40,23 @@ class AuthController extends Controller
    */
   public function login(LoginRequest $request): JsonResponse
   {
+    $user = User::where('email', $request->email)->first();
+
+    if ($user && $user->isLocked()) {
+      return Response::json([
+        'errors' => [
+          'email' => ['Account is locked. Try again later.']
+        ]
+      ], 423);
+    }
+
     $remember = $request->boolean('remember', false);
 
     if (!Auth::attempt($request->only('email', 'password'), $remember)) {
+      if ($user) {
+        $this->securityService->handleLoginAttempt($user, $request, false);
+      }
+
       return Response::json([
         'errors' => [
           'email' => ['Kredensial ini tidak cocok dengan catatan kami.']
@@ -33,13 +64,13 @@ class AuthController extends Controller
       ], 401);
     }
 
+    $this->securityService->handleLoginAttempt($user, $request, true);
+
     $token = $this->getOAuthToken(
       $request->email,
       $request->password,
       $remember
     );
-
-    $user = Auth::user();
 
     return Response::json([
       'message' => 'User has been logged successfully.',
@@ -72,9 +103,12 @@ class AuthController extends Controller
    */
   public function user(): JsonResponse
   {
+    $user = Auth::user();
+    $user->update(['last_activity' => now()]);
+
     return Response::json([
       'message' => 'Authenticated user info.',
-      'user' => new UserResource(Auth::user()),
+      'user' => new UserResource($user),
     ]);
   }
 
@@ -87,7 +121,10 @@ class AuthController extends Controller
   public function logout(Request $request): JsonResponse
   {
     // $request->user()->token()->revoke();
-    $request->user()->tokens()->delete();
+    $user = $request->user();
+    $user->update(['last_activity' => null]);
+    $user->tokens()->delete();
+
     return Response::json([
       'message' => 'Logged out successfully.'
     ]);
