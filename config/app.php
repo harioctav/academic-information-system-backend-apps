@@ -54,10 +54,7 @@ return [
 
   'url' => env('APP_URL', 'http://localhost'),
 
-  'frontend_url' => env('FRONTEND_APP_URL', 'http://localhost'),
-
-  'frontend_vue_js_url' => env('APP_FRONTEND_URL_VUE_JS', 'http://localhost:4000'),
-  'frontend_next_js_url' => env('APP_FRONTEND_URL_NEXT_JS', 'http://localhost:3000'),
+  'frontend_url' => env('APP_FRONTEND_URL', 'http://localhost'),
 
   /*
   |--------------------------------------------------------------------------

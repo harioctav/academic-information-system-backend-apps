@@ -18,8 +18,7 @@ return [
   'paths' => ['api/*', 'sanctum/csrf-cookie'],
   'allowed_methods' => ['*'],
   'allowed_origins' => [
-    config('app.frontend_vue_js_url'),
-    config('app.frontend_next_js_url'),
+    config('app.frontend_url')
   ],
   'allowed_origins_patterns' => [],
   'allowed_headers' => ['*'],
