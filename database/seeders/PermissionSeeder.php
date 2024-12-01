@@ -83,6 +83,20 @@ class PermissionSeeder extends Seeder
     'students.show',
     'students.update',
     'students.destroy',
+
+    // API Grades
+    'grades.index',
+    'grades.store',
+    'grades.show',
+    'grades.update',
+    'grades.destroy',
+
+    // API Recommendations
+    'recommendations.index',
+    'recommendations.store',
+    'recommendations.show',
+    'recommendations.update',
+    'recommendations.destroy',
   ];
 
   /**
@@ -99,6 +113,8 @@ class PermissionSeeder extends Seeder
     'majors' => 7,
     'subjects' => 8,
     'students' => 9,
+    'grades' => 10,
+    'recommendations' => 11,
   ];
 
   /**
