@@ -28,22 +28,10 @@ class UserSeeder extends Seeder
       'role' => UserRole::StudentRegisTeam->value
     ],
     [
-      'name' => 'User Finance',
-      'email' => 'user.finance@example.com',
-      'status' => false,
-      'role' => UserRole::FinanceTeam->value
-    ],
-    [
       'name' => 'User Registration Subject',
       'email' => 'user.regis@example.com',
       'status' => true,
       'role' => UserRole::SubjectRegisTeam->value
-    ],
-    [
-      'name' => 'User Filling',
-      'email' => 'user.filling@example.com',
-      'status' => true,
-      'role' => UserRole::FilingTeam->value
     ],
   ];
 
