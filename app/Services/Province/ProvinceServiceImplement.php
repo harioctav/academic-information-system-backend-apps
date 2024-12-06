@@ -6,6 +6,7 @@ use App\Enums\WhereOperator;
 use App\Models\Province;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Province\ProvinceRepository;
+use Illuminate\Support\Facades\Log;
 
 class ProvinceServiceImplement extends ServiceApi implements ProvinceService
 {

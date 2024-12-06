@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -45,6 +46,14 @@ class User extends Authenticatable
   ];
 
   /**
+   * Get the route key for the model.
+   */
+  public function getRouteKeyName(): string
+  {
+    return 'uuid';
+  }
+
+  /**
    * The attributes that should be hidden for serialization.
    *
    * @var array<int, string>
@@ -68,6 +77,31 @@ class User extends Authenticatable
       'last_activity' => 'datetime',
       'locked_until' => 'datetime'
     ];
+  }
+
+  /**
+   * Gets the URL of the user's profile photo.
+   *
+   * If the `photo_profile_path` attribute is set, this method will return the URL of the
+   * corresponding file in the storage. Otherwise, it will return `null`.
+   *
+   * @return string|null The URL of the user's profile photo, or `null` if no photo is set.
+   */
+  public function getPhotoUrlAttribute()
+  {
+    return $this->photo_profile_path
+      ? Storage::url($this->photo_profile_path)
+      : null;
+  }
+
+  public function getRoleNameAttribute()
+  {
+    return $this->roles->implode('name');
+  }
+
+  public function getRoleIdAttribute()
+  {
+    return $this->roles->implode('id');
   }
 
   /**

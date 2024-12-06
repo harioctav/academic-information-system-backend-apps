@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Settings;
 
+use App\Enums\GeneralConstant;
 use App\Http\Resources\Utils\DateTimeResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -22,6 +23,7 @@ class UserResource extends JsonResource
       'email' => $this->email,
       'status' => $this->status,
       'photo_profile_path' => $this->photo_profile_path,
+      'photo_url' => $this->photo_url,
       'last_activity' => DateTimeResource::make($this->last_activity),
       'roles' => RoleResource::collection($this->roles),
       'created_at' => DateTimeResource::make($this->created_at),

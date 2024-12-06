@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Locations\RegencyController;
 use App\Http\Controllers\Api\Locations\VillageController;
 use App\Http\Controllers\Api\Settings\PermissionCategoryController;
 use App\Http\Controllers\Api\Settings\RoleController;
+use App\Http\Controllers\Api\Settings\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes with rate limiting
@@ -24,7 +25,13 @@ Route::prefix('auth')
   });
 
 // Protected routes with enhanced security
-Route::middleware(['auth:api', 'permission', 'session.check'])->group(function () {
+Route::middleware(
+  [
+    'auth:api',
+    'permission',
+    'session.check'
+  ]
+)->group(function () {
   // Locations routes
   Route::prefix('locations')->group(function () {
     // Province routes
@@ -60,15 +67,25 @@ Route::middleware(['auth:api', 'permission', 'session.check'])->group(function (
 
   // Settings routes
   Route::prefix('settings')->group(function () {
+    // Roles
     Route::prefix('roles')
-      ->name('roles')
+      ->name('roles.')
       ->group(function () {
         Route::delete('bulk-delete', [RoleController::class, 'bulkDestroy'])->name('bulk');
       });
     Route::apiResource('roles', RoleController::class)->except('store');
 
+    // Permissions
     Route::apiResource('permission-categories', PermissionCategoryController::class)
       ->parameters(['permission-categories' => 'permissionCategory'])
       ->only('index');
+
+    // Users
+    Route::prefix('users')
+      ->name('users.')
+      ->group(function () {
+        Route::delete('bulk-delete', [UserController::class, 'bulkDestroy'])->name('bulk');
+      });
+    Route::apiResource('users', UserController::class);
   });
 });
