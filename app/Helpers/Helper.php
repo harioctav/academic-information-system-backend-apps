@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 use Illuminate\Database\Eloquent\Model;
 
-class General
+class Helper
 {
   public const All = 'Semua Data';
   public const DefaultPassword = 'password';

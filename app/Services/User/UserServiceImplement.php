@@ -3,7 +3,7 @@
 namespace App\Services\User;
 
 use App\Enums\WhereOperator;
-use App\Helpers\General;
+use App\Helpers\Helper;
 use App\Repositories\Role\RoleRepository;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\User\UserRepository;
@@ -86,7 +86,7 @@ class UserServiceImplement extends ServiceApi implements UserService
       }
 
       $payload['photo_profile_path'] = $photoPath;
-      $payload['password'] = General::DefaultPassword;
+      $payload['password'] = Helper::DefaultPassword;
 
       $user = $this->mainRepository->create($payload);
       $user->assignRole($role->name);
