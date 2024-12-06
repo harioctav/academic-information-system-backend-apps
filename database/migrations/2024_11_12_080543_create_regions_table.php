@@ -57,9 +57,9 @@ return new class extends Migration
    */
   public function down(): void
   {
-    Schema::dropIfExists('provinces');
-    Schema::dropIfExists('regencies');
-    Schema::dropIfExists('districts');
     Schema::dropIfExists('villages');
+    Schema::dropIfExists('districts');
+    Schema::dropIfExists('regencies');
+    Schema::dropIfExists('provinces');
   }
 };
