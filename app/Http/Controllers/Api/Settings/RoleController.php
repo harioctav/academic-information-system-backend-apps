@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Settings;
 
+use App\Enums\UserRole;
 use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Settings\RoleRequest;
@@ -45,6 +46,9 @@ class RoleController extends Controller
         'created_at',
         'updated_at'
       ],
+      enumFields: [
+        'name' => UserRole::class
+      ]
     );
 
     return RoleResource::collection(

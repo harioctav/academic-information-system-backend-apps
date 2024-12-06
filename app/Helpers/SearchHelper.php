@@ -7,56 +7,77 @@ use Illuminate\Database\Eloquent\Builder;
 
 class SearchHelper
 {
+  // Add method to sanitize search input
+  private static function sanitizeSearchTerm(string $search): string
+  {
+    return trim(str_replace(['%', '_'], ['\%', '\_'], $search));
+  }
+
+  // Add method to build search conditions
+  private static function buildSearchCondition(Builder $query, string $field, string $search): void
+  {
+    $query->orWhere($field, 'LIKE', "%{$search}%");
+  }
+
   public static function applySearchQuery(
     Builder $query,
     Request $request,
-    array $searchableFields,
+    array $searchableFields = [],
     array $sortableFields = [],
+    array $enumFields = [],
     array $combinedFields = [],
     array $relationFields = []
   ): Builder {
-    $search = $request->input('search');
+    // Sanitize search input early
+    $search = $request->has('search') ? self::sanitizeSearchTerm($request->input('search')) : null;
 
-    // Handle dynamic relation fields
+    // Cache enum values to avoid repeated lookups
+    $enumValueCache = [];
+
+    // Process relations first for better query optimization
     foreach ($relationFields as $relationField) {
-      $relationId = $request->input($relationField);
-      $query->when($relationId, function ($query) use ($relationField, $relationId) {
+      if ($relationId = $request->input($relationField)) {
         $query->where($relationField, $relationId);
-      });
+      }
     }
 
-    $query->when($search, function ($query) use ($search, $searchableFields, $combinedFields) {
-      $query->where(function ($query) use ($search, $searchableFields, $combinedFields) {
-        // Regular field search
+    if ($search) {
+      $query->where(function ($query) use ($search, $searchableFields, $combinedFields, $enumFields, &$enumValueCache) {
+        // Regular fields
         foreach ($searchableFields as $field) {
-          $query->orWhere($field, 'LIKE', "%{$search}%");
+          self::buildSearchCondition($query, $field, $search);
         }
 
-        // Combined fields search if provided
-        if (!empty($combinedFields)) {
-          foreach ($combinedFields as $fields) {
-            $query->orWhereRaw(
-              "CONCAT(" . implode(", ' ', ", $fields) . ") LIKE ?",
-              ["%{$search}%"]
-            );
+        // Enum fields with caching
+        foreach ($enumFields as $field => $enumClass) {
+          if (!isset($enumValueCache[$enumClass]) && method_exists($enumClass, 'searchByLabelOrValue')) {
+            $enumValueCache[$enumClass] = $enumClass::searchByLabelOrValue($search);
+          }
 
-            // Reverse order combination
-            $reversedFields = array_reverse($fields);
-            $query->orWhereRaw(
-              "CONCAT(" . implode(", ' ', ", $reversedFields) . ") LIKE ?",
-              ["%{$search}%"]
-            );
+          if (!empty($enumValueCache[$enumClass])) {
+            $query->orWhereIn($field, $enumValueCache[$enumClass]);
+          }
+        }
+
+        // Combined fields
+        foreach ($combinedFields as $fields) {
+          $concatenated = implode(", ' ', ", $fields);
+          $query->orWhereRaw("CONCAT({$concatenated}) LIKE ?", ["%{$search}%"]);
+
+          // Only reverse if more than one field
+          if (count($fields) > 1) {
+            $reversed = implode(", ' ', ", array_reverse($fields));
+            $query->orWhereRaw("CONCAT({$reversed}) LIKE ?", ["%{$search}%"]);
           }
         }
       });
-    });
+    }
 
-    // Apply Sorting
-    $sortField = $request->input('sort_by');
-    $sortDirection = $request->input('sort_direction', 'asc');
-
-    if ($sortField && in_array($sortField, $sortableFields)) {
-      $query->orderBy($sortField, $sortDirection);
+    // Apply sorting
+    if ($sortField = $request->input('sort_by')) {
+      if (in_array($sortField, $sortableFields, true)) {
+        $query->orderBy($sortField, $request->input('sort_direction', 'asc'));
+      }
     }
 
     return $query;

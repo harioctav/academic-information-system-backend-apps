@@ -2,11 +2,13 @@
 
 namespace App\Enums;
 
+use App\Traits\EnumLabelSearchable;
 use App\Traits\EnumsToArray;
 
 enum UserRole: string
 {
   use EnumsToArray;
+  use EnumLabelSearchable;
 
   case SuperAdmin = 'super_admin';
   case SubjectRegisTeam = 'subject_regis_team';
