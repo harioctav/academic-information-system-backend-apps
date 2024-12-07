@@ -10,6 +10,9 @@ class SearchHelper
   // Add method to sanitize search input
   private static function sanitizeSearchTerm(string $search): string
   {
+    if ($search == null):
+      return '';
+    endif;
     return trim(str_replace(['%', '_'], ['\%', '\_'], $search));
   }
 
