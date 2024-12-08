@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enums\GeneralConstant;
+use App\Enums\UserRole;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Builder;
 
 class User extends Authenticatable
 {
@@ -102,6 +104,19 @@ class User extends Authenticatable
   public function getRoleIdAttribute()
   {
     return $this->roles->implode('id');
+  }
+
+  /**
+   * Scope a query to exclude users with the "Super Admin" role.
+   *
+   * @param  \Illuminate\Database\Eloquent\Builder  $query
+   * @return \Illuminate\Database\Eloquent\Builder
+   */
+  public function scopeWhereNotAdmin($query): Builder
+  {
+    return $query->whereDoesntHave('roles', function ($row) {
+      $row->where('name', UserRole::SuperAdmin->value);
+    });
   }
 
   /**

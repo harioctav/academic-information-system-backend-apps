@@ -22,6 +22,7 @@ class UserResource extends JsonResource
       'name' => $this->name,
       'email' => $this->email,
       'status' => $this->status,
+      'phone' => $this->phone,
       'photo_profile_path' => $this->photo_profile_path,
       'photo_url' => $this->photo_url,
       'last_activity' => DateTimeResource::make($this->last_activity),

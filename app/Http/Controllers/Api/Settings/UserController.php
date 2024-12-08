@@ -36,13 +36,16 @@ class UserController extends Controller
    */
   public function index(Request $request)
   {
+    $baseQuery = $this->userService->query()->whereNotAdmin();
+
     $query = SearchHelper::applySearchQuery(
-      query: $this->userService->query(),
+      query: $baseQuery,
       request: $request,
       searchableFields: [
         'name',
         'email',
-        'status'
+        'status',
+        'phone'
       ],
       sortableFields: [
         'name',
