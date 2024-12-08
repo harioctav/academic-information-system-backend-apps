@@ -38,6 +38,12 @@ class UserController extends Controller
   {
     $baseQuery = $this->userService->query()->whereNotAdmin();
 
+    if ($request->has('roles')) {
+      $baseQuery->whereHas('roles', function ($query) use ($request) {
+        $query->where('name', $request->roles);
+      });
+    }
+
     $query = SearchHelper::applySearchQuery(
       query: $baseQuery,
       request: $request,
