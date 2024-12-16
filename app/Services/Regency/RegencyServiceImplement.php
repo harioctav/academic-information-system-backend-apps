@@ -3,13 +3,17 @@
 namespace App\Services\Regency;
 
 use App\Enums\WhereOperator;
+use App\Http\Resources\Locations\RegencyResource;
 use App\Models\Regency;
 use App\Repositories\Province\ProvinceRepository;
+use App\Traits\LocationPayload;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Regency\RegencyRepository;
 
 class RegencyServiceImplement extends ServiceApi implements RegencyService
 {
+  use LocationPayload;
+
   /**
    * set title message api for CRUD
    * @param string $title
@@ -59,26 +63,16 @@ class RegencyServiceImplement extends ServiceApi implements RegencyService
   public function handleStore($request)
   {
     try {
-      $payload = $request->validated();
-
-      //  Find province
-      $province = $this->provinceRepository->findOrFail($payload['provinces']);
-
-      // Store Data
-      if (!$province) {
-        return $this->setMessage($this->error_message)->toJson();
-      }
-
-      # Execute to Database
-      $payload['full_code'] = $province->code . $payload['code'];
-      $payload['province_id'] = $province->id;
+      $r = $request->validated();
+      $payload = $this->prepareLocationPayload($r, 'provinces', $this->provinceRepository);
 
       # Create and load relations
       $regency = $this->mainRepository->create($payload);
-      $regency->load('province');
 
       return $this->setMessage($this->create_message)
-        ->setData($regency)
+        ->setData(
+          new RegencyResource($regency)
+        )
         ->toJson();
     } catch (\Exception $e) {
       $this->exceptionResponse($e);
@@ -89,23 +83,17 @@ class RegencyServiceImplement extends ServiceApi implements RegencyService
   public function handleUpdate($request, Regency $regency)
   {
     try {
-      $payload = $request->validated();
-
-      $province = $this->provinceRepository->findOrFail($payload['provinces']);
-
-      if (!$province) {
-        return $this->setMessage($this->error_message)->toJson();
-      }
-
-      $payload['full_code'] = $province->code . $payload['code'];
-      $payload['province_id'] = $province->id;
+      $r = $request->validated();
+      $payload = $this->prepareLocationPayload($r, 'provinces', $this->provinceRepository);
 
       # Update Data
       $regency->update($payload);
       $regency->refresh();
 
       return $this->setMessage($this->update_message)
-        ->setData($regency)
+        ->setData(
+          new RegencyResource($regency)
+        )
         ->toJson();
     } catch (\Exception $exception) {
       $this->exceptionResponse($exception);

@@ -3,12 +3,16 @@
 namespace App\Services\Village;
 
 use App\Enums\WhereOperator;
+use App\Http\Resources\Locations\VillageResource;
 use App\Repositories\District\DistrictRepository;
+use App\Traits\LocationPayload;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Village\VillageRepository;
 
 class VillageServiceImplement extends ServiceApi implements VillageService
 {
+  use LocationPayload;
+
   /**
    * set title message api for CRUD
    * @param string $title
@@ -59,26 +63,15 @@ class VillageServiceImplement extends ServiceApi implements VillageService
   {
     try {
       # request
-      $payload = $request->validated();
-
-      # Find District
-      $district = $this->districtRepository->findOrFail($payload['districts']);
-
-      # Check if District not found
-      if (!$district) {
-        return $this->setMessage($this->error_message)->toJson();
-      }
-
-      # Execute to Database
-      $payload['full_code'] = $district->full_code . $payload['code'];
-      $payload['district_id'] = $district->id;
+      $payload = $this->prepareLocationPayload($request->validated(), 'districts', $this->districtRepository);
 
       # Create and load relations
       $village = $this->mainRepository->create($payload);
-      $village->load('district.regency.province');
 
       return $this->setMessage($this->create_message)
-        ->setData($village)
+        ->setData(
+          new VillageResource($village)
+        )
         ->toJson();
     } catch (\Exception $e) {
       $this->exceptionResponse($e);
@@ -90,28 +83,15 @@ class VillageServiceImplement extends ServiceApi implements VillageService
   {
     try {
       # request
-      $payload = $request->validated();
-
-      # Find District
-      $district = $this->districtRepository->findOrFail($payload['districts']);
-
-      # Check if District not found
-      if (!$district) {
-        return $this->setMessage($this->error_message)->toJson();
-      }
-
-      # Execute to Database
-      $payload['full_code'] = $district->full_code . $payload['code'];
-      $payload['district_id'] = $district->id;
+      $payload = $this->prepareLocationPayload($request->validated(), 'districts', $this->districtRepository);
 
       # Update Database
       $village->update($payload);
 
-      # Refresh model untuk mendapatkan relasi yang terupdate
-      $village->refresh();
-
       return $this->setMessage($this->update_message)
-        ->setData($village)
+        ->setData(
+          new VillageResource($village)
+        )
         ->toJson();
     } catch (\Exception $e) {
       $this->exceptionResponse($e);

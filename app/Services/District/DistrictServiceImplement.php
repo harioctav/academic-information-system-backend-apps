@@ -3,12 +3,16 @@
 namespace App\Services\District;
 
 use App\Enums\WhereOperator;
+use App\Http\Resources\Locations\DistrictResource;
+use App\Traits\LocationPayload;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\District\DistrictRepository;
 use App\Repositories\Regency\RegencyRepository;
 
 class DistrictServiceImplement extends ServiceApi implements DistrictService
 {
+  use LocationPayload;
+
   /**
    * set title message api for CRUD
    * @param string $title
@@ -59,26 +63,15 @@ class DistrictServiceImplement extends ServiceApi implements DistrictService
   {
     try {
       # request
-      $payload = $request->validated();
-
-      # Find Regency
-      $regency = $this->regencyRepository->findOrFail($payload['regencies']);
-
-      # Check if Regency not found
-      if (!$regency) {
-        return $this->setMessage($this->error_message)->toJson();
-      }
-
-      # Execute to Database
-      $payload['full_code'] = $regency->full_code . $payload['code'];
-      $payload['regency_id'] = $regency->id;
+      $payload = $this->prepareLocationPayload($request->validated(), 'regencies', $this->regencyRepository);
 
       # Create and load relations
       $district = $this->mainRepository->create($payload);
-      $district->load('regency.province');
 
       return $this->setMessage($this->create_message)
-        ->setData($district)
+        ->setData(
+          new DistrictResource($district)
+        )
         ->toJson();
     } catch (\Exception $e) {
       $this->exceptionResponse($e);
@@ -90,28 +83,15 @@ class DistrictServiceImplement extends ServiceApi implements DistrictService
   {
     try {
       # request
-      $payload = $request->validated();
-
-      # Find Regency
-      $regency = $this->regencyRepository->findOrFail($payload['regencies']);
-
-      # Check if Regency not found
-      if (!$regency) {
-        return $this->setMessage($this->error_message)->toJson();
-      }
-
-      # Execute to Database
-      $payload['full_code'] = $regency->full_code . $payload['code'];
-      $payload['regency_id'] = $regency->id;
+      $payload = $this->prepareLocationPayload($request->validated(), 'regencies', $this->regencyRepository);
 
       # Update Database
       $district->update($payload);
 
-      # Refresh model untuk mendapatkan relasi yang terupdate
-      $district->refresh();
-
       return $this->setMessage($this->update_message)
-        ->setData($district)
+        ->setData(
+          new DistrictResource($district)
+        )
         ->toJson();
     } catch (\Exception $e) {
       $this->exceptionResponse($e);
