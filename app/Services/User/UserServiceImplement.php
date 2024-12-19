@@ -124,11 +124,13 @@ class UserServiceImplement extends ServiceApi implements UserService
         );
 
         if ($result['success']) {
-          $path = $result['path'];
+          $payload['photo_profile_path'] = $result['path'];
         }
+      } else {
+        // Keep existing photo if no new photo is uploaded
+        $payload['photo_profile_path'] = $user->photo_profile_path;
       }
 
-      $payload['photo_profile_path'] = $path;
       $user->update($payload);
 
       DB::commit();
