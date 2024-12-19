@@ -23,6 +23,7 @@ class UserServiceImplement extends ServiceApi implements UserService
   protected string $create_message = "Successfully created User Data";
   protected string $update_message = "Successfully updated User Data";
   protected string $delete_message = "Successfully deleted User Data";
+  protected string $delete_image_message = "Successfully deleted User Avatar";
   protected string $error_message = "Error while performing action, please check log";
 
   /**
@@ -133,6 +134,30 @@ class UserServiceImplement extends ServiceApi implements UserService
       DB::commit();
 
       return $user->refresh();
+    } catch (\Exception $e) {
+      DB::rollBack();
+      $this->exceptionResponse($e);
+      return null;
+    }
+  }
+
+  public function handleDeleteImage(\App\Models\User $user)
+  {
+    try {
+      DB::beginTransaction();
+
+      // Handle delete file
+      if ($user->photo_profile_path) {
+        Storage::delete($user->photo_profile_path);
+      }
+
+      $user->update([
+        'photo_profile_path' => null,
+      ]);
+
+      DB::commit();
+
+      return $this->setMessage($this->delete_image_message)->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
       $this->exceptionResponse($e);

@@ -128,4 +128,12 @@ class UserController extends Controller
 
     return $this->userService->handleBulkDelete($request->ids);
   }
+
+  /**
+   * Remove the specified image user from storage.
+   */
+  public function deleteImage(User $user): JsonResponse
+  {
+    return $this->userService->handleDeleteImage($user);
+  }
 }

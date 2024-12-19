@@ -84,6 +84,7 @@ Route::middleware(
     Route::prefix('users')
       ->name('users.')
       ->group(function () {
+        Route::get('{user}/delete-image', [UserController::class, 'deleteImage'])->name('delete.image');
         Route::delete('bulk-delete', [UserController::class, 'bulkDestroy'])->name('bulk');
       });
     Route::apiResource('users', UserController::class);
