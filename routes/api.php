@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Academics\MajorController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Locations\DistrictController;
 use App\Http\Controllers\Api\Locations\ProvinceController;
@@ -25,42 +26,44 @@ Route::prefix('auth')
   });
 
 // Protected routes with enhanced security
-Route::middleware(
-  [
-    'auth:api',
-    'permission',
-    'session.check'
-  ]
-)->group(function () {
+Route::middleware([
+  'auth:api',
+  'permission',
+  'session.check'
+])->group(function () {
   // Locations routes
   Route::prefix('locations')->group(function () {
     // Province routes
     Route::prefix('provinces')
       ->name('provinces.')
+      ->controller(ProvinceController::class)
       ->group(function () {
-        Route::delete('bulk-delete', [ProvinceController::class, 'bulkDestroy'])->name('bulk');
+        Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
       });
     Route::apiResource('provinces', ProvinceController::class);
 
     // Your existing location routes remain the same
     Route::prefix('regencies')
       ->name('regencies.')
+      ->controller(RegencyController::class)
       ->group(function () {
-        Route::delete('bulk-delete', [RegencyController::class, 'bulkDestroy'])->name('bulk');
+        Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
       });
     Route::apiResource('regencies', RegencyController::class);
 
     Route::prefix('districts')
       ->name('districts.')
+      ->controller(DistrictController::class)
       ->group(function () {
-        Route::delete('bulk-delete', [DistrictController::class, 'bulkDestroy'])->name('bulk');
+        Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
       });
     Route::apiResource('districts', DistrictController::class);
 
     Route::prefix('villages')
       ->name('villages.')
+      ->controller(VillageController::class)
       ->group(function () {
-        Route::delete('bulk-delete', [VillageController::class, 'bulkDestroy'])->name('bulk');
+        Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
       });
     Route::apiResource('villages', VillageController::class);
   });
@@ -70,8 +73,9 @@ Route::middleware(
     // Roles
     Route::prefix('roles')
       ->name('roles.')
+      ->controller(RoleController::class)
       ->group(function () {
-        Route::delete('bulk-delete', [RoleController::class, 'bulkDestroy'])->name('bulk');
+        Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
       });
     Route::apiResource('roles', RoleController::class)->except('store');
 
@@ -90,5 +94,17 @@ Route::middleware(
         Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
       });
     Route::apiResource('users', UserController::class);
+  });
+
+  // Academic Resources
+  Route::prefix('academics')->group(function () {
+    // Majors
+    Route::prefix('majors')
+      ->name('majors.')
+      ->controller(MajorController::class)
+      ->group(function () {
+        Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+      });
+    Route::apiResource('majors', MajorController::class);
   });
 });

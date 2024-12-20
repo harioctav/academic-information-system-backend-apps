@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Api\Locations;
+namespace App\Http\Requests\Locations;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DistrictRequest extends FormRequest
+class ProvinceRequest extends FormRequest
 {
   /**
    * Determine if the user is authorized to make this request.
@@ -22,10 +22,6 @@ class DistrictRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'regencies' => [
-        'required',
-        'exists:regencies,id'
-      ],
       'code' => [
         'required',
         'numeric',
@@ -46,7 +42,6 @@ class DistrictRequest extends FormRequest
       '*.required' => ':attribute tidak boleh dikosongkan',
       '*.unique' => ':attribute sudah digunakan, silahkan pilih yang lain',
       '*.numeric' => ':attribute tidak valid, harus berupa angka',
-      '*.exists' => ':attribute tidak ditemukan atau tidak valid',
     ];
   }
 
@@ -58,9 +53,8 @@ class DistrictRequest extends FormRequest
   public function attributes(): array
   {
     return [
-      'regencies' => 'Kota atau Kabupaten',
-      'code' => 'Kode Kecamatan',
-      'name' => 'Nama Kecamatan',
+      'code' => 'Kode Provinsi',
+      'name' => 'Nama Provinsi',
     ];
   }
 }

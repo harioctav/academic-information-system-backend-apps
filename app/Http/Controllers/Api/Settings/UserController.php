@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Settings;
 use App\Enums\GeneralConstant;
 use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Settings\UserRequest;
+use App\Http\Requests\Settings\UserRequest;
 use App\Http\Resources\Settings\UserResource;
 use App\Models\User;
 use App\Services\User\UserService;
@@ -16,7 +16,7 @@ use Illuminate\Http\Response;
 class UserController extends Controller
 {
   /**
-   * The instance used by this controller.
+   * The UserService instance used by this controller.
    */
   protected $userService;
 

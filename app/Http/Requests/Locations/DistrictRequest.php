@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Api\Settings;
+namespace App\Http\Requests\Locations;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class RoleRequest extends FormRequest
+class DistrictRequest extends FormRequest
 {
   /**
    * Determine if the user is authorized to make this request.
@@ -23,41 +22,45 @@ class RoleRequest extends FormRequest
   public function rules(): array
   {
     return [
+      'regencies' => [
+        'required',
+        'exists:regencies,id'
+      ],
+      'code' => [
+        'required',
+        'numeric',
+      ],
       'name' => [
         'required',
         'string',
-        Rule::unique('roles', 'name')->ignore($this->role),
-      ],
-      'permissions' => [
-        'nullable'
       ],
     ];
   }
 
   /**
    * Get the error messages for the defined validation rules.
-   *
    */
   public function messages(): array
   {
     return [
       '*.required' => ':attribute tidak boleh dikosongkan',
-      '*.string' => ':attribute tidak valid, masukkan yang benar',
-      '*.max' => ':attribute terlalu panjang, maksimal :max karakter',
       '*.unique' => ':attribute sudah digunakan, silahkan pilih yang lain',
-      '*.in' => ':attribute tidak sesuai dengan data kami',
+      '*.numeric' => ':attribute tidak valid, harus berupa angka',
+      '*.exists' => ':attribute tidak ditemukan atau tidak valid',
     ];
   }
 
   /**
-   * Get custom attributes for validator errors.
+   * Get the validation attribute names that apply to the request.
    *
+   * @return array<string, string>
    */
   public function attributes(): array
   {
     return [
-      'name' => 'Peran',
-      'permissions' => 'Hak Akses',
+      'regencies' => 'Kota atau Kabupaten',
+      'code' => 'Kode Kecamatan',
+      'name' => 'Nama Kecamatan',
     ];
   }
 }

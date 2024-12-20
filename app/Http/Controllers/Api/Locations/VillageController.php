@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Locations;
 
 use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Locations\VillageRequest;
+use App\Http\Requests\Locations\VillageRequest;
 use App\Http\Resources\Locations\VillageResource;
 use App\Models\Village;
 use App\Services\Village\VillageService;
@@ -13,6 +13,9 @@ use Illuminate\Http\Request;
 
 class VillageController extends Controller
 {
+  /**
+   * The VillageService instance used by this controller.
+   */
   protected $villageService;
 
   /**

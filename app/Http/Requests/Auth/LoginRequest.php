@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Api\Locations;
+namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ProvinceRequest extends FormRequest
+class LoginRequest extends FormRequest
 {
   /**
    * Determine if the user is authorized to make this request.
@@ -22,14 +22,9 @@ class ProvinceRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'code' => [
-        'required',
-        'numeric',
-      ],
-      'name' => [
-        'required',
-        'string',
-      ],
+      'email' => 'required|email',
+      'password' => 'required',
+      'remember' => 'boolean',
     ];
   }
 
@@ -40,6 +35,7 @@ class ProvinceRequest extends FormRequest
   {
     return [
       '*.required' => ':attribute tidak boleh dikosongkan',
+      '*.email' => ':attribute tidak valid, harus berupa email',
       '*.unique' => ':attribute sudah digunakan, silahkan pilih yang lain',
       '*.numeric' => ':attribute tidak valid, harus berupa angka',
     ];
@@ -53,8 +49,8 @@ class ProvinceRequest extends FormRequest
   public function attributes(): array
   {
     return [
-      'code' => 'Kode Provinsi',
-      'name' => 'Nama Provinsi',
+      'email' => 'Email',
+      'password' => 'Password',
     ];
   }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Locations;
 
 use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Locations\RegencyRequest;
+use App\Http\Requests\Locations\RegencyRequest;
 use App\Http\Resources\Locations\RegencyResource;
 use App\Models\Regency;
 use App\Services\Regency\RegencyService;

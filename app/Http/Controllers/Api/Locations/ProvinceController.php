@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Locations;
 
 use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Locations\ProvinceRequest;
+use App\Http\Requests\Locations\ProvinceRequest;
 use App\Http\Resources\Locations\ProvinceResource;
 use App\Models\Province;
 use App\Services\Province\ProvinceService;
@@ -37,8 +37,16 @@ class ProvinceController extends Controller
     $query = SearchHelper::applySearchQuery(
       $this->provinceService->query(),
       $request,
-      searchableFields: ['name', 'code'],
-      sortableFields: ['name', 'code', 'created_at', 'updated_at']
+      searchableFields: [
+        'code',
+        'name',
+      ],
+      sortableFields: [
+        'name',
+        'code',
+        'created_at',
+        'updated_at'
+      ]
     );
 
     return ProvinceResource::collection(

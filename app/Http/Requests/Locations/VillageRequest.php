@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Api\Locations;
+namespace App\Http\Requests\Locations;
 
-use App\Enums\Locations\RegencyType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class RegencyRequest extends FormRequest
+class VillageRequest extends FormRequest
 {
   /**
    * Determine if the user is authorized to make this request.
@@ -23,9 +23,9 @@ class RegencyRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'provinces' => [
+      'districts' => [
         'required',
-        'exists:provinces,id'
+        'exists:districts,id'
       ],
       'code' => [
         'required',
@@ -35,10 +35,10 @@ class RegencyRequest extends FormRequest
         'required',
         'string',
       ],
-      'type' => [
+      'pos_code' => [
         'required',
-        'string',
-        RegencyType::toValidation()
+        'numeric',
+        Rule::unique('villages', 'pos_code')->ignore($this->village),
       ],
     ];
   }
@@ -51,9 +51,7 @@ class RegencyRequest extends FormRequest
     return [
       '*.required' => ':attribute tidak boleh dikosongkan',
       '*.unique' => ':attribute sudah digunakan, silahkan pilih yang lain',
-      '*.numeric' => ':attribute tidak valid, harus berupa angka',
       '*.exists' => ':attribute tidak ditemukan atau tidak valid',
-      '*.in' => ':attribute tidak sesuai dengan data kami',
     ];
   }
 
@@ -65,10 +63,10 @@ class RegencyRequest extends FormRequest
   public function attributes(): array
   {
     return [
-      'provinces' => 'Provinsi',
-      'code' => 'Kode Kota atau Kabupaten',
-      'name' => 'Nama Kota atau Kabupaten',
-      'type' => 'Tipe Kota atau Kabupaten',
+      'districts' => 'Kecamatan',
+      'code' => 'Kode Desa atau Kelurahan',
+      'name' => 'Nama Desa atau Kelurahan',
+      'pos_code' => 'Kode Pos',
     ];
   }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Settings;
 use App\Enums\UserRole;
 use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Settings\RoleRequest;
+use App\Http\Requests\Settings\RoleRequest;
 use App\Http\Resources\Settings\RoleResource;
 use App\Models\Role;
 use App\Services\Role\RoleService;
@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 class RoleController extends Controller
 {
   /**
-   * The instance used by this controller.
+   * The RoleService instance used by this controller.
    */
   protected $roleService;
 

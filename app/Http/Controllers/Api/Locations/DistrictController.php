@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Locations;
 
 use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Locations\DistrictRequest;
+use App\Http\Requests\Locations\DistrictRequest;
 use App\Http\Resources\Locations\DistrictResource;
 use App\Models\District;
 use App\Services\District\DistrictService;
@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 class DistrictController extends Controller
 {
   /**
-   * The instance used by this controller.
+   * The DistrictService instance used by this controller.
    */
   protected $districtService;
 

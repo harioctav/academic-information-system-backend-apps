@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Api\Auth;
+namespace App\Http\Requests\Locations;
 
+use App\Enums\Locations\RegencyType;
 use Illuminate\Foundation\Http\FormRequest;
 
-class LoginRequest extends FormRequest
+class RegencyRequest extends FormRequest
 {
   /**
    * Determine if the user is authorized to make this request.
@@ -22,9 +23,23 @@ class LoginRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'email' => 'required|email',
-      'password' => 'required',
-      'remember' => 'boolean',
+      'provinces' => [
+        'required',
+        'exists:provinces,id'
+      ],
+      'code' => [
+        'required',
+        'numeric',
+      ],
+      'name' => [
+        'required',
+        'string',
+      ],
+      'type' => [
+        'required',
+        'string',
+        RegencyType::toValidation()
+      ],
     ];
   }
 
@@ -35,9 +50,10 @@ class LoginRequest extends FormRequest
   {
     return [
       '*.required' => ':attribute tidak boleh dikosongkan',
-      '*.email' => ':attribute tidak valid, harus berupa email',
       '*.unique' => ':attribute sudah digunakan, silahkan pilih yang lain',
       '*.numeric' => ':attribute tidak valid, harus berupa angka',
+      '*.exists' => ':attribute tidak ditemukan atau tidak valid',
+      '*.in' => ':attribute tidak sesuai dengan data kami',
     ];
   }
 
@@ -49,8 +65,10 @@ class LoginRequest extends FormRequest
   public function attributes(): array
   {
     return [
-      'email' => 'Email',
-      'password' => 'Password',
+      'provinces' => 'Provinsi',
+      'code' => 'Kode Kota atau Kabupaten',
+      'name' => 'Nama Kota atau Kabupaten',
+      'type' => 'Tipe Kota atau Kabupaten',
     ];
   }
 }
