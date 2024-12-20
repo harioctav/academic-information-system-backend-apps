@@ -86,7 +86,7 @@ Route::middleware(
       ->controller(UserController::class)
       ->group(function () {
         Route::get('{user}/delete-image', 'deleteImage')->name('delete.image');
-        Route::patch('status/{user}', 'status')->name('status');
+        Route::put('status/{user}', 'status')->name('status');
         Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
       });
     Route::apiResource('users', UserController::class);
