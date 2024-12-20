@@ -23,7 +23,7 @@ class SubjectResource extends JsonResource
       'course_credit' => $this->course_credit,
       'subject_status' => $this->subject_status,
       'exam_time' => $this->exam_time,
-      'note' => $this->note,
+      'subject_note' => $this->subject_note,
       'created_at' => DateTimeResource::make($this->created_at),
       'updated_at' => DateTimeResource::make($this->updated_at),
     ];

@@ -22,7 +22,7 @@ class Subject extends Model
     'course_credit',
     'exam_time',
     'subject_status',
-    'note',
+    'subject_note',
   ];
 
   /**

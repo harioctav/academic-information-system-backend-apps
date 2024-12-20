@@ -27,13 +27,13 @@ class SubjectRequest extends FormRequest
     return [
       'code' => [
         'required',
-        'numeric',
+        'string',
         Rule::unique('subjects', 'code')->ignore($this->subject)
       ],
       'name' => [
         'required',
         'string',
-        'max:25',
+        'max:100',
         Rule::unique('subjects', 'name')->ignore($this->subject)
       ],
       'course_credit' => [
@@ -42,7 +42,7 @@ class SubjectRequest extends FormRequest
         'min:1',
         'max:5'
       ],
-      'status' => [
+      'subject_status' => [
         'required',
         'string',
         SubjectStatus::toValidation()

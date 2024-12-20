@@ -19,7 +19,7 @@ return new class extends Migration
       $table->string('course_credit');
       $table->string('subject_status');
       $table->string('exam_time')->nullable();
-      $table->text('note')->nullable();
+      $table->text('subject_note')->nullable();
       $table->timestamps();
     });
   }
