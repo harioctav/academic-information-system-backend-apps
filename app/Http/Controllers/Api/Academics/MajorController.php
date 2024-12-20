@@ -42,10 +42,13 @@ class MajorController extends Controller
         'name',
       ],
       sortableFields: [
-        'name',
         'code',
+        'name',
         'created_at',
         'updated_at'
+      ],
+      relationFields: [
+        'degree'
       ]
     );
 

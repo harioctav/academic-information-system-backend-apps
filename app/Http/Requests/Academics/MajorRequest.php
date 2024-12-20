@@ -27,8 +27,7 @@ class MajorRequest extends FormRequest
     return [
       'code' => [
         'required',
-        'string',
-        'max:20',
+        'numeric',
         Rule::unique('majors', 'code')->ignore($this->major),
       ],
       'name' => [

@@ -44,6 +44,10 @@ class UserController extends Controller
       });
     }
 
+    if ($request->has('status')) {
+      $baseQuery->where('status', $request->status);
+    }
+
     $query = SearchHelper::applySearchQuery(
       query: $baseQuery,
       request: $request,
@@ -61,9 +65,6 @@ class UserController extends Controller
       ],
       enumFields: [
         'status' => GeneralConstant::class
-      ],
-      relationFields: [
-        'status'
       ]
     );
 
