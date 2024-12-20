@@ -8,6 +8,7 @@ use App\Http\Requests\Academics\MajorRequest;
 use App\Http\Resources\Academics\MajorResource;
 use App\Models\Major;
 use App\Services\Major\MajorService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class MajorController extends Controller
@@ -56,32 +57,45 @@ class MajorController extends Controller
   /**
    * Store a newly created resource in storage.
    */
-  public function store(MajorRequest $request)
+  public function store(MajorRequest $request): JsonResponse
   {
-    //
+    return $this->majorService->handleStore($request);
   }
 
   /**
    * Display the specified resource.
    */
-  public function show(Major $major)
+  public function show(Major $major): MajorResource
   {
-    //
+    return new MajorResource($major);
   }
 
   /**
    * Update the specified resource in storage.
    */
-  public function update(MajorRequest $request, Major $major)
+  public function update(MajorRequest $request, Major $major): JsonResponse
   {
-    //
+    return $this->majorService->handleUpdate($request, $major);
   }
 
   /**
    * Remove the specified resource from storage.
    */
-  public function destroy(Major $major)
+  public function destroy(Major $major): JsonResponse
   {
-    //
+    return $this->majorService->handleDelete($major);
+  }
+
+  /**
+   * Remove multiple resources from storage.
+   */
+  public function bulkDestroy(Request $request): JsonResponse
+  {
+    $request->validate([
+      'ids' => 'required|array',
+      'ids.*' => 'exists:majors,uuid'
+    ]);
+
+    return $this->majorService->handleBulkDelete($request->ids);
   }
 }
