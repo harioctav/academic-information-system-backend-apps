@@ -17,21 +17,24 @@ class UserSeeder extends Seeder
   protected array $users = [
     [
       'name' => 'Administrator',
-      'email' => 'admin@example.com',
+      'email' => 'admin@gmail.com',
       'status' => true,
-      'role' => UserRole::SuperAdmin->value
+      'role' => UserRole::SuperAdmin->value,
+      'phone' => '6285798888733'
     ],
     [
       'name' => 'User PPDB',
-      'email' => 'user.ppdb@example.com',
+      'email' => 'user.ppdb@gmail.com',
       'status' => true,
-      'role' => UserRole::StudentRegisTeam->value
+      'role' => UserRole::StudentRegisTeam->value,
+      'phone' => '6285659466622'
     ],
     [
       'name' => 'User Registration Subject',
-      'email' => 'user.regis@example.com',
-      'status' => true,
-      'role' => UserRole::SubjectRegisTeam->value
+      'email' => 'user.regis@gmail.com',
+      'status' => false,
+      'role' => UserRole::SubjectRegisTeam->value,
+      'phone' => '6285153435008'
     ],
   ];
 
@@ -48,7 +51,8 @@ class UserSeeder extends Seeder
         'email' => $data['email'],
         'email_verified_at' => now(),
         'password' => bcrypt('password'),
-        'status' => $data['status']
+        'status' => $data['status'],
+        'phone' => $data['phone']
       ]);
 
       $user->assignRole($data['role']);
