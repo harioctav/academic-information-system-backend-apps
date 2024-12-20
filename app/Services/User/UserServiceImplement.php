@@ -2,6 +2,7 @@
 
 namespace App\Services\User;
 
+use App\Enums\GeneralConstant;
 use App\Enums\WhereOperator;
 use App\Helpers\Helper;
 use App\Repositories\Role\RoleRepository;
@@ -24,6 +25,7 @@ class UserServiceImplement extends ServiceApi implements UserService
   protected string $update_message = "Successfully updated User Data";
   protected string $delete_message = "Successfully deleted User Data";
   protected string $delete_image_message = "Successfully deleted User Avatar";
+  protected string $status_change_message = "Successfully change status User";
   protected string $error_message = "Error while performing action, please check log";
 
   /**
@@ -185,6 +187,30 @@ class UserServiceImplement extends ServiceApi implements UserService
       return $this->setMessage($this->delete_message)->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
+      $this->exceptionResponse($e);
+      return null;
+    }
+  }
+
+  public function handleChangeStatus(\App\Models\User $user)
+  {
+    try {
+      DB::beginTransaction();
+
+      // Get Status User
+      $oldStatus = $user->status->value;
+
+      // Determine New Status
+      $newStatus = $oldStatus == GeneralConstant::Active->value
+        ? GeneralConstant::InActive->value
+        : GeneralConstant::Active->value;
+
+      // Change Status
+      $this->mainRepository->update($user->id, ['status' => $newStatus]);
+      DB::commit();
+
+      return $this->setMessage($this->status_change_message)->toJson();
+    } catch (\Exception $e) {
       $this->exceptionResponse($e);
       return null;
     }

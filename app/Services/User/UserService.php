@@ -19,5 +19,6 @@ interface UserService extends BaseService
   public function handleUpdate($request, User $user);
   public function handleDeleteImage(User $user);
   public function handleDelete(User $user);
+  public function handleChangeStatus(User $user);
   public function handleBulkDelete(array $uuid);
 }
