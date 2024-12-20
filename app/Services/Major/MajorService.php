@@ -15,7 +15,6 @@ interface MajorService extends BaseService
     $orderBy = null,
     $orderByType = null
   );
-
   public function handleStore($request);
   public function handleUpdate($request, Major $major);
   public function handleDelete(Major $major);
