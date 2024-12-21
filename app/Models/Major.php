@@ -53,7 +53,8 @@ class Major extends Model
       Subject::class,
       'major_has_subjects'
     )->using(MajorSubject::class)
-      ->withPivot('semester');
+      ->withPivot('semester')
+      ->withTimestamps();
   }
 
   /**

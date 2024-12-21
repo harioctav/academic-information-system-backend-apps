@@ -54,6 +54,16 @@ class MajorSubject extends Pivot
   }
 
   /**
+   * The relationships that should always be loaded.
+   *
+   * @var array<string>
+   */
+  protected $with = [
+    'major',
+    'subject'
+  ];
+
+  /**
    * Get the subject associated with this major subject.
    *
    * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

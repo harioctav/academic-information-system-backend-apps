@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Academics\MajorController;
+use App\Http\Controllers\Api\Academics\MajorSubjectController;
 use App\Http\Controllers\Api\Academics\SubjectController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\HomeController;
@@ -121,6 +122,19 @@ Route::middleware([
         Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
       });
     Route::apiResource('majors', MajorController::class);
+
+    // Major Subjects
+    Route::prefix('majors/{major}/subjects')
+      ->name('majors.subjects.')
+      ->controller(MajorSubjectController::class)
+      ->group(function () {
+        Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+        Route::get('', 'index')->name('index');
+        Route::post('', 'store')->name('store');
+        Route::get('{majorSubject}', 'show')->name('show');
+        Route::put('{majorSubject}', 'update')->name('update');
+        Route::delete('{majorSubject}', 'destroy')->name('destroy');
+      });
 
     // Subjects
     Route::prefix('subjects')
