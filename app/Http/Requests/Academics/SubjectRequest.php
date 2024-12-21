@@ -91,7 +91,7 @@ class SubjectRequest extends FormRequest
       'code' => 'Kode Matakuliah',
       'name' => 'Nama Matakuliah',
       'course_credit' => 'Jumlah SKS',
-      'status' => 'Status',
+      'subject_status' => 'Status',
       'exam_time' => 'Waktu Ujian',
       'note' => 'Keterangan',
       'notes' => 'Keterangan',

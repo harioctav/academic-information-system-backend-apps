@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Academics\MajorController;
 use App\Http\Controllers\Api\Academics\SubjectController;
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\Locations\DistrictController;
 use App\Http\Controllers\Api\Locations\ProvinceController;
 use App\Http\Controllers\Api\Locations\RegencyController;
@@ -25,6 +26,19 @@ Route::prefix('auth')
       Route::post('logout', 'logout');
     });
   });
+
+Route::middleware([
+  'auth:api',
+  'session.check'
+])->group(function () {
+  // Dashboard
+  Route::prefix('home')
+    ->name('home')
+    ->controller(HomeController::class)
+    ->group(function () {
+      Route::get('', 'index');
+    });
+});
 
 // Protected routes with enhanced security
 Route::middleware([

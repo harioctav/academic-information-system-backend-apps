@@ -64,8 +64,12 @@ class SubjectServiceImplement extends ServiceApi implements SubjectService
        * If 'notes' is an array, it joins the array elements with ' | ' and assigns the result to 'subject_note'.
        * If 'notes' is not an array, it sets 'subject_note' to null.
        */
-      if (isset($payload['notes']) && is_array($payload['notes'])):
-        $payload['subject_note'] = implode(' | ', array_filter($payload['notes']));
+      if (isset($payload['notes'])):
+        if (is_array($payload['notes']) && !empty(array_filter($payload['notes']))):
+          $payload['subject_note'] = implode(' | ', array_filter($payload['notes']));
+        else:
+          $payload['subject_note'] = null;
+        endif;
       else:
         $payload['subject_note'] = null;
       endif;
@@ -107,8 +111,12 @@ class SubjectServiceImplement extends ServiceApi implements SubjectService
        * If 'notes' is an array, it joins the array elements with ' | ' and assigns the result to 'subject_note'.
        * If 'notes' is not an array, it sets 'subject_note' to null.
        */
-      if (isset($payload['notes']) && is_array($payload['notes'])):
-        $payload['subject_note'] = implode(' | ', array_filter($payload['notes']));
+      if (isset($payload['notes'])):
+        if (is_array($payload['notes']) && !empty(array_filter($payload['notes']))):
+          $payload['subject_note'] = implode(' | ', array_filter($payload['notes']));
+        else:
+          $payload['subject_note'] = null;
+        endif;
       else:
         $payload['subject_note'] = null;
       endif;

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class User extends Authenticatable
 {
@@ -117,6 +118,20 @@ class User extends Authenticatable
     return $query->whereDoesntHave('roles', function ($row) {
       $row->where('name', UserRole::SuperAdmin->value);
     });
+  }
+
+  /**
+   * Scope a query to only include active users.
+   * 
+   */
+  public function scopeActive($data)
+  {
+    return $data->where('status', true);
+  }
+
+  public function getActive(): Collection
+  {
+    return $this->active()->get();
   }
 
   /**

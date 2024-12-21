@@ -48,8 +48,7 @@ class SubjectController extends Controller
         'updated_at'
       ],
       relationFields: [
-        'subject_status',
-        'subject_note'
+        'subject_status'
       ]
     );
 
