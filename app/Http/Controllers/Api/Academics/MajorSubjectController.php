@@ -6,9 +6,11 @@ use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Academics\MajorSubjectRequest;
 use App\Http\Resources\Academics\MajorSubjectResource;
+use App\Http\Resources\Academics\SubjectResource;
 use App\Models\Major;
 use App\Models\MajorSubject;
 use App\Services\MajorSubject\MajorSubjectService;
+use App\Services\Subject\SubjectService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -20,6 +22,7 @@ class MajorSubjectController extends Controller
    * @var \App\Services\MajorSubject\MajorSubjectService
    */
   protected $majorSubjectService;
+  protected $subjectService;
 
   /**
    * Create a new controller instance.
@@ -27,9 +30,11 @@ class MajorSubjectController extends Controller
    * @return void
    */
   public function __construct(
-    MajorSubjectService $majorSubjectService
+    MajorSubjectService $majorSubjectService,
+    SubjectService $subjectService,
   ) {
     $this->majorSubjectService = $majorSubjectService;
+    $this->subjectService = $subjectService;
   }
 
   /**
@@ -37,8 +42,7 @@ class MajorSubjectController extends Controller
    */
   public function index(Request $request, Major $major)
   {
-    $baseQuery =
-      $this->majorSubjectService->query()
+    $baseQuery = $this->majorSubjectService->query()
       ->join('subjects', 'major_has_subjects.subject_id', '=', 'subjects.id')
       ->select('major_has_subjects.*')
       ->where('major_id', $major->id);
@@ -66,6 +70,29 @@ class MajorSubjectController extends Controller
 
     return MajorSubjectResource::collection(
       $query->oldest('major_has_subjects.semester')->paginate($request->input('per_page', 5))
+    );
+  }
+
+  public function condition(Request $request, Major $major)
+  {
+    $baseQuery = $this->subjectService->query()
+      ->whereNotIn('id', function ($q) use ($major) {
+        $q->select('subject_id')
+          ->from('major_has_subjects')
+          ->where('major_id', $major->id);
+      });
+
+    $query = SearchHelper::applySearchQuery(
+      query: $baseQuery,
+      request: $request,
+      searchableFields: [
+        'code',
+        'name',
+      ]
+    );
+
+    return SubjectResource::collection(
+      $query->latest()->paginate($request->input('per_page', 5))
     );
   }
 

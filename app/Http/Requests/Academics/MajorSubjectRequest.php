@@ -131,7 +131,7 @@ class MajorSubjectRequest extends FormRequest
       '*.in' => ':attribute tidak sesuai dengan data kami',
       '*.exists' => ':attribute tidak ditemukan di storage kami',
       '*.regex' => ':attribute harus dalam format angka.angka, misalnya 1.1 atau 2.5 dst',
-      '*.between' => ':attribute harus berada diantara tahun :min sampai :max',
+      '*.between' => ':attribute harus berada diantara :attribute :min sampai :max',
     ];
   }
 

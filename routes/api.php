@@ -130,6 +130,7 @@ Route::middleware([
       ->group(function () {
         Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
         Route::get('', 'index')->name('index');
+        Route::get('conditions', 'condition')->name('conditions');
         Route::post('', 'store')->name('store');
         Route::get('{majorSubject}', 'show')->name('show');
         Route::put('{majorSubject}', 'update')->name('update');
