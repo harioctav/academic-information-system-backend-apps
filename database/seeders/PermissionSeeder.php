@@ -24,6 +24,7 @@ class PermissionSeeder extends Seeder
     'users.store',
     'users.show',
     'users.profile',
+    'users.status',
     'users.password',
     'users.update',
     'users.destroy',
