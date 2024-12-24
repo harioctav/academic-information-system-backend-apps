@@ -17,6 +17,7 @@ interface MajorSubjectService extends BaseService
     $orderByType = null
   );
   public function handleStore(Major $major, $request);
+  public function handleUpdate($request, MajorSubject $majorSubject);
   public function handleDestroy(Major $major, MajorSubject $majorSubject);
   public function handleBulkDelete(array $uuid);
 }

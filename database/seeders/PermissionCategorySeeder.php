@@ -24,8 +24,7 @@ class PermissionCategorySeeder extends Seeder
     'subjects.name',
     'students.name',
     'grades.name',
-    'recommendations.name',
-    'majors.subjects.name'
+    'recommendations.name'
   ];
 
   /**

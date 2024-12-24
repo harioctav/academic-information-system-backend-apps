@@ -21,34 +21,104 @@ class MajorSubjectRequest extends FormRequest
    */
   public function rules(): array
   {
+    return array_merge(
+      $this->baseRules(),
+      $this->methodSpecificRules()
+    );
+  }
+
+  /**
+   * Base validation rules that apply to all requests
+   */
+  private function baseRules(): array
+  {
     return [
       'subjects' => 'required|array|min:1',
-      'subjects.*' => [
-        'exists:subjects,id',
-        function ($attribute, $value, $fail) {
-          // Dapatkan major_id dari request atau context
-          $major = $this->route('major'); // Asumsi ada 'major' di route
-
-          if ($major) {
-            // Cari subject berdasarkan major_id dan subject_id
-            $existingSubject = \App\Models\MajorSubject::where('major_id', $major->id)
-              ->where('subject_id', $value)
-              ->first();
-
-            // Jika subject sudah ada di jurusan tersebut, berikan pesan error
-            if ($existingSubject) {
-              $fail("Mata kuliah ini sudah ada di semester {$existingSubject->semester} untuk jurusan tersebut.");
-            }
-          }
-        },
-      ],
       'semester' => 'required|integer|between:1,8',
     ];
   }
 
   /**
+   * Get method specific validation rules
+   */
+  private function methodSpecificRules(): array
+  {
+    return match ($this->method()) {
+      'POST' => $this->createRules(),
+      'PUT', 'PATCH' => $this->updateRules(),
+      default => []
+    };
+  }
+
+  /**
+   * Validation rules specific to create operation
+   */
+  private function createRules(): array
+  {
+    return [
+      'subjects.*' => [
+        'exists:subjects,id',
+        $this->validateNewSubject()
+      ]
+    ];
+  }
+
+  /**
+   * Validation rules specific to update operation
+   */
+  private function updateRules(): array
+  {
+    return [
+      'subjects.*' => [
+        'exists:subjects,id',
+        $this->validateExistingSubject()
+      ]
+    ];
+  }
+
+  /**
+   * Custom validation for new subject assignment
+   * Checks if subject is already assigned to the major
+   */
+  private function validateNewSubject(): \Closure
+  {
+    return function ($attribute, $value, $fail) {
+      $major = $this->route('major');
+
+      if (!$major) return;
+
+      $existingSubject = \App\Models\MajorSubject::where('major_id', $major->id)
+        ->where('subject_id', $value)
+        ->first();
+
+      if ($existingSubject) {
+        $fail("Mata kuliah ini sudah ada di semester {$existingSubject->semester} untuk jurusan tersebut.");
+      }
+    };
+  }
+
+  /**
+   * Custom validation for existing subject update
+   * Allows updating if subject already exists
+   */
+  private function validateExistingSubject(): \Closure
+  {
+    return function ($attribute, $value, $fail) {
+      $major = $this->route('major');
+      $currentMajorSubject = $this->route('majorSubject');
+
+      if ($major && $currentMajorSubject && $value != $currentMajorSubject->subject_id) {
+        $existingSubject = \App\Models\MajorSubject::where('major_id', $major->id)
+          ->where('subject_id', $value)
+          ->first();
+
+        if ($existingSubject) return;
+      }
+    };
+  }
+
+  /**
    * Get the error messages for the defined validation rules.
-   *
    */
   public function messages(): array
   {
@@ -67,7 +137,6 @@ class MajorSubjectRequest extends FormRequest
 
   /**
    * Get custom attributes for validator errors.
-   *
    */
   public function attributes(): array
   {

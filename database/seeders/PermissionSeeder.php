@@ -99,7 +99,6 @@ class PermissionSeeder extends Seeder
     'recommendations.destroy',
 
     // Api Major Subjects
-    'majors.subjects.index',
     'majors.subjects.store',
     'majors.subjects.show',
     'majors.subjects.update',
@@ -121,8 +120,7 @@ class PermissionSeeder extends Seeder
     'subjects' => 8,
     'students' => 9,
     'grades' => 10,
-    'recommendations' => 11,
-    'majors.subjects' => 12
+    'recommendations' => 11
   ];
 
   /**

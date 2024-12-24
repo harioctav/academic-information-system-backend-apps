@@ -37,8 +37,14 @@ class MajorSubjectController extends Controller
    */
   public function index(Request $request, Major $major)
   {
+    $baseQuery =
+      $this->majorSubjectService->query()
+      ->join('subjects', 'major_has_subjects.subject_id', '=', 'subjects.id')
+      ->select('major_has_subjects.*')
+      ->where('major_id', $major->id);
+
     $query = SearchHelper::applySearchQuery(
-      query: $this->majorSubjectService->query()->where('major_id', $major->id),
+      query: $baseQuery,
       request: $request,
       searchableFields: [
         'subjects.code',
@@ -82,9 +88,9 @@ class MajorSubjectController extends Controller
   /**
    * Update the specified resource in storage.
    */
-  public function update(Major $major, MajorSubjectRequest $request, MajorSubject $majorSubject)
+  public function update(Major $major, MajorSubjectRequest $request, MajorSubject $majorSubject): JsonResponse
   {
-    //
+    return $this->majorSubjectService->handleUpdate($request, $majorSubject);
   }
 
   /**

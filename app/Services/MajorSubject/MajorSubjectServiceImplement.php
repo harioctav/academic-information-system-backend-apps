@@ -3,6 +3,7 @@
 namespace App\Services\MajorSubject;
 
 use App\Enums\WhereOperator;
+use App\Http\Resources\Academics\MajorSubjectResource;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\MajorSubject\MajorSubjectRepository;
 use App\Repositories\Subject\SubjectRepository;
@@ -85,7 +86,30 @@ class MajorSubjectServiceImplement extends ServiceApi implements MajorSubjectSer
 
       DB::commit();
 
-      return $this->setMessage($this->create_message)->toJson();
+      return $this->setMessage($this->create_message)
+        ->toJson();
+    } catch (\Exception $e) {
+      DB::rollBack();
+      $this->exceptionResponse($e);
+      return null;
+    }
+  }
+
+  public function handleUpdate($request, \App\Models\MajorSubject $majorSubject)
+  {
+    DB::beginTransaction();
+    try {
+
+      $payload = $request->validated();
+
+      $majorSubject->update([
+        'semester' => $payload['semester']
+      ]);
+
+      DB::commit();
+
+      return $this->setMessage($this->update_message)
+        ->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
       $this->exceptionResponse($e);
