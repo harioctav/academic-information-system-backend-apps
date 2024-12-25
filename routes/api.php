@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Academics\MajorController;
 use App\Http\Controllers\Api\Academics\MajorSubjectController;
+use App\Http\Controllers\Api\Academics\StudentController;
 use App\Http\Controllers\Api\Academics\SubjectController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\HomeController;
@@ -146,5 +147,14 @@ Route::middleware([
         Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
       });
     Route::apiResource('subjects', SubjectController::class);
+
+    // Students
+    Route::prefix('students')
+      ->name('students.')
+      ->controller(StudentController::class)
+      ->group(function () {
+        Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+      });
+    Route::apiResource('students', StudentController::class);
   });
 });

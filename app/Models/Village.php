@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Village extends Model
 {
@@ -49,5 +50,15 @@ class Village extends Model
   public function district(): BelongsTo
   {
     return $this->belongsTo(District::class);
+  }
+
+  /**
+   * Get the students for the district.
+   *
+   * @return HasMany
+   */
+  public function students(): HasMany
+  {
+    return $this->hasMany(Student::class);
   }
 }

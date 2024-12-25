@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Academics\MajorController;
 use App\Http\Controllers\Api\Academics\MajorSubjectController;
 use App\Http\Controllers\Api\Locations\DistrictController;
 use App\Http\Controllers\Api\Locations\ProvinceController;
@@ -17,6 +18,7 @@ Route::prefix('options')
     Route::get('regencies', [RegencyController::class, 'index'])->name('regencies');
     Route::get('districts', [DistrictController::class, 'index'])->name('districts');
     Route::get('villages', [VillageController::class, 'index'])->name('villages');
+    Route::get('majors', [MajorController::class, 'index'])->name('majors');
     Route::get('majors/{major}/subjects/conditions', [MajorSubjectController::class, 'condition'])->name('subjects.condition');
     Route::get('majors/{major}/subjects/{majorSubject}', [MajorSubjectController::class, 'show'])->name('majors.subjects.show');
   });

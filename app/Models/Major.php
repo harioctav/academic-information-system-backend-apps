@@ -7,6 +7,7 @@ use App\Enums\Academics\SubjectNote;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Major extends Model
 {
@@ -41,6 +42,16 @@ class Major extends Model
   protected $casts = [
     'degree' => DegreeType::class
   ];
+
+  /**
+   * Get the students for the district.
+   *
+   * @return HasMany
+   */
+  public function students(): HasMany
+  {
+    return $this->hasMany(Student::class);
+  }
 
   /**
    * Get the subjects associated with this major.
