@@ -67,7 +67,7 @@ class StudentRequest extends FormRequest
       ],
       'status_activity' => [
         'nullable',
-        'string',
+        'numeric',
         GeneralConstant::toValidation()
       ],
       'phone' => [
@@ -115,7 +115,6 @@ class StudentRequest extends FormRequest
       'addresses.*.regency_id' => 'required|exists:regencies,id',
       'addresses.*.district_id' => 'required|exists:districts,id',
       'addresses.*.village_id' => 'required|exists:villages,id',
-      'addresses.*.postal_code' => 'required|string',
       'addresses.*.address' => 'required|string',
 
       // Additional Information

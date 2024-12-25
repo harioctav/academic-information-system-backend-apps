@@ -2,6 +2,7 @@
 
 namespace App\Services\Student;
 
+use App\Models\Student;
 use LaravelEasyRepository\BaseService;
 
 interface StudentService extends BaseService
@@ -14,4 +15,8 @@ interface StudentService extends BaseService
     $orderBy = null,
     $orderByType = null
   );
+  public function handleStore($request);
+  public function handleUpdate($request, Student $student);
+  public function handleDestroy(Student $student);
+  public function handleBulkDelete(array $uuid);
 }

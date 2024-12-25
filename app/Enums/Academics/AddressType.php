@@ -8,7 +8,7 @@ enum AddressType: string
 {
   use EnumsToArray;
 
-  case Domicile = 'domicile';    // Alamat domisili
+  case Domicile = 'domicile';
   case IdCard = 'id_card';
 
   /**

@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api\Academics;
 
 use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Academics\StudentRequest;
 use App\Http\Resources\Academics\StudentResource;
 use App\Models\Student;
 use App\Services\Student\StudentService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
@@ -65,32 +67,48 @@ class StudentController extends Controller
   /**
    * Store a newly created resource in storage.
    */
-  public function store(Request $request)
+  public function store(StudentRequest $request): JsonResponse
   {
-    //
+    return $this->studentService->handleStore($request);
   }
 
   /**
    * Display the specified resource.
    */
-  public function show(Student $student)
+  public function show(Student $student): StudentResource
   {
-    //
+    return new StudentResource($student->load([
+      'domicileAddress.village',
+      'idCardAddress.village'
+    ]));
   }
 
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, Student $student)
+  public function update(StudentRequest $request, Student $student): JsonResponse
   {
-    //
+    return $this->studentService->handleUpdate($request, $student);
   }
 
   /**
    * Remove the specified resource from storage.
    */
-  public function destroy(Student $student)
+  public function destroy(Student $student): JsonResponse
   {
-    //
+    return $this->studentService->handleDestroy($student);
+  }
+
+  /**
+   * Remove multiple resources from storage.
+   */
+  public function bulkDestroy(Request $request)
+  {
+    $request->validate([
+      'ids' => 'required|array',
+      'ids.*' => 'exists:students,uuid'
+    ]);
+
+    return $this->studentService->handleBulkDelete($request->ids);
   }
 }
