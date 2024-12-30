@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Academics;
 
+use App\Enums\GeneralConstant;
 use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Academics\StudentRequest;
@@ -54,7 +55,13 @@ class StudentController extends Controller
         'updated_at'
       ],
       relationFields: [
-        'major'
+        'major_id',
+        'gender',
+        'religion',
+        'status_registration'
+      ],
+      enumFields: [
+        'status_activity' => GeneralConstant::class
       ]
     );
 
