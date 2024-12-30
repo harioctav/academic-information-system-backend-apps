@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\GeneralConstant;
 use App\Enums\UserRole;
+use App\Notifications\Auth\ResetPasswordNotification;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,6 +23,17 @@ class User extends Authenticatable
 {
   /** @use HasFactory<\Database\Factories\UserFactory> */
   use HasFactory, Notifiable, HasApiTokens, HasUuid, HasRoles;
+
+  /**
+   * Sends a password reset notification to the user.
+   *
+   * @param string $token The password reset token.
+   * @return void
+   */
+  public function sendPasswordResetNotification($token)
+  {
+    $this->notify(new ResetPasswordNotification($token));
+  }
 
   /**
    * The guard name used for authentication.

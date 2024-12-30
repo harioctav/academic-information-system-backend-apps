@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Academics\MajorSubjectController;
 use App\Http\Controllers\Api\Academics\StudentController;
 use App\Http\Controllers\Api\Academics\SubjectController;
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\Auth\ForgotPasswordController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\Locations\DistrictController;
 use App\Http\Controllers\Api\Locations\ProvinceController;
@@ -27,6 +28,12 @@ Route::prefix('auth')
       Route::get('user', 'user');
       Route::post('logout', 'logout');
     });
+
+    Route::controller(ForgotPasswordController::class)
+      ->group(function () {
+        Route::post('forgot-password', 'forgotPassword')->name('password.email');
+        Route::post('reset-password', 'resetPassword')->name('password.reset');
+      });
   });
 
 Route::middleware([
