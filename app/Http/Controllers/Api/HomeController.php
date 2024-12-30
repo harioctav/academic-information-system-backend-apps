@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\Major\MajorService;
+use App\Services\Student\StudentService;
 use App\Services\Subject\SubjectService;
 use App\Services\User\UserService;
 use Illuminate\Http\Request;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Response;
 
 class HomeController extends Controller
 {
-  protected $userService, $majorService, $subjectService;
+  protected $userService, $majorService, $subjectService, $studentService;
 
   /**
    * Create a new controller instance.
@@ -22,10 +23,12 @@ class HomeController extends Controller
     UserService $userService,
     MajorService $majorService,
     SubjectService $subjectService,
+    StudentService $studentService
   ) {
     $this->userService = $userService;
     $this->majorService = $majorService;
     $this->subjectService = $subjectService;
+    $this->studentService = $studentService;
   }
 
   /**
@@ -37,6 +40,7 @@ class HomeController extends Controller
       'users' => $this->userService->query()->active()->count(),
       'majors' => $this->majorService->query()->count(),
       'subjects' => $this->subjectService->query()->count(),
+      'students' => $this->studentService->query()->count()
     ];
 
     return Response::json([

@@ -19,17 +19,25 @@ class StudentSeeder extends Seeder
 {
   public function run(): void
   {
+    $this->command->warn(PHP_EOL . 'Creating Students data...');
+
     $majorIds = Major::pluck('id')->toArray();
     $villageIds = Village::pluck('id')->toArray();
 
-    // Enable mass insert mode
     DB::beginTransaction();
 
-    SeederProgressBar::withProgressBar($this->command, 3000, function () use ($majorIds, $villageIds) {
+    SeederProgressBar::withProgressBar($this->command, 350, function () use ($majorIds, $villageIds) {
+      $registrationYear = fake()->numberBetween(2020, 2024);
+      $registrationPeriod = fake()->randomElement(['GANJIL', 'GENAP']);
+      $initialRegistrationPeriod = $registrationYear . ' ' . $registrationPeriod;
+
+      $major = Major::find(fake()->randomElement($majorIds));
+      $nim = $major->code . $registrationYear . str_pad(fake()->unique()->numberBetween(1, 999), 3, '0', STR_PAD_LEFT);
+
       $student = Student::create([
         'uuid' => Str::uuid(),
-        'major_id' => fake()->randomElement($majorIds),
-        'nim' => fake()->unique()->numerify(date('Y') . '##########'),
+        'major_id' => $major->id,
+        'nim' => $nim,
         'nik' => fake()->unique()->numerify('################'),
         'name' => fake()->name(),
         'email' => fake()->unique()->safeEmail(),
@@ -48,7 +56,7 @@ class StudentSeeder extends Seeder
             fn($religion) => $religion !== ReligionType::Unknown
           )
         ),
-        'initial_registration_period' => fake()->numberBetween(2020, 2024) . ' ' . fake()->randomElement(['GANJIL', 'GENAP']),
+        'initial_registration_period' => $initialRegistrationPeriod,
         'origin_department' => fake()->randomElement(['SMA', 'SMK', 'MA']),
         'upbjj' => fake()->city(),
         'status_registration' => fake()->randomElement(
@@ -57,12 +65,11 @@ class StudentSeeder extends Seeder
             fn($status) => $status !== StudentRegistrationStatus::Unknown
           )
         ),
-        'status_activity' => fake()->boolean(80), // 80% chance of being active
+        'status_activity' => fake()->boolean(80),
         'parent_name' => fake()->name(),
         'parent_phone_number' => fake()->unique()->e164PhoneNumber(),
       ]);
 
-      // Batch insert addresses
       $addresses = [
         [
           'uuid' => Str::uuid(),
@@ -90,5 +97,7 @@ class StudentSeeder extends Seeder
     });
 
     DB::commit();
+
+    $this->command->info('Students created successfully!');
   }
 }

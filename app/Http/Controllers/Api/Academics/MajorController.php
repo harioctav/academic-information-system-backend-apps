@@ -48,7 +48,8 @@ class MajorController extends Controller
         'updated_at'
       ],
       relationFields: [
-        'degree'
+        'degree',
+        'id'
       ]
     );
 
