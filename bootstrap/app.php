@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
       'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
       'session.check' => \App\Http\Middleware\CheckUserSession::class,
       'auth.rate' => \App\Http\Middleware\RateLimitAuth::class,
+      'is.in-active.user' => \App\Http\Middleware\InActiveUser::class
     ]);
 
     $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);

@@ -24,7 +24,11 @@ Route::prefix('auth')
     Route::post('login', 'login');
     Route::post('refresh', 'refreshToken');
 
-    Route::middleware(['auth:api', 'session.check'])->group(function () {
+    Route::middleware([
+      'auth:api',
+      'session.check',
+      'is.in-active.user'
+    ])->group(function () {
       Route::get('user', 'user');
       Route::post('logout', 'logout');
     });
@@ -55,7 +59,8 @@ Route::middleware([
 Route::middleware([
   'auth:api',
   'permission',
-  'session.check'
+  'session.check',
+  'is.in-active.user'
 ])->group(function () {
   // Locations routes
   Route::prefix('locations')->group(function () {

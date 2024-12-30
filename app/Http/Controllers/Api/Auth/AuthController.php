@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use App\Enums\GeneralConstant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RefreshTokenRequest;
@@ -13,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 use Laravel\Passport\Client;
 
 class AuthController extends Controller
@@ -42,12 +44,24 @@ class AuthController extends Controller
   {
     $user = User::where('email', $request->email)->first();
 
+    if ($user && $user->status->value == GeneralConstant::InActive->value) {
+      return Response::json([
+        'errors' => [
+          'email' => [
+            'Akun sedang tidak aktif. Silakan hubungi Administrator untuk mengaktifkan.'
+          ]
+        ]
+      ], HttpFoundationResponse::HTTP_LOCKED);
+    }
+
     if ($user && $user->isLocked()) {
       return Response::json([
         'errors' => [
-          'email' => ['Account is locked. Try again later.']
+          'email' => [
+            'Akun terkunci. Silakan coba lagi nanti.'
+          ]
         ]
-      ], 423);
+      ], HttpFoundationResponse::HTTP_LOCKED);
     }
 
     $remember = $request->boolean('remember', false);
@@ -59,9 +73,11 @@ class AuthController extends Controller
 
       return Response::json([
         'errors' => [
-          'email' => ['Kredensial ini tidak cocok dengan catatan kami.']
+          'email' => [
+            'Kredensial ini tidak cocok dengan catatan kami.'
+          ]
         ]
-      ], 401);
+      ], HttpFoundationResponse::HTTP_UNAUTHORIZED);
     }
 
     $this->securityService->handleLoginAttempt($user, $request, true);
