@@ -15,6 +15,7 @@ interface VillageService extends BaseService
     $orderBy = null,
     $orderByType = null
   );
+  public function findById(int $id);
   public function handleStore($request);
   public function handleUpdate($request, Village $village);
   public function handleDelete(Village $village);

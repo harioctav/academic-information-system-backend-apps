@@ -12,6 +12,7 @@ use App\Services\District\DistrictService;
 use App\Services\Province\ProvinceService;
 use App\Services\Regency\RegencyService;
 use App\Services\Village\VillageService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class SelectRegionController extends Controller
@@ -40,6 +41,9 @@ class SelectRegionController extends Controller
         'code',
         'created_at',
         'updated_at'
+      ],
+      relationFields: [
+        'id'
       ]
     );
 
@@ -80,7 +84,8 @@ class SelectRegionController extends Controller
       ],
       relationFields: [
         'province_id',
-        'type'
+        'type',
+        'id'
       ]
     );
 
@@ -113,7 +118,8 @@ class SelectRegionController extends Controller
         'updated_at'
       ],
       relationFields: [
-        'regency_id'
+        'regency_id',
+        'id'
       ]
     );
 
@@ -146,12 +152,18 @@ class SelectRegionController extends Controller
         'updated_at'
       ],
       relationFields: [
-        'district_id'
+        'district_id',
+        'id'
       ]
     );
 
     return VillageResource::collection(
       $query->latest()->paginate($request->input('per_page', 5))
     );
+  }
+
+  public function village(int $id): JsonResponse
+  {
+    return $this->villageService->findById($id);
   }
 }

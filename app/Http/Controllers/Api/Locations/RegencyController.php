@@ -50,9 +50,15 @@ class RegencyController extends Controller
         'updated_at'
       ],
       combinedFields: [
-        ['type', 'name']
+        [
+          'type',
+          'name'
+        ]
       ],
-      relationFields: ['province_id', 'type']
+      relationFields: [
+        'province_id',
+        'type'
+      ]
     );
 
     return RegencyResource::collection(

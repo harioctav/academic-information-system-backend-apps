@@ -59,6 +59,18 @@ class VillageServiceImplement extends ServiceApi implements VillageService
     );
   }
 
+  public function findById(int $id)
+  {
+    try {
+      $village = $this->mainRepository->findOrFail($id);
+
+      return $this->setData(new VillageResource($village))->toJson();
+    } catch (\Exception $e) {
+      $this->exceptionResponse($e);
+      return null;
+    }
+  }
+
   public function handleStore($request)
   {
     try {

@@ -10,7 +10,6 @@ use App\Models\Province;
 use App\Services\Province\ProvinceService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
 
 class ProvinceController extends Controller
 {

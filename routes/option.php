@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\Academics\MajorController;
 use App\Http\Controllers\Api\Academics\MajorSubjectController;
+use App\Http\Controllers\Api\Academics\StudentController;
+use App\Http\Controllers\Api\Academics\SubjectController;
 use App\Http\Controllers\Api\Locations\DistrictController;
 use App\Http\Controllers\Api\Locations\ProvinceController;
 use App\Http\Controllers\Api\Locations\RegencyController;
@@ -52,22 +54,54 @@ Route::prefix('options')->name('options.')->group(function () {
     });
 
   // Academic Options
-  Route::prefix('academics')->name('academics.')->group(function () {
-    Route::get('majors', [MajorController::class, 'index'])->name('majors.index');
-    Route::get('majors/{major}', [MajorController::class, 'show'])->name('majors.show');
-    Route::get('majors/{major}/subjects/conditions', [MajorSubjectController::class, 'condition'])
-      ->name('subjects.condition');
-    Route::get('majors/{major}/subjects/{majorSubject}', [MajorSubjectController::class, 'show'])
-      ->name('majors.subjects.show');
-  });
+  Route::prefix('academics')
+    ->name('academics.')
+    ->group(function () {
+      /** Majors */
+      Route::controller(MajorController::class)
+        ->name('majors.')
+        ->group(function () {
+          Route::get('majors', 'index')->name('index');
+          Route::get('majors/{major}', 'show')->name('show');
+        });
+
+      /** Major Subjects */
+      Route::controller(MajorSubjectController::class)
+        ->name('majors.subjects.')
+        ->group(function () {
+          Route::get('majors/{major}/subjects/conditions', 'condition')->name('condition');
+          Route::get('majors/{major}/subjects/{majorSubject}', 'show')->name('show');
+        });
+
+      /** Subjects */
+      Route::controller(SubjectController::class)
+        ->name('subjects.')
+        ->group(function () {
+          Route::get('subjects', 'index')->name('index');
+          Route::get('subjects/{subject}', 'show')->name('show');
+        });
+
+      /** Students */
+      Route::controller(StudentController::class)
+        ->name('students.')
+        ->group(function () {
+          Route::get('students', 'index')->name('index');
+          Route::get('students/{student}', 'show')->name('show');
+        });
+    });
 
   // Select Dropdowns
-  Route::prefix('selects')->name('selects.')->group(function () {
-    Route::controller(SelectRegionController::class)->group(function () {
-      Route::get('provinces', 'provinces')->name('provinces');
-      Route::get('regencies', 'regencies')->name('regencies');
-      Route::get('districts', 'districts')->name('districts');
-      Route::get('villages', 'villages')->name('villages');
+  Route::prefix('selects')
+    ->name('selects.')
+    ->group(function () {
+      Route::controller(SelectRegionController::class)->group(function () {
+        Route::get('provinces', 'provinces')->name('provinces');
+        Route::get('regencies', 'regencies')->name('regencies');
+        Route::get('districts', 'districts')->name('districts');
+        Route::get('villages', 'villages')->name('villages');
+
+        // Show spesific data
+        Route::get('village/{id}', 'village')->name('village');
+      });
     });
-  });
 });
