@@ -56,7 +56,7 @@ class UserSeeder extends Seeder
 
           $user = [
             'uuid' => Str::uuid(),
-            'name' => $faker->name(),
+            'name' => "{$faker->firstName()} {$faker->lastName()}",
             'email' => $faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => bcrypt(Helper::DefaultPassword),

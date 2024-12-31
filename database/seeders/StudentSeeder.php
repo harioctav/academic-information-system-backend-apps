@@ -42,7 +42,7 @@ class StudentSeeder extends Seeder
         'major_id' => $major->id,
         'nim' => $nim,
         'nik' => $faker->unique()->nik(),
-        'name' => $faker->name(),
+        'name' => "{$faker->firstName()} {$faker->lastName()}",
         'email' => $faker->unique()->safeEmail(),
         'birth_date' => $faker->date(),
         'birth_place' => $faker->city(),
