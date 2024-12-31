@@ -5,6 +5,7 @@ namespace App\Services\User;
 use App\Enums\GeneralConstant;
 use App\Enums\WhereOperator;
 use App\Helpers\Helper;
+use App\Http\Resources\Settings\UserResource;
 use App\Repositories\Role\RoleRepository;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\User\UserRepository;
@@ -66,8 +67,8 @@ class UserServiceImplement extends ServiceApi implements UserService
 
   public function handleStore($request)
   {
+    DB::beginTransaction();
     try {
-      DB::beginTransaction();
       // Prepare request data
       $payload = $request->validated();
 
@@ -88,15 +89,19 @@ class UserServiceImplement extends ServiceApi implements UserService
         }
       }
 
-      $payload['photo_profile_path'] = $photoPath;
       $payload['password'] = Helper::DefaultPassword;
+      $payload['photo_profile_path'] = $photoPath;
 
       $user = $this->mainRepository->create($payload);
       $user->assignRole($role->name);
 
       DB::commit();
 
-      return $user;
+      return $this->setMessage($this->create_message)
+        ->setData(
+          new UserResource($user)
+        )
+        ->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
       $this->exceptionResponse($e);
@@ -134,10 +139,15 @@ class UserServiceImplement extends ServiceApi implements UserService
       }
 
       $user->update($payload);
+      $user->refresh();
 
       DB::commit();
 
-      return $user->refresh();
+      return $this->setMessage($this->update_message)
+        ->setData(
+          new UserResource($user)
+        )
+        ->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
       $this->exceptionResponse($e);

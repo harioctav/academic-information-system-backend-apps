@@ -56,7 +56,9 @@ class SelectRegionController extends Controller
   {
     $query = SearchHelper::applySearchQuery(
       query: $this->regencyService->getWhere(
-        ['province_id' => $request->province_id],
+        [
+          'province_id' => $request->province_id
+        ],
         '*',
         '=',
         'name',
@@ -66,7 +68,6 @@ class SelectRegionController extends Controller
       searchableFields: [
         'name',
         'code',
-
         'type',
         'full_code'
       ],

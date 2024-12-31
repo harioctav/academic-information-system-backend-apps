@@ -78,12 +78,7 @@ class UserController extends Controller
    */
   public function store(UserRequest $request): JsonResponse
   {
-    $result = new UserResource($this->userService->handleStore($request));
-
-    return response()->json([
-      'message' => "Successfully created User Data",
-      'data' => $result,
-    ]);
+    return $this->userService->handleStore($request);
   }
 
   /**
@@ -99,14 +94,7 @@ class UserController extends Controller
    */
   public function update(UserRequest $request, User $user): JsonResponse
   {
-    $result = new UserResource(
-      $this->userService->handleUpdate($request, $user)
-    );
-
-    return response()->json([
-      'message' => "Successfully updated User Data",
-      'data' => $result,
-    ]);
+    return $this->userService->handleUpdate($request, $user);
   }
 
   /**
