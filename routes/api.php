@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Academics\MajorController;
 use App\Http\Controllers\Api\Academics\MajorSubjectController;
 use App\Http\Controllers\Api\Academics\StudentController;
 use App\Http\Controllers\Api\Academics\SubjectController;
+use App\Http\Controllers\Api\Auth\AccountController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\ForgotPasswordController;
 use App\Http\Controllers\Api\HomeController;
@@ -53,6 +54,22 @@ Route::middleware([
     });
 
   require __DIR__ . '/option.php';
+
+  // Accounts
+  Route::prefix('accounts')
+    ->controller(AccountController::class)
+    ->group(function () {
+      Route::get('users/{user}/delete-image', 'deleteImage');
+      Route::patch('change-profile/{user}', 'profile');
+      Route::post('change-password', 'changePassword');
+    });
+
+  // delete user image
+  Route::prefix('settings')
+    ->controller(UserController::class)
+    ->group(function () {
+      Route::get('users/{user}/delete-image', 'deleteImage');
+    });
 });
 
 // Protected routes with enhanced security
@@ -62,6 +79,7 @@ Route::middleware([
   'session.check',
   'is.in-active.user'
 ])->group(function () {
+
   // Locations routes
   Route::prefix('locations')->group(function () {
     // Province routes
@@ -120,7 +138,6 @@ Route::middleware([
       ->name('users.')
       ->controller(UserController::class)
       ->group(function () {
-        Route::get('{user}/delete-image', 'deleteImage')->name('delete.image');
         Route::put('status/{user}', 'status')->name('status');
         Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
       });

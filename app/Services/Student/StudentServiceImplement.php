@@ -20,10 +20,15 @@ class StudentServiceImplement extends ServiceApi implements StudentService
    * set title message api for CRUD
    * @param string $title
    */
-  protected string $title = "Student";
-  protected string $create_message = "Successfully created Student Data";
-  protected string $update_message = "Successfully updated Student Data";
-  protected string $delete_message = "Successfully deleted Student Data";
+  protected string $title = "Mahasiswa";
+
+  protected string $create_message = "Data Mahasiswa berhasil dibuat";
+
+  protected string $update_message = "Data Mahasiswa berhasil diperbarui";
+
+  protected string $delete_message = "Data Mahasiswa berhasil dihapus";
+
+  protected string $delete_image_message = "Foto Mahasiswa berhasil dihapus";
 
 
   protected MajorRepository $majorRepository;
@@ -227,6 +232,30 @@ class StudentServiceImplement extends ServiceApi implements StudentService
       DB::commit();
 
       return $this->setMessage($this->delete_message)->toJson();
+    } catch (\Exception $e) {
+      DB::rollBack();
+      $this->exceptionResponse($e);
+      return null;
+    }
+  }
+
+  public function handleDeleteImage(\App\Models\Student $student)
+  {
+    try {
+      DB::beginTransaction();
+
+      // Handle delete file
+      if ($student->student_photo_path) {
+        Storage::delete($student->student_photo_path);
+      }
+
+      $student->update([
+        'student_photo_path' => null,
+      ]);
+
+      DB::commit();
+
+      return $this->setMessage($this->delete_image_message)->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
       $this->exceptionResponse($e);

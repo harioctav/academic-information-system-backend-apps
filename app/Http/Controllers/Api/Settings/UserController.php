@@ -126,7 +126,10 @@ class UserController extends Controller
     return $this->userService->handleDeleteImage($user);
   }
 
-  public function status(USer $user): JsonResponse
+  /**
+   * Change the status of the specified user.
+   */
+  public function status(User $user): JsonResponse
   {
     return $this->userService->handleChangeStatus($user);
   }

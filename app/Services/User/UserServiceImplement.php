@@ -21,13 +21,19 @@ class UserServiceImplement extends ServiceApi implements UserService
    * set title message api for CRUD
    * @param string $title
    */
-  protected string $title = "User";
-  protected string $create_message = "Successfully created User Data";
-  protected string $update_message = "Successfully updated User Data";
-  protected string $delete_message = "Successfully deleted User Data";
-  protected string $delete_image_message = "Successfully deleted User Avatar";
-  protected string $status_change_message = "Successfully change status User";
-  protected string $error_message = "Error while performing action, please check log";
+  protected string $title = "Pengguna";
+
+  protected string $create_message = "Data Pengguna berhasil dibuat";
+
+  protected string $update_message = "Data Pengguna berhasil diperbarui";
+
+  protected string $delete_message = "Data Pengguna berhasil dihapus";
+
+  protected string $delete_image_message = "Foto Pengguna berhasil dihapus";
+
+  protected string $status_change_message = "Status Pengguna berhasil diubah";
+
+  protected string $error_message = "Terjadi kesalahan saat melakukan tindakan, silakan periksa log";
 
   /**
    * don't change $this->mainRepository variable name

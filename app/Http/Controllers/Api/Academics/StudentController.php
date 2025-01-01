@@ -118,4 +118,12 @@ class StudentController extends Controller
 
     return $this->studentService->handleBulkDelete($request->ids);
   }
+
+  /**
+   * Deletes the image associated with the specified student.
+   */
+  public function deleteImage(Student $student): JsonResponse
+  {
+    return $this->studentService->handleDeleteImage($student);
+  }
 }
