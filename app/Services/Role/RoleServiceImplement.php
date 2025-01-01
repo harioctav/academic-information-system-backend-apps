@@ -16,11 +16,15 @@ class RoleServiceImplement extends ServiceApi implements RoleService
    * set title message api for CRUD
    * @param string $title
    */
-  protected string $title = "Role & Permissions";
-  protected string $create_message = "Successfully created Role & Permissions Data";
-  protected string $update_message = "Successfully updated Role & Permissions Data";
-  protected string $delete_message = "Successfully deleted Role & Permissions Data";
-  protected string $error_message = "Error while performing action, please check log";
+  protected string $title = "Peran & Hak Akses";
+
+  protected string $create_message = "Data Peran & Hak Akses berhasil dibuat";
+
+  protected string $update_message = "Data Peran & Hak Akses berhasil diperbarui";
+
+  protected string $delete_message = "Data Peran & Hak Akses berhasil dihapus";
+
+  protected string $error_message = "Terjadi kesalahan saat melakukan tindakan, silakan periksa log";
 
   /**
    * don't change $this->mainRepository variable name

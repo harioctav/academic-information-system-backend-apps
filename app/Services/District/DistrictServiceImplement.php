@@ -17,11 +17,15 @@ class DistrictServiceImplement extends ServiceApi implements DistrictService
    * set title message api for CRUD
    * @param string $title
    */
-  protected string $title = "District";
-  protected string $create_message = "Successfully created District Data";
-  protected string $update_message = "Successfully updated District Data";
-  protected string $delete_message = "Successfully deleted District Data";
-  protected string $error_message = "Error while performing action, please check log";
+  protected string $title = "Kecamatan";
+
+  protected string $create_message = "Data Kecamatan berhasil dibuat";
+
+  protected string $update_message = "Data Kecamatan berhasil diperbarui";
+
+  protected string $delete_message = "Data Kecamatan berhasil dihapus";
+
+  protected string $error_message = "Terjadi kesalahan saat melakukan tindakan, silakan periksa log";
 
   /**
    * don't change $this->mainRepository variable name

@@ -16,10 +16,13 @@ class MajorSubjectServiceImplement extends ServiceApi implements MajorSubjectSer
    * set title message api for CRUD
    * @param string $title
    */
-  protected string $title = "Major Subjects";
-  protected string $create_message = "Successfully created Major Subjects Data";
-  protected string $update_message = "Successfully updated Major Subjects Data";
-  protected string $delete_message = "Successfully deleted Major Subjects Data";
+  protected string $title = "Matakuliah di Program Studi";
+
+  protected string $create_message = "Data Matakuliah di Program Studi berhasil dibuat";
+
+  protected string $update_message = "Data Matakuliah di Program Studi berhasil diperbarui";
+
+  protected string $delete_message = "Data Matakuliah di Program Studi berhasil dihapus";
 
   /**
    * don't change $this->mainRepository variable name

@@ -18,11 +18,13 @@ class RegencyServiceImplement extends ServiceApi implements RegencyService
    * set title message api for CRUD
    * @param string $title
    */
-  protected string $title = "Regency";
-  protected string $create_message = "Successfully created Regency Data";
-  protected string $update_message = "Successfully updated Regency Data";
-  protected string $delete_message = "Successfully deleted Regency Data";
-  protected string $error_message = "Error while performing action, please check log";
+  protected string $title = "Kabupaten atau Kota";
+
+  protected string $create_message = "Data Kabupaten atau Kota berhasil dibuat";
+
+  protected string $update_message = "Data Kabupaten atau Kota berhasil diperbarui";
+
+  protected string $delete_message = "Data Kabupaten atau Kota berhasil dihapus";
 
   /**
    * don't change $this->mainRepository variable name

@@ -13,10 +13,13 @@ class MajorServiceImplement extends ServiceApi implements MajorService
    * set title message api for CRUD
    * @param string $title
    */
-  protected string $title = "Major";
-  protected string $create_message = "Successfully created Major Data";
-  protected string $update_message = "Successfully updated Major Data";
-  protected string $delete_message = "Successfully deleted Major Data";
+  protected string $title = "Program Studi";
+
+  protected string $create_message = "Data Program Studi berhasil dibuat";
+
+  protected string $update_message = "Data Program Studi berhasil diperbarui";
+
+  protected string $delete_message = "Data Program Studi berhasil dihapus";
 
   /**
    * don't change $this->mainRepository variable name

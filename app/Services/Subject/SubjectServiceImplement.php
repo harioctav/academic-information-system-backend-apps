@@ -13,10 +13,15 @@ class SubjectServiceImplement extends ServiceApi implements SubjectService
    * set title message api for CRUD
    * @param string $title
    */
-  protected string $title = "Subject";
-  protected string $create_message = "Successfully created Subject Data";
-  protected string $update_message = "Successfully updated Subject Data";
-  protected string $delete_message = "Successfully deleted Subject Data";
+  protected string $title = "Matakuliah";
+
+  protected string $create_message = "Data Matakuliah berhasil dibuat";
+
+  protected string $update_message = "Data Matakuliah berhasil diperbarui";
+
+  protected string $delete_message = "Data Matakuliah berhasil dihapus";
+
+  protected string $error_message = "Terjadi kesalahan saat melakukan tindakan, silakan periksa log";
 
   /**
    * don't change $this->mainRepository variable name

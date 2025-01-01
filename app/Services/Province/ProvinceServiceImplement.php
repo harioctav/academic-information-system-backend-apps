@@ -14,10 +14,13 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
    * set title message api for CRUD
    * @param string $title
    */
-  protected string $title = "Province";
-  protected string $create_message = "Successfully created Province Data";
-  protected string $update_message = "Successfully updated Province Data";
-  protected string $delete_message = "Successfully deleted Province Data";
+  protected string $title = "Provinsi";
+
+  protected string $create_message = "Data Provinsi berhasil dibuat";
+
+  protected string $update_message = "Data Provinsi berhasil diperbarui";
+
+  protected string $delete_message = "Data Provinsi berhasil dihapus";
 
   /**
    * don't change $this->mainRepository variable name

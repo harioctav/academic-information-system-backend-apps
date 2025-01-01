@@ -15,11 +15,15 @@ class PermissionCategoryServiceImplement extends ServiceApi implements Permissio
    * set title message api for CRUD
    * @param string $title
    */
-  protected string $title = "Permission Category";
-  protected string $create_message = "Successfully created Permission Category Data";
-  protected string $update_message = "Successfully updated Permission Category Data";
-  protected string $delete_message = "Successfully deleted Permission Category Data";
-  protected string $error_message = "Error while performing action, please check log";
+  protected string $title = "Kategori Hak Akses";
+
+  protected string $create_message = "Data Kategori Hak Akses berhasil dibuat";
+
+  protected string $update_message = "Data Kategori Hak Akses berhasil diperbarui";
+
+  protected string $delete_message = "Data Kategori Hak Akses berhasil dihapus";
+
+  protected string $error_message = "Terjadi kesalahan saat melakukan tindakan, silakan periksa log";
 
   /**
    * don't change $this->mainRepository variable name

@@ -17,11 +17,15 @@ class VillageServiceImplement extends ServiceApi implements VillageService
    * set title message api for CRUD
    * @param string $title
    */
-  protected string $title = "Village";
-  protected string $create_message = "Successfully created Village Data";
-  protected string $update_message = "Successfully updated Village Data";
-  protected string $delete_message = "Successfully deleted Village Data";
-  protected string $error_message = "Error while performing action, please check log";
+  protected string $title = "Desa atau Kelurahan";
+
+  protected string $create_message = "Data Desa atau Kelurahan berhasil dibuat";
+
+  protected string $update_message = "Data Desa atau Kelurahan berhasil diperbarui";
+
+  protected string $delete_message = "Data Desa atau Kelurahan berhasil dihapus";
+
+  protected string $error_message = "Terjadi kesalahan saat melakukan tindakan, silakan periksa log";
 
   /**
    * don't change $this->mainRepository variable name
