@@ -19,10 +19,10 @@ A robust backend API service built with Laravel for managing academic informatio
 
 ## Tech Stack
 
--   Laravel Framework
+-   Laravel Framework 11.x
 -   PHP 8.x
 -   MySQL/PostgreSQL
--   JWT Authentication
+-   Passport OAuth Authentication
 -   Excel Import/Export capabilities
 
 ## Getting Started
@@ -78,6 +78,13 @@ The API includes endpoints for:
 -   Commit your changes
 -   Push to the branch
 -   Create a new Pull Request
+
+## Contact
+
+-   Developer: Hari Octavian
+-   Email: aldiama.octavian@gmail.com
+-   LinkedIn: [Hari Octavian](https://www.linkedin.com/in/aldiama-octavian/)
+-   Project: [System Information Academic UT Sukabumi](https://github.com/harioctav/academic-information-system-backend-apps)
 
 ## License
 
