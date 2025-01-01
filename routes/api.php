@@ -70,6 +70,13 @@ Route::middleware([
     ->group(function () {
       Route::get('users/{user}/delete-image', 'deleteImage');
     });
+
+  // Delete student image
+  Route::prefix('academics')
+    ->controller(StudentController::class)
+    ->group(function () {
+      Route::get('students/{student}/delete-image', 'deleteImage');
+    });
 });
 
 // Protected routes with enhanced security
