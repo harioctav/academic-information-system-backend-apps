@@ -27,7 +27,7 @@ return new class extends Migration
       $table->index(['student_id', 'subject_id']);
 
       // Mencegah duplikasi nilai untuk mata kuliah yang sama
-      $table->unique(['student_id', 'subject_id', 'exam_period']);
+      $table->unique(['student_id', 'subject_id']);
     });
   }
 

@@ -8,6 +8,7 @@ use App\Enums\GenderType;
 use App\Enums\GeneralConstant;
 use App\Enums\ReligionType;
 use App\Traits\HasUuid;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -185,5 +186,30 @@ class Student extends Model
   public function getVillageAttribute()
   {
     return optional($this->domicileAddress)->village;
+  }
+
+  /**
+   * Get the active students.
+   *
+   * This scope filters the query to only return students with an 'active' status.
+   *
+   * @param \Illuminate\Database\Eloquent\Builder $data The query builder instance.
+   * @return \Illuminate\Database\Eloquent\Builder The modified query builder.
+   */
+  public function scopeActive($data)
+  {
+    return $data->where('status_activity', GeneralConstant::Active->value);
+  }
+
+  /**
+   * Get the active students.
+   *
+   * This method returns a collection of active students by calling the `active()` scope.
+   *
+   * @return \Illuminate\Database\Eloquent\Collection The collection of active students.
+   */
+  public function getActive(): Collection
+  {
+    return $this->active()->get();
   }
 }

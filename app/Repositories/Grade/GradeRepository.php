@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Repositories\Subject;
+namespace App\Repositories\Grade;
 
-use App\Models\Student;
 use LaravelEasyRepository\Repository;
 
-interface SubjectRepository extends Repository
+interface GradeRepository extends Repository
 {
   public function query();
   public function getWhere(
@@ -15,5 +14,4 @@ interface SubjectRepository extends Repository
     $orderBy = null,
     $orderByType = null
   );
-  public function getSubjectsForStudent(Student $student);
 }

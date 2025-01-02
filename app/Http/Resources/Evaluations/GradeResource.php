@@ -8,7 +8,7 @@ use App\Http\Resources\Utils\DateTimeResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class RecommendationResource extends JsonResource
+class GradeResource extends JsonResource
 {
   /**
    * Transform the resource into an array.
@@ -22,9 +22,11 @@ class RecommendationResource extends JsonResource
       'uuid' => $this->uuid,
       'subject_id' => $this->subject_id,
       'student_id' => $this->student_id,
-      'semester' => $this->semester,
+      'grade' => $this->grade,
+      'quality' => $this->quality,
       'exam_period' => $this->exam_period,
-      'recommendation_note' => $this->recommendation_note,
+      'mutu' => $this->mutu,
+      'grade_note' => $this->grade_note,
       'student' => StudentResource::make($this->student),
       'subject' => SubjectResource::make($this->subject),
       'created_at' => DateTimeResource::make($this->created_at),

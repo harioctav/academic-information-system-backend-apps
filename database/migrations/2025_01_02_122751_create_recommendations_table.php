@@ -18,7 +18,7 @@ return new class extends Migration
       $table->foreignId('subject_id')->index()->constrained('subjects')->onDelete('cascade');
       $table->tinyInteger('semester')->unsigned();
       $table->string('exam_period', 50)->nullable();
-      $table->text('note')->nullable();
+      $table->text('recommendation_note')->nullable();
       $table->timestamps();
 
       // Add composite index for common queries

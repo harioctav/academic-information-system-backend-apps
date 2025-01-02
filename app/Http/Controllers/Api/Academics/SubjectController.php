@@ -6,6 +6,7 @@ use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Academics\SubjectRequest;
 use App\Http\Resources\Academics\SubjectResource;
+use App\Models\Student;
 use App\Models\Subject;
 use App\Services\Subject\SubjectService;
 use Illuminate\Http\JsonResponse;
@@ -100,5 +101,32 @@ class SubjectController extends Controller
     ]);
 
     return $this->subjectService->handleBulkDelete($request->ids);
+  }
+
+  public function condition(Request $request, Student $student)
+  {
+    $query = SearchHelper::applySearchQuery(
+      query: $this->subjectService->getSubjectsForStudent(
+        student: $student
+      ),
+      request: $request,
+      searchableFields: [
+        'code',
+        'name',
+      ],
+      sortableFields: [
+        'code',
+        'name',
+        'created_at',
+        'updated_at'
+      ],
+      relationFields: [
+        'subject_status'
+      ]
+    );
+
+    return SubjectResource::collection(
+      $query->paginate($request->input('per_page', 5))
+    );
   }
 }

@@ -1,23 +1,16 @@
 <?php
 
-namespace App\Repositories\Subject;
+namespace App\Repositories\Grade;
 
-use App\Enums\Evaluations\GradeType;
 use App\Enums\WhereOperator;
 use LaravelEasyRepository\Implementations\Eloquent;
-use App\Models\Subject;
-use Illuminate\Support\Facades\DB;
+use App\Models\Grade;
 
-class SubjectRepositoryImplement extends Eloquent implements SubjectRepository
+class GradeRepositoryImplement extends Eloquent implements GradeRepository
 {
+  protected Grade $model;
 
-  /**
-   * Model class to be used in this repository for the common methods inside Eloquent
-   * Don't remove or change $this->model variable name
-   */
-  protected Subject $model;
-
-  public function __construct(Subject $model)
+  public function __construct(Grade $model)
   {
     $this->model = $model;
   }
@@ -75,27 +68,5 @@ class SubjectRepositoryImplement extends Eloquent implements SubjectRepository
     }
 
     return $query;
-  }
-
-  public function getSubjectsForStudent(\App\Models\Student $student)
-  {
-    $query = $this->model->newQuery()
-      ->join('major_has_subjects', 'subjects.id', '=', 'major_has_subjects.subject_id')
-      ->with(['grades' => function ($query) use ($student) {
-        $query->where('student_id', $student->id);
-      }])
-      ->with(['recommendations' => function ($query) use ($student) {
-        $query->where('student_id', $student->id);
-      }])
-      ->where('major_has_subjects.major_id', $student->major->id);
-
-    return $query->select(
-      'subjects.*',
-      'major_has_subjects.semester',
-      'major_has_subjects.semester as major_semester',
-      DB::raw('CAST(subjects.course_credit AS SIGNED) as course_credit')
-    )
-      ->orderBy('major_semester', 'asc')
-      ->orderBy('subjects.created_at', 'desc');
   }
 }

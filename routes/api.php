@@ -199,13 +199,20 @@ Route::middleware([
   // Evaluations Resources
   Route::prefix('evaluations')
     ->group(function () {
-      // Recommendations
+
+      // Recommendation Resources
       Route::prefix('recommendations')
         ->name('recommendations.')
         ->controller(RecommendationController::class)
         ->group(function () {
+          // Custom routes with student parameter
           Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+          Route::post('{student}', 'store')->name('store');
+          Route::get('{student}', 'show')->name('show');
         });
-      Route::apiResource('recommendations', RecommendationController::class);
+      Route::apiResource('recommendations', RecommendationController::class)->except(
+        'store',
+        'show'
+      );
     });
 });

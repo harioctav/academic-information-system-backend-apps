@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Academics;
 
+use App\Http\Resources\Evaluations\RecommendationResource;
 use App\Http\Resources\Utils\DateTimeResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -37,6 +38,7 @@ class StudentResource extends JsonResource
       'parent_phone_number' => $this->parent_phone_number,
       'major' => MajorResource::make($this->major),
       'addresses' => StudentAddressResource::collection($this->whenLoaded('addresses')),
+      'recommendations' => RecommendationResource::collection($this->whenLoaded('recommendations')),
       'domicile_address' => StudentAddressResource::make($this->whenLoaded('domicileAddress')),
       'id_card_address' => StudentAddressResource::make($this->whenLoaded('idCardAddress')),
       'created_at' => DateTimeResource::make($this->created_at),

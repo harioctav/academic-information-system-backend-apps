@@ -2,6 +2,7 @@
 
 namespace App\Services\Subject;
 
+use App\Models\Student;
 use App\Models\Subject;
 use LaravelEasyRepository\BaseService;
 
@@ -19,4 +20,5 @@ interface SubjectService extends BaseService
   public function handleUpdate($request, Subject $subject);
   public function handleDelete(Subject $subject);
   public function handleBulkDelete(array $uuid);
+  public function getSubjectsForStudent(Student $student);
 }

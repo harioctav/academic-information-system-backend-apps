@@ -69,4 +69,14 @@ class Subject extends Model
   {
     return $this->hasMany(Grade::class);
   }
+
+  /**
+   * Get the recommendations associated with this subject.
+   *
+   * @return \Illuminate\Database\Eloquent\Relations\HasMany
+   */
+  public function recommendations(): HasMany
+  {
+    return $this->hasMany(Recommendation::class);
+  }
 }

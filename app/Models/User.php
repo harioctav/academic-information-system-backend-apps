@@ -109,11 +109,27 @@ class User extends Authenticatable
       : null;
   }
 
+  /**
+   * Get the role names associated with the user.
+   *
+   * This attribute returns a comma-separated string of the names of all the roles
+   * associated with the user.
+   *
+   * @return string The comma-separated list of role names.
+   */
   public function getRoleNameAttribute()
   {
     return $this->roles->implode('name');
   }
 
+  /**
+   * Get the role IDs associated with the user.
+   *
+   * This attribute returns a comma-separated string of the IDs of all the roles
+   * associated with the user.
+   *
+   * @return string The comma-separated list of role IDs.
+   */
   public function getRoleIdAttribute()
   {
     return $this->roles->implode('id');
@@ -141,6 +157,13 @@ class User extends Authenticatable
     return $data->where('status', true);
   }
 
+  /**
+   * Get the active users.
+   *
+   * This method returns a collection of all active users.
+   *
+   * @return \Illuminate\Database\Eloquent\Collection The collection of active users.
+   */
   public function getActive(): Collection
   {
     return $this->active()->get();

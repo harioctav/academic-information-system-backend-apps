@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers\Api\Evaluations;
 
+use App\Enums\GeneralConstant;
+use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Evaluations\RecommendationRequest;
+use App\Http\Resources\Academics\StudentResource;
+use App\Http\Resources\Evaluations\RecommendationResource;
 use App\Models\Recommendation;
+use App\Models\Student;
 use App\Services\Recommendation\RecommendationService;
 use App\Services\Student\StudentService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class RecommendationController extends Controller
@@ -31,31 +37,88 @@ class RecommendationController extends Controller
    */
   public function index(Request $request)
   {
-    //
+    $query = SearchHelper::applySearchQuery(
+      query: $this->studentService->query()
+        ->active()
+        ->with([
+          'domicileAddress.village',
+          'idCardAddress.village'
+        ]),
+      request: $request,
+      searchableFields: [
+        'nim',
+        'nik',
+        'name',
+        'email',
+        'phone',
+        'parent_name',
+        'parent_phone_number'
+      ],
+      sortableFields: [
+        'nim',
+        'name',
+        'email',
+        'created_at',
+        'updated_at'
+      ],
+      relationFields: [
+        'major_id',
+        'gender',
+        'religion',
+        'status_registration'
+      ]
+    );
+
+    return StudentResource::collection(
+      $query->latest()->paginate($request->input('per_page', 5))
+    );
   }
 
   /**
    * Store a newly created resource in storage.
    */
-  public function store(RecommendationRequest $request)
+  public function store(RecommendationRequest $request, Student $student): JsonResponse
   {
-    //
+    return $this->recommendationService->handleStore($request, $student);
   }
 
   /**
    * Display the specified resource.
    */
-  public function show(Recommendation $recommendation)
+  public function show(Student $student, Request $request)
   {
-    //
+    $query = SearchHelper::applySearchQuery(
+      query: $this->recommendationService->getWhere(
+        wheres: [
+          'student_id' => $student->id
+        ]
+      ),
+      request: $request,
+      searchableFields: [
+        'semester',
+        'exam_period',
+      ],
+      sortableFields: [
+        'semester',
+        'created_at',
+        'updated_at'
+      ],
+      relationFields: [
+        'recommendation_note',
+      ]
+    );
+
+    return RecommendationResource::collection(
+      $query->latest()->paginate($request->input('per_page', 5))
+    );
   }
 
   /**
    * Update the specified resource in storage.
    */
-  public function update(RecommendationRequest $request, Recommendation $recommendation)
+  public function update(RecommendationRequest $request, Recommendation $recommendation): JsonResponse
   {
-    //
+    return $this->recommendationService->handleUpdate($request, $recommendation);
   }
 
   /**
@@ -63,6 +126,19 @@ class RecommendationController extends Controller
    */
   public function destroy(Recommendation $recommendation)
   {
-    //
+    return $this->recommendationService->handleDelete($recommendation);
+  }
+
+  /**
+   * Remove multiple resources from storage.
+   */
+  public function bulkDestroy(Request $request): JsonResponse
+  {
+    $request->validate([
+      'ids' => 'required|array',
+      'ids.*' => 'exists:recommendations,uuid'
+    ]);
+
+    return $this->recommendationService->handleBulkDelete($request->ids);
   }
 }
