@@ -13,7 +13,7 @@ return new class extends Migration
   {
     Schema::create('majors', function (Blueprint $table) {
       $table->id();
-      $table->string('uuid');
+      $table->string('uuid')->index();
       $table->string('code')->unique();
       $table->string('name')->unique();
       $table->string('degree');

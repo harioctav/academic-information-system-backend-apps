@@ -32,10 +32,13 @@ class StudentSeeder extends Seeder
     SeederProgressBar::withProgressBar($this->command, 350, function () use ($majorIds, $villageIds, $faker) {
       $registrationYear = $faker->numberBetween(2020, 2024);
       $registrationPeriod = $faker->randomElement(['GANJIL', 'GENAP']);
-      $initialRegistrationPeriod = $registrationYear . ' ' . $registrationPeriod;
+      $initialRegistrationPeriod = "{$registrationYear} {$registrationPeriod}";
 
       $major = Major::find($faker->randomElement($majorIds));
-      $nim = $major->code . $registrationYear . str_pad($faker->unique()->numberBetween(1, 999), 3, '0', STR_PAD_LEFT);
+      $randomNumber = str_pad($faker->unique()->numberBetween(1, 999), 3, '0', STR_PAD_LEFT);
+      $nim = "{$major->code}{$registrationYear}{$randomNumber}";
+
+      $phonePrefix = "628";
 
       $student = Student::create([
         'uuid' => Str::uuid(),
@@ -52,7 +55,7 @@ class StudentSeeder extends Seeder
             fn($gender) => $gender !== GenderType::Unknown
           )
         ),
-        'phone' => '628' . $faker->unique()->numerify('##########'),
+        'phone' => "{$phonePrefix}{$faker->unique()->numerify('##########')}",
         'religion' => $faker->randomElement(
           array_filter(
             ReligionType::cases(),
@@ -69,8 +72,8 @@ class StudentSeeder extends Seeder
           )
         ),
         'status_activity' => $faker->boolean(80),
-        'parent_name' => $faker->name(),
-        'parent_phone_number' => '628' . $faker->unique()->numerify('##########'),
+        'parent_name' => "{$faker->firstName()} {$faker->lastName()}",
+        'parent_phone_number' => "{$phonePrefix}{$faker->unique()->numerify('##########')}",
       ]);
 
       $addresses = [

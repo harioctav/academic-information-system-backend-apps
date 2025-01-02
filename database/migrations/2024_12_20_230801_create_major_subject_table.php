@@ -13,7 +13,7 @@ return new class extends Migration
   {
     Schema::create('major_has_subjects', function (Blueprint $table) {
       $table->id();
-      $table->string('uuid');
+      $table->string('uuid')->index();
       $table->foreignId('major_id')->constrained('majors')->onDelete('cascade');
       $table->foreignId('subject_id')->constrained('subjects')->onDelete('cascade');
       $table->integer('semester');

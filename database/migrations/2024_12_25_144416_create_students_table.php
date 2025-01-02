@@ -16,7 +16,7 @@ return new class extends Migration
   {
     Schema::create('students', function (Blueprint $table) {
       $table->id();
-      $table->string('uuid');
+      $table->string('uuid')->index();
       $table->foreignId('major_id')->constrained('majors')->onDelete('cascade');
       $table->string('nim')->unique();
       $table->string('nik')->unique()->nullable();
@@ -36,6 +36,9 @@ return new class extends Migration
       $table->string('parent_name')->nullable();
       $table->string('parent_phone_number')->unique()->nullable();
       $table->timestamps();
+
+      // Add composite index for common queries
+      $table->index(['major_id', 'status_activity']);
     });
   }
 
