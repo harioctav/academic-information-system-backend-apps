@@ -6,6 +6,7 @@ use App\Enums\Academics\SubjectStatus;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Subject extends Model
 {
@@ -57,5 +58,15 @@ class Subject extends Model
       ->using(MajorSubject::class)
       ->withPivot('semester')
       ->withTimestamps();
+  }
+
+  /**
+   * Get the grades associated with this subject.
+   *
+   * @return \Illuminate\Database\Eloquent\Relations\HasMany
+   */
+  public function grades(): HasMany
+  {
+    return $this->hasMany(Grade::class);
   }
 }

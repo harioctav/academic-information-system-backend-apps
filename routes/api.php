@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Academics\SubjectController;
 use App\Http\Controllers\Api\Auth\AccountController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\ForgotPasswordController;
+use App\Http\Controllers\Api\Evaluations\RecommendationController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\Locations\DistrictController;
 use App\Http\Controllers\Api\Locations\ProvinceController;
@@ -152,45 +153,59 @@ Route::middleware([
   });
 
   // Academic Resources
-  Route::prefix('academics')->group(function () {
-    // Majors
-    Route::prefix('majors')
-      ->name('majors.')
-      ->controller(MajorController::class)
-      ->group(function () {
-        Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
-      });
-    Route::apiResource('majors', MajorController::class);
+  Route::prefix('academics')
+    ->group(function () {
+      // Majors
+      Route::prefix('majors')
+        ->name('majors.')
+        ->controller(MajorController::class)
+        ->group(function () {
+          Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+        });
+      Route::apiResource('majors', MajorController::class);
 
-    // Major Subjects
-    Route::prefix('majors/{major}/subjects')
-      ->name('majors.subjects.')
-      ->controller(MajorSubjectController::class)
-      ->group(function () {
-        Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
-        Route::get('', 'index')->name('index');
-        Route::post('', 'store')->name('store');
-        Route::get('{majorSubject}', 'show')->name('show');
-        Route::put('{majorSubject}', 'update')->name('update');
-        Route::delete('{majorSubject}', 'destroy')->name('destroy');
-      });
+      // Major Subjects
+      Route::prefix('majors/{major}/subjects')
+        ->name('majors.subjects.')
+        ->controller(MajorSubjectController::class)
+        ->group(function () {
+          Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+          Route::get('', 'index')->name('index');
+          Route::post('', 'store')->name('store');
+          Route::get('{majorSubject}', 'show')->name('show');
+          Route::put('{majorSubject}', 'update')->name('update');
+          Route::delete('{majorSubject}', 'destroy')->name('destroy');
+        });
 
-    // Subjects
-    Route::prefix('subjects')
-      ->name('subjects.')
-      ->controller(SubjectController::class)
-      ->group(function () {
-        Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
-      });
-    Route::apiResource('subjects', SubjectController::class);
+      // Subjects
+      Route::prefix('subjects')
+        ->name('subjects.')
+        ->controller(SubjectController::class)
+        ->group(function () {
+          Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+        });
+      Route::apiResource('subjects', SubjectController::class);
 
-    // Students
-    Route::prefix('students')
-      ->name('students.')
-      ->controller(StudentController::class)
-      ->group(function () {
-        Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
-      });
-    Route::apiResource('students', StudentController::class);
-  });
+      // Students
+      Route::prefix('students')
+        ->name('students.')
+        ->controller(StudentController::class)
+        ->group(function () {
+          Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+        });
+      Route::apiResource('students', StudentController::class);
+    });
+
+  // Evaluations Resources
+  Route::prefix('evaluations')
+    ->group(function () {
+      // Recommendations
+      Route::prefix('recommendations')
+        ->name('recommendations.')
+        ->controller(RecommendationController::class)
+        ->group(function () {
+          Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+        });
+      Route::apiResource('recommendations', RecommendationController::class);
+    });
 });

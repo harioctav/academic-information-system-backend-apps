@@ -11,6 +11,7 @@ use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Storage;
 
 class Student extends Model
@@ -96,8 +97,9 @@ class Student extends Model
   /**
    * Get the student's domicile address.
    *
+   * @return HasOne
    */
-  public function domicileAddress()
+  public function domicileAddress(): HasOne
   {
     return $this->hasOne(StudentAddress::class)
       ->where('type', AddressType::Domicile->value);
@@ -106,11 +108,32 @@ class Student extends Model
   /**
    * Get the student's ID card address.
    *
+   * @return HasOne
    */
-  public function idCardAddress()
+  public function idCardAddress(): HasOne
   {
     return $this->hasOne(StudentAddress::class)
       ->where('type', AddressType::IdCard->value);
+  }
+
+  /**
+   * Get the recommendations associated with the student.
+   *
+   * @return HasMany
+   */
+  public function recommendations(): HasMany
+  {
+    return $this->hasMany(Recommendation::class);
+  }
+
+  /**
+   * Get the grades associated with the student.
+   *
+   * @return HasMany
+   */
+  public function grades(): HasMany
+  {
+    return $this->hasMany(Grade::class);
   }
 
   /**
