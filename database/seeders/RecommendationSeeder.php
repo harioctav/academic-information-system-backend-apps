@@ -58,7 +58,13 @@ class RecommendationSeeder extends Seeder
               'student_id' => $student->id,
               'subject_id' => $subject->id,
               'semester' => $semester,
-              'exam_period' => $faker->randomElement(['2023/2024 GANJIL', '2023/2024 GENAP']),
+              // Replace the existing exam_period line with this:
+              'exam_period' => $faker->randomElement(array_merge(
+                ['55555'],
+                array_map(function ($year) {
+                  return $year . '.' . rand(1, 2);
+                }, range(2020, 2024))
+              )),
               'recommendation_note' => $faker->randomElement([
                 RecommendationNote::DalamPerbaikan->value,
                 RecommendationNote::RequestPerbaikan->value

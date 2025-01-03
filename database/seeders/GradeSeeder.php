@@ -15,6 +15,24 @@ use Illuminate\Support\Str;
 class GradeSeeder extends Seeder
 {
   /**
+   * Get quality point based on grade
+   */
+  private function getQualityPoint(string $grade): float
+  {
+    return match ($grade) {
+      GradeType::A->value => 4.00,
+      GradeType::AMin->value => 3.70,
+      GradeType::B->value => 3.00,
+      GradeType::BMin->value => 2.70,
+      GradeType::C->value => 2.00,
+      GradeType::CMin->value => 1.70,
+      GradeType::D->value => 1.00,
+      GradeType::E->value => 0.00,
+      default => 0.00,
+    };
+  }
+
+  /**
    * Run the database seeds.
    */
   public function run(): void
@@ -52,12 +70,18 @@ class GradeSeeder extends Seeder
             $key = "{$student->id}-{$subject->id}";
             $uniqueCombinations[$key] = true;
 
+            // Generate random grade
+            $grade = $faker->randomElement(array_column(GradeType::cases(), 'value'));
+
+            // Get corresponding quality point
+            $qualityPoint = $this->getQualityPoint($grade);
+
             $grades[] = [
               'uuid' => Str::uuid(),
               'student_id' => $student->id,
               'subject_id' => $subject->id,
-              'grade' => $faker->randomElement(array_column(GradeType::cases(), 'value')),
-              'quality' => $faker->randomFloat(2, 0, 4),
+              'grade' => $grade,
+              'quality' => $qualityPoint,
               'mutu' => $faker->randomFloat(2, 0, 4),
               'exam_period' => $faker->randomElement(['2023/2024 GANJIL', '2023/2024 GENAP']),
               'grade_note' => $faker->sentence(),

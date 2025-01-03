@@ -7,6 +7,7 @@ use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Academics\StudentRequest;
 use App\Http\Resources\Academics\StudentResource;
+use App\Http\Resources\Academics\Students\AcademicInfoResource;
 use App\Models\Student;
 use App\Services\Student\StudentService;
 use Illuminate\Http\JsonResponse;
@@ -125,5 +126,18 @@ class StudentController extends Controller
   public function deleteImage(Student $student): JsonResponse
   {
     return $this->studentService->handleDeleteImage($student);
+  }
+
+  public function info(Student $student)
+  {
+    $academicInfo = $this->studentService->getAcademicInfo($student);
+
+    if (!$academicInfo) {
+      return response()->json([
+        'message' => 'Failed to get academic information'
+      ], 500);
+    }
+
+    return new AcademicInfoResource($academicInfo);
   }
 }

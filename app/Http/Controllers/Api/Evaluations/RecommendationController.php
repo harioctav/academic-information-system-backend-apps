@@ -91,7 +91,9 @@ class RecommendationController extends Controller
       query: $this->recommendationService->getWhere(
         wheres: [
           'student_id' => $student->id
-        ]
+        ],
+        orderBy: 'semester',
+        orderByType: 'asc'
       ),
       request: $request,
       searchableFields: [
@@ -105,11 +107,12 @@ class RecommendationController extends Controller
       ],
       relationFields: [
         'recommendation_note',
+        'semester'
       ]
     );
 
     return RecommendationResource::collection(
-      $query->latest()->paginate($request->input('per_page', 5))
+      $query->paginate($request->input('per_page', 5))
     );
   }
 

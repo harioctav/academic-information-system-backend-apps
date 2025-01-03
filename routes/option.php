@@ -88,6 +88,7 @@ Route::prefix('options')->name('options.')->group(function () {
         ->group(function () {
           Route::get('students', 'index')->name('index');
           Route::get('students/{student}', 'show')->name('show');
+          Route::get('students/{student}/info', 'info')->name('info');
         });
     });
 
