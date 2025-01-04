@@ -36,7 +36,7 @@ class UserRequest extends FormRequest
       'photo' => [
         'nullable',
         'mimes:png,jpg,jpeg,webp',
-        'max:2048'
+        'max:1024'
       ],
       'roles' => [
         'required',

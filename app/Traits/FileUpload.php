@@ -9,6 +9,13 @@ use Illuminate\Support\Str;
 
 trait FileUpload
 {
+  protected $maxFileSize = 1024; // KB
+
+  protected function validateFileSize(UploadedFile $file): bool
+  {
+    return $file->getSize() <= ($this->maxFileSize * 1024);
+  }
+
   /**
    * Uploads a file to the specified path and returns the upload result.
    *
@@ -23,7 +30,15 @@ trait FileUpload
     string $currentFile = null
   ): array {
     try {
-      // Delete old file if exists
+      // Validasi ukuran file
+      if (!$this->validateFileSize($file)) {
+        return [
+          'success' => false,
+          'message' => 'Ukuran file melebihi ' . $this->maxFileSize . 'KB'
+        ];
+      }
+
+      // Proses upload yang sudah ada
       if ($currentFile && Storage::exists($currentFile)) {
         Storage::delete($currentFile);
       }
