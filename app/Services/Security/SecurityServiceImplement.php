@@ -2,8 +2,11 @@
 
 namespace App\Services\Security;
 
+use App\Jobs\Auth\ProcessLoginActivity;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Security\SecurityRepository;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Queue;
 
 class SecurityServiceImplement extends ServiceApi implements SecurityService
 {
@@ -55,13 +58,16 @@ class SecurityServiceImplement extends ServiceApi implements SecurityService
 
   private function getLocation(string $ip): ?string
   {
-    // Implement IP geolocation logic here
-    return null;
+    return Cache::remember('ip_location_' . $ip, 60 * 24, function () use ($ip) {
+      // Implement IP geolocation logic here
+      return null;
+    });
   }
 
   public function handleLoginAttempt(\App\Models\User $user, \Illuminate\Http\Request $request, bool $success)
   {
-    $this->mainRepository->create([
+    // Dispatch job instead of using Queue facade directly
+    ProcessLoginActivity::dispatch([
       'user_id' => $user->id,
       'ip_address' => $request->ip(),
       'user_agent' => $request->userAgent(),
@@ -70,14 +76,21 @@ class SecurityServiceImplement extends ServiceApi implements SecurityService
       'login_at' => now()
     ]);
 
-    if (!$success) {
-      $user->increment('failed_login_attempts');
+    // Cache failed login attempts
+    $attemptsKey = 'login_attempts_' . $user->id;
 
-      if ($user->failed_login_attempts >= 5) {
+    if (!$success) {
+      $attempts = Cache::get($attemptsKey, 0) + 1;
+      Cache::put($attemptsKey, $attempts, 60 * 30);
+
+      if ($attempts >= 5) {
         $user->locked_until = now()->addMinutes(30);
         $user->save();
       }
+
+      $user->increment('failed_login_attempts');
     } else {
+      Cache::forget($attemptsKey);
       $user->failed_login_attempts = 0;
       $user->locked_until = null;
       $user->last_activity = now();

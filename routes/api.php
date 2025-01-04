@@ -23,7 +23,7 @@ Route::prefix('auth')
   ->controller(AuthController::class)
   ->middleware('auth.rate')
   ->group(function () {
-    Route::post('login', 'login');
+    Route::post('login', 'login')->middleware('throttle:6,1');;
     Route::post('refresh', 'refreshToken');
 
     Route::middleware([

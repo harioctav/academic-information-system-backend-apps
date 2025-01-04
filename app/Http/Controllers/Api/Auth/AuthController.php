@@ -12,6 +12,7 @@ use App\Services\Security\SecurityService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Response;
 use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
@@ -42,7 +43,9 @@ class AuthController extends Controller
    */
   public function login(LoginRequest $request): JsonResponse
   {
-    $user = User::where('email', $request->email)->first();
+    $user = Cache::remember('user.' . $request->email, 60, function () use ($request) {
+      return User::with(['roles', 'permissions'])->where('email', $request->email)->first();
+    });
 
     if ($user && $user->status->value == GeneralConstant::InActive->value) {
       return Response::json([
@@ -164,6 +167,14 @@ class AuthController extends Controller
       'scope' => '',
       'remember' => $remember
     ]);
+
+    if (!$response->successful()) {
+      return [
+        'error' => 'oauth_error',
+        'message' => $response->json()['message'] ?? 'Failed to get OAuth token',
+        'status' => $response->status()
+      ];
+    }
 
     return $response->json();
   }

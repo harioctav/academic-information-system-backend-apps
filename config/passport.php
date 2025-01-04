@@ -75,4 +75,7 @@ return [
   'client_id' => env('PASSPORT_CLIENT_ID'),
   'client_secret' => env('PASSPORT_CLIENT_SECRET'),
 
+  'token_ttl' => env('PASSPORT_TOKEN_TTL', 60), // Optimize token lifetime
+  'refresh_ttl' => env('PASSPORT_REFRESH_TTL', 20160),
+
 ];
