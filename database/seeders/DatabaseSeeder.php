@@ -16,13 +16,14 @@ class DatabaseSeeder extends Seeder
       PermissionCategorySeeder::class,
       PermissionSeeder::class,
       RoleSeeder::class,
-      UserSeeder::class,
+      // UserSeeder::class,
+      AdminSeeder::class,
       ProvinceSeeder::class,
       RegencySeeder::class,
       DistrictSeeder::class,
       VillageSeeder::class,
       MajorSubjectSeeder::class,
-      StudentSeeder::class,
+      // StudentSeeder::class,
       // RecommendationSeeder::class,
       // GradeSeeder::class
     ]);
