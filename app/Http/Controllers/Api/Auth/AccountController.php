@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Accounts\ChangePasswordRequest;
 use App\Http\Requests\Settings\UserRequest;
 use App\Http\Resources\Settings\UserResource;
 use App\Models\User;
@@ -30,6 +31,9 @@ class AccountController extends Controller
     $this->userService = $userService;
   }
 
+  /**
+   * Update the user's profile information.
+   */
   public function profile(UserRequest $request, User $user): JsonResponse
   {
     return $this->userService->handleUpdate($request, $user);
@@ -41,5 +45,10 @@ class AccountController extends Controller
   public function deleteImage(User $user): JsonResponse
   {
     return $this->userService->handleDeleteImage($user);
+  }
+
+  public function changePassword(ChangePasswordRequest $request): JsonResponse
+  {
+    return $this->userService->handleChangePassword($request);
   }
 }

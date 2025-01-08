@@ -10,7 +10,9 @@ use App\Repositories\Role\RoleRepository;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\User\UserRepository;
 use App\Traits\FileUpload;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class UserServiceImplement extends ServiceApi implements UserService
@@ -253,6 +255,31 @@ class UserServiceImplement extends ServiceApi implements UserService
 
       return $this->setMessage($this->delete_message)->toJson();
     } catch (\Exception $e) {
+      $this->exceptionResponse($e);
+      return null;
+    }
+  }
+
+  public function handleChangePassword($request)
+  {
+    try {
+      DB::beginTransaction();
+
+      $user = Auth::user();
+
+      if (!Hash::check($request->current_password, $user->password)) {
+        return $this->setError('Kata Sandi saat ini salah')->toJson();
+      }
+
+      $user->update([
+        'password' => Hash::make($request->password)
+      ]);
+
+      DB::commit();
+
+      return $this->setMessage('Kata Sandi berhasil diubah')->toJson();
+    } catch (\Exception $e) {
+      DB::rollBack();
       $this->exceptionResponse($e);
       return null;
     }

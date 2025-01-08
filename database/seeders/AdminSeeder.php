@@ -13,6 +13,9 @@ use Illuminate\Support\Str;
 
 class AdminSeeder extends Seeder
 {
+  /**
+   * An array of user data to be seeded in the database.
+   */
   protected array $users = [
     [
       'name' => 'Super Admin',
