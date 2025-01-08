@@ -277,7 +277,7 @@ class UserServiceImplement extends ServiceApi implements UserService
 
       DB::commit();
 
-      return $this->setMessage('Kata Sandi berhasil diubah')->toJson();
+      return $this->setMessage('Kata Sandi berhasil diubah. Silahkan kembali login menggunakan password baru anda')->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
       $this->exceptionResponse($e);
