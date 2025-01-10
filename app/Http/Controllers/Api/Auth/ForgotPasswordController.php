@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Response;
 
@@ -25,14 +25,8 @@ class ForgotPasswordController extends Controller
       : Response::json(['errors' => ['email' => [__($status)]]], 400);
   }
 
-  public function resetPassword(Request $request): JsonResponse
+  public function resetPassword(ResetPasswordRequest $request): JsonResponse
   {
-    $request->validate([
-      'token' => 'required',
-      'email' => 'required|email',
-      'password' => 'required|min:8|confirmed',
-    ]);
-
     $status = Password::reset(
       $request->only('email', 'password', 'password_confirmation', 'token'),
       function (User $user, string $password) {
