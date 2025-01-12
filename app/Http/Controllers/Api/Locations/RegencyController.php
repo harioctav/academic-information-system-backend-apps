@@ -55,7 +55,7 @@ class RegencyController extends Controller
           'name'
         ]
       ],
-      relationFields: [
+      filterFields: [
         'province_id',
         'type'
       ]

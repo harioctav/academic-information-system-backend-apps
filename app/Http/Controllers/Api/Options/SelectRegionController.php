@@ -42,7 +42,7 @@ class SelectRegionController extends Controller
         'created_at',
         'updated_at'
       ],
-      relationFields: [
+      filterFields: [
         'id'
       ]
     );
@@ -83,7 +83,7 @@ class SelectRegionController extends Controller
           'name'
         ]
       ],
-      relationFields: [
+      filterFields: [
         'province_id',
         'type',
         'id'
@@ -118,7 +118,7 @@ class SelectRegionController extends Controller
         'created_at',
         'updated_at'
       ],
-      relationFields: [
+      filterFields: [
         'regency_id',
         'id'
       ]
@@ -152,7 +152,7 @@ class SelectRegionController extends Controller
         'created_at',
         'updated_at'
       ],
-      relationFields: [
+      filterFields: [
         'district_id',
         'id'
       ]

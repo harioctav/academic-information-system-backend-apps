@@ -48,7 +48,7 @@ class SubjectController extends Controller
         'created_at',
         'updated_at'
       ],
-      relationFields: [
+      filterFields: [
         'subject_status'
       ]
     );
@@ -120,7 +120,7 @@ class SubjectController extends Controller
         'created_at',
         'updated_at'
       ],
-      relationFields: [
+      filterFields: [
         'subject_status'
       ]
     );

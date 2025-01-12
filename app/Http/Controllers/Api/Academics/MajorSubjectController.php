@@ -63,7 +63,7 @@ class MajorSubjectController extends Controller
         'major_has_subjects.created_at',
         'major_has_subjects.updated_at',
       ],
-      relationFields: [
+      filterFields: [
         'semester'
       ]
     );

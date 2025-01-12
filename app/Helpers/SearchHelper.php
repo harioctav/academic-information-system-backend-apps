@@ -4,22 +4,22 @@ namespace App\Helpers;
 
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class SearchHelper
 {
-  // Add method to sanitize search input
-  private static function sanitizeSearchTerm(string $search): string
+  private static function sanitizeSearchTerm(?string $search): string
   {
-    if ($search == null):
-      return '';
-    endif;
-    return trim(str_replace(['%', '_'], ['\%', '\_'], $search));
+    return $search ? trim(str_replace(['%', '_'], ['\%', '\_'], $search)) : '';
   }
 
-  // Add method to build search conditions
   private static function buildSearchCondition(Builder $query, string $field, string $search): void
   {
-    $query->orWhere($field, 'LIKE', "%{$search}%");
+    $cacheKey = "search_{$field}_{$search}";
+    Cache::remember($cacheKey, now()->addHours(1), function () use ($query, $field, $search) {
+      $query->orWhere($field, 'LIKE', "%{$search}%");
+    });
   }
 
   public static function applySearchQuery(
@@ -29,58 +29,81 @@ class SearchHelper
     array $sortableFields = [],
     array $enumFields = [],
     array $combinedFields = [],
-    array $relationFields = []
+    array $filterFields = [],
+    array $relationFilters = [],
+    bool $useLazyLoading = false,
+    int $chunkSize = 1000
   ): Builder {
-    // Sanitize search input early
-    $search = $request->has('search') ? self::sanitizeSearchTerm($request->input('search')) : null;
-
-    // Cache enum values to avoid repeated lookups
+    $search = self::sanitizeSearchTerm($request->input('search'));
     $enumValueCache = [];
 
-    // Process relations first for better query optimization
-    foreach ($relationFields as $relationField) {
+    if ($useLazyLoading) {
+      $query->lazy();
+    }
+
+    collect($filterFields)->each(function ($relationField) use ($query, $request) {
       if ($relationId = $request->input($relationField)) {
         $query->where($relationField, $relationId);
       }
-    }
+    });
+
+    // Handling relation filters
+    collect($relationFilters)->each(function ($field, $relation) use ($query, $request) {
+      if ($request->has($relation)) {
+        $query->whereHas($relation, function ($q) use ($field, $request, $relation) {
+          $q->where($field, $request->input($relation));
+        });
+      }
+    });
 
     if ($search) {
       $query->where(function ($query) use ($search, $searchableFields, $combinedFields, $enumFields, &$enumValueCache) {
-        // Regular fields
-        foreach ($searchableFields as $field) {
+        // Regular fields with cache
+        collect($searchableFields)->each(function ($field) use ($query, $search) {
           self::buildSearchCondition($query, $field, $search);
-        }
+        });
 
-        // Enum fields with caching
-        foreach ($enumFields as $field => $enumClass) {
-          if (!isset($enumValueCache[$enumClass]) && method_exists($enumClass, 'searchByLabelOrValue')) {
-            $enumValueCache[$enumClass] = $enumClass::searchByLabelOrValue($search);
-          }
+        // Enum fields with optimized caching
+        collect($enumFields)->each(function ($enumClass, $field) use ($query, $search, &$enumValueCache) {
+          $enumCacheKey = "enum_{$enumClass}_{$search}";
+          $enumValueCache[$enumClass] = Cache::remember($enumCacheKey, now()->addDay(), function () use ($enumClass, $search) {
+            return method_exists($enumClass, 'searchByLabelOrValue')
+              ? $enumClass::searchByLabelOrValue($search)
+              : [];
+          });
 
           if (!empty($enumValueCache[$enumClass])) {
             $query->orWhereIn($field, $enumValueCache[$enumClass]);
           }
-        }
+        });
 
-        // Combined fields
-        foreach ($combinedFields as $fields) {
+        // Optimized combined fields processing
+        collect($combinedFields)->each(function ($fields) use ($query, $search) {
           $concatenated = implode(", ' ', ", $fields);
           $query->orWhereRaw("CONCAT({$concatenated}) LIKE ?", ["%{$search}%"]);
 
-          // Only reverse if more than one field
           if (count($fields) > 1) {
             $reversed = implode(", ' ', ", array_reverse($fields));
             $query->orWhereRaw("CONCAT({$reversed}) LIKE ?", ["%{$search}%"]);
           }
-        }
+        });
       });
     }
 
-    // Apply sorting
+    // Optimized sorting
     if ($sortField = $request->input('sort_by')) {
       if (in_array($sortField, $sortableFields, true)) {
-        $query->orderBy($sortField, $request->input('sort_direction', 'asc'));
+        $direction = strtolower($request->input('sort_direction', 'asc'));
+        $query->orderBy($sortField, in_array($direction, ['asc', 'desc']) ? $direction : 'asc');
       }
+    }
+
+    // Implement chunking for large datasets
+    if ($request->has('chunk')) {
+      $query->chunk($chunkSize, function ($records) {
+        // Process records
+        return true;
+      });
     }
 
     return $query;

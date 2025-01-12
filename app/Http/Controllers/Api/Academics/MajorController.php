@@ -47,7 +47,7 @@ class MajorController extends Controller
         'created_at',
         'updated_at'
       ],
-      relationFields: [
+      filterFields: [
         'degree',
         'id'
       ]

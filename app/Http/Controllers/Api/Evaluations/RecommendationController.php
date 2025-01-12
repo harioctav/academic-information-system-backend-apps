@@ -61,7 +61,7 @@ class RecommendationController extends Controller
         'created_at',
         'updated_at'
       ],
-      relationFields: [
+      filterFields: [
         'major_id',
         'gender',
         'religion',
@@ -105,7 +105,7 @@ class RecommendationController extends Controller
         'created_at',
         'updated_at'
       ],
-      relationFields: [
+      filterFields: [
         'recommendation_note',
         'semester'
       ]

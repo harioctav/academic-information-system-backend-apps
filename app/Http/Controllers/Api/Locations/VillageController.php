@@ -49,7 +49,7 @@ class VillageController extends Controller
         'created_at',
         'updated_at'
       ],
-      relationFields: [
+      filterFields: [
         'district_id'
       ]
     );

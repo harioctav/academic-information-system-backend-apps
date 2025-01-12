@@ -48,7 +48,7 @@ class DistrictController extends Controller
         'created_at',
         'updated_at'
       ],
-      relationFields: [
+      filterFields: [
         'regency_id'
       ]
     );

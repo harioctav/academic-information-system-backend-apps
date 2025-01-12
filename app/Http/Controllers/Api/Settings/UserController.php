@@ -38,16 +38,6 @@ class UserController extends Controller
   {
     $baseQuery = $this->userService->query()->whereNotAdmin();
 
-    if ($request->has('roles')) {
-      $baseQuery->whereHas('roles', function ($query) use ($request) {
-        $query->where('name', $request->roles);
-      });
-    }
-
-    if ($request->has('status')) {
-      $baseQuery->where('status', $request->status);
-    }
-
     $query = SearchHelper::applySearchQuery(
       query: $baseQuery,
       request: $request,
@@ -65,7 +55,13 @@ class UserController extends Controller
       ],
       enumFields: [
         'status' => GeneralConstant::class
-      ]
+      ],
+      filterFields: [
+        'status'
+      ],
+      relationFilters: [
+        'roles' => 'name'
+      ] // Key adalah nama relasi, value adalah field yang difilter
     );
 
     return UserResource::collection(

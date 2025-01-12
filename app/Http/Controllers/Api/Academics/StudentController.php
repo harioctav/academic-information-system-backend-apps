@@ -55,7 +55,7 @@ class StudentController extends Controller
         'created_at',
         'updated_at'
       ],
-      relationFields: [
+      filterFields: [
         'major_id',
         'gender',
         'religion',

@@ -3,10 +3,10 @@
 namespace App\Services\Province;
 
 use App\Enums\WhereOperator;
+use App\Http\Resources\Locations\ProvinceResource;
 use App\Models\Province;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Province\ProvinceRepository;
-use Illuminate\Support\Facades\Log;
 
 class ProvinceServiceImplement extends ServiceApi implements ProvinceService
 {
@@ -15,11 +15,8 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
    * @param string $title
    */
   protected string $title = "Provinsi";
-
   protected string $create_message = "Data Provinsi berhasil dibuat";
-
   protected string $update_message = "Data Provinsi berhasil diperbarui";
-
   protected string $delete_message = "Data Provinsi berhasil dihapus";
 
   /**
@@ -58,9 +55,19 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
   public function handleStore($request)
   {
     try {
-      $result = $this->mainRepository->create($request->validated());
+      $payload = $request->validated();
+      $result = $this->mainRepository->create($payload);
+
+      /**
+       * Returns a JSON response with a success message and the created province resource.
+       *
+       * @param $request
+       * @return \Illuminate\Http\JsonResponse The JSON response.
+       */
       return $this->setMessage($this->create_message)
-        ->setData($result)
+        ->setData(
+          new ProvinceResource($result)
+        )
         ->toJson();
     } catch (\Exception $exception) {
       $this->exceptionResponse($exception);
@@ -71,9 +78,20 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
   public function handleUpdate($request, Province $province)
   {
     try {
-      $province->update($request->validated());
+      $payload = $request->validated();
+      $province->update($payload);
+
+      /**
+       * Returns a JSON response with a success message and the updated province resource.
+       *
+       * @param $request
+       * @param Province $province The province to be updated.
+       * @return \Illuminate\Http\JsonResponse The JSON response.
+       */
       return $this->setMessage($this->update_message)
-        ->setData($province)
+        ->setData(
+          new ProvinceResource($province)
+        )
         ->toJson();
     } catch (\Exception $exception) {
       $this->exceptionResponse($exception);
@@ -85,6 +103,12 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
   {
     try {
       $province->delete();
+
+      /**
+       * Returns a JSON response with a success message indicating the province has been deleted.
+       *
+       * @return \Illuminate\Http\JsonResponse The JSON response.
+       */
       return $this->setMessage($this->delete_message)->toJson();
     } catch (\Exception $exception) {
       $this->exceptionResponse($exception);
@@ -108,6 +132,11 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
         $province->delete();
       }
 
+      /**
+       * Returns a JSON response with a success message indicating the province has been deleted.
+       *
+       * @return \Illuminate\Http\JsonResponse The JSON response.
+       */
       return $this->setMessage($this->delete_message)->toJson();
     } catch (\Exception $exception) {
       $this->exceptionResponse($exception);
