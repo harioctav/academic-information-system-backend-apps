@@ -61,8 +61,11 @@ class RegencyController extends Controller
       ]
     );
 
+    $perPage = $request->input('per_page', 5);
+    $result = $query->latest();
+
     return RegencyResource::collection(
-      $query->latest()->paginate($request->input('per_page', 5))
+      $perPage == -1 ? $result->get() : $result->paginate($perPage)
     );
   }
 

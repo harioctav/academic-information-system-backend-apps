@@ -54,8 +54,11 @@ class VillageController extends Controller
       ]
     );
 
+    $perPage = $request->input('per_page', 5);
+    $result = $query->latest();
+
     return VillageResource::collection(
-      $query->latest()->paginate($request->input('per_page', 5))
+      $perPage == -1 ? $result->get() : $result->paginate($perPage)
     );
   }
 

@@ -10,11 +10,33 @@ use App\Http\Controllers\Api\Locations\RegencyController;
 use App\Http\Controllers\Api\Locations\VillageController;
 use App\Http\Controllers\Api\Options\SelectRegionController;
 use App\Http\Controllers\Api\Settings\RoleController;
+use App\Http\Controllers\Api\Settings\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('options')->name('options.')->group(function () {
   // Basic Options
   Route::get('roles', [RoleController::class, 'index'])->name('roles');
+
+  // Setting Options
+  Route::prefix('settings')
+    ->name('settings.')
+    ->group(function () {
+      /** Roles */
+      Route::controller(RoleController::class)
+        ->name('roles.')
+        ->group(function () {
+          Route::get('roles', 'index')->name('index');
+          Route::get('roles/{role}', 'show')->name('show');
+        });
+
+      /** Users */
+      Route::controller(UserController::class)
+        ->name('users.')
+        ->group(function () {
+          Route::get('users', 'index')->name('index');
+          Route::get('users/{user}', 'show')->name('show');
+        });
+    });
 
   // Location Options
   Route::prefix('locations')

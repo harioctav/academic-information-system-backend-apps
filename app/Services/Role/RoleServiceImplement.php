@@ -17,13 +17,9 @@ class RoleServiceImplement extends ServiceApi implements RoleService
    * @param string $title
    */
   protected string $title = "Peran & Hak Akses";
-
   protected string $create_message = "Data Peran & Hak Akses berhasil dibuat";
-
   protected string $update_message = "Data Peran & Hak Akses berhasil diperbarui";
-
   protected string $delete_message = "Data Peran & Hak Akses berhasil dihapus";
-
   protected string $error_message = "Terjadi kesalahan saat melakukan tindakan, silakan periksa log";
 
   /**
