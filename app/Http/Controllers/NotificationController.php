@@ -47,4 +47,14 @@ class NotificationController extends Controller
       'message' => 'Notifikasi berhasil dihapus'
     ]);
   }
+
+  public function destroyAll(Request $request)
+  {
+    $request->user()->notifications()->delete();
+
+    return response()->json([
+      'status' => true,
+      'message' => 'Semua notifikasi berhasil dihapus'
+    ]);
+  }
 }

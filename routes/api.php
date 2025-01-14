@@ -93,6 +93,7 @@ Route::middleware([
   Route::controller(NotificationController::class)
     ->group(function () {
       Route::get('notifications', 'index');
+      Route::delete('notifications/delete-all', 'destroyAll');
       Route::post('notifications/{id}/read', 'markAsRead');
       Route::delete('notifications/{id}', 'destroy');
     });
