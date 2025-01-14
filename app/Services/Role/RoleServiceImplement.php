@@ -5,8 +5,10 @@ namespace App\Services\Role;
 use App\Enums\UserRole;
 use App\Enums\WhereOperator;
 use App\Http\Resources\Settings\RoleResource;
+use App\Notifications\Settings\RolePermissionUpdated;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Role\RoleRepository;
+use App\Repositories\User\UserRepository;
 use Illuminate\Support\Facades\DB;
 
 class RoleServiceImplement extends ServiceApi implements RoleService
@@ -27,11 +29,14 @@ class RoleServiceImplement extends ServiceApi implements RoleService
    * because used in extends service class
    */
   protected RoleRepository $mainRepository;
+  protected UserRepository $userRepository;
 
   public function __construct(
-    RoleRepository $mainRepository
+    RoleRepository $mainRepository,
+    UserRepository $userRepository
   ) {
     $this->mainRepository = $mainRepository;
+    $this->userRepository = $userRepository;
   }
 
   /**
@@ -102,8 +107,21 @@ class RoleServiceImplement extends ServiceApi implements RoleService
       $payload = $request->validated();
 
       DB::beginTransaction();
+
       $role->update($payload);
       $role->syncPermissions($payload['permissions']);
+
+      // Get users with specific role using Spatie's role() scope
+      $users = $this->userRepository->getWhere(
+        wheres: [],
+        columns: '*'
+      )->role($role->name)->get();
+
+      // Send notification to each user
+      foreach ($users as $user) {
+        $user->notify(new RolePermissionUpdated($role));
+      }
+
       DB::commit();
 
       return $this->setMessage($this->update_message)

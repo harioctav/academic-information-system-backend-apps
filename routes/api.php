@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\Locations\VillageController;
 use App\Http\Controllers\Api\Settings\PermissionCategoryController;
 use App\Http\Controllers\Api\Settings\RoleController;
 use App\Http\Controllers\Api\Settings\UserController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 // Auth routes with rate limiting
@@ -87,6 +88,14 @@ Route::middleware([
   'session.check',
   'is.in-active.user'
 ])->group(function () {
+
+  // Notifications
+  Route::controller(NotificationController::class)
+    ->group(function () {
+      Route::get('notifications', 'index');
+      Route::post('notifications/{id}/read', 'markAsRead');
+      Route::delete('notifications/{id}', 'destroy');
+    });
 
   // Locations routes
   Route::prefix('locations')->group(function () {
