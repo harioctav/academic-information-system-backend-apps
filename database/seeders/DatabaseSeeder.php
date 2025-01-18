@@ -25,7 +25,8 @@ class DatabaseSeeder extends Seeder
       MajorSubjectSeeder::class,
       StudentSeeder::class,
       // RecommendationSeeder::class,
-      // GradeSeeder::class
+      // GradeSeeder::class,
+      // NotificationSeeder::class
     ]);
   }
 }

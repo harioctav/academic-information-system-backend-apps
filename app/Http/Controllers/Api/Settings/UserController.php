@@ -38,6 +38,11 @@ class UserController extends Controller
   {
     $baseQuery = $this->userService->query()->whereNotAdmin();
 
+    if ($request->has('status')) {
+      $status = (int) $request->status;
+      $baseQuery->where('status', $status);
+    }
+
     $query = SearchHelper::applySearchQuery(
       query: $baseQuery,
       request: $request,
@@ -60,7 +65,7 @@ class UserController extends Controller
         'status'
       ],
       relationFilters: [
-        'roles' => 'name'
+        'roles' => 'id'
       ] // Key adalah nama relasi, value adalah field yang difilter
     );
 

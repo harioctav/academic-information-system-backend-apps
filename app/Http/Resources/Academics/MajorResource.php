@@ -22,6 +22,7 @@ class MajorResource extends JsonResource
       'name' => $this->name,
       'degree' => $this->degree,
       'total_course_credit' => (int) $this->total_course_credit,
+      'total_subjects' => (int) $this->subjects()->count(),
       'created_at' => DateTimeResource::make($this->created_at),
       'updated_at' => DateTimeResource::make($this->updated_at),
     ];
