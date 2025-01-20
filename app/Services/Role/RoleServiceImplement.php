@@ -10,6 +10,7 @@ use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Role\RoleRepository;
 use App\Repositories\User\UserRepository;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response;
 
 class RoleServiceImplement extends ServiceApi implements RoleService
 {
@@ -46,10 +47,16 @@ class RoleServiceImplement extends ServiceApi implements RoleService
    */
   private function checkProtectedRole(\App\Models\Role $role): ?string
   {
+    $roleName = UserRole::from($role->name)->label();
+
     if ($role->name === UserRole::SuperAdmin->value) {
-      $name = UserRole::from($role->name)->label();
-      return "Gagal: Peran {$name} tidak bisa Dimodifikasi";
+      return "Gagal: Peran {$roleName} tidak bisa Dimodifikasi";
     }
+
+    if ($role->users()->count() > 0) {
+      return "Tidak bisa menghapus Peran: {$roleName} yang sudah memiliki data Pengguna";
+    }
+
     return null;
   }
 
@@ -161,10 +168,25 @@ class RoleServiceImplement extends ServiceApi implements RoleService
         ]
       )->get();
 
+      $errorMessages = [];
+
       foreach ($roles as $role) {
-        if (!$this->checkProtectedRole($role)) {
-          $role->delete();
+        if ($message = $this->checkProtectedRole($role)) {
+          $errorMessages[] = $message;
         }
+      }
+
+      if (!empty($errorMessages)) {
+        return Response::json([
+          'message' => 'Peran tidak bisa dihapus.',
+          'errors' => [
+            'roles' => $errorMessages
+          ]
+        ]);
+      }
+
+      foreach ($roles as $role) {
+        $role->delete();
       }
 
       return $this->setMessage($this->delete_message)->toJson();

@@ -48,8 +48,7 @@ class MajorController extends Controller
         'updated_at'
       ],
       filterFields: [
-        'degree',
-        'id'
+        'degree'
       ]
     );
 
