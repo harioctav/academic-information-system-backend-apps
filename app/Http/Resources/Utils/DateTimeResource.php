@@ -44,7 +44,10 @@ class DateTimeResource extends JsonResource
     $monthName = $this->indonesianMonths[$this->format('F')];
 
     return [
-      'human' => $this->diffForHumans(),
+      'human' => $this->locale('id')->diffForHumans([
+        'parts' => 3,
+        'join' => ', ',
+      ]),
       'machine' => $this->toDateTimeString(),
       'formatted' => "{$dayName}, {$this->format('d')} {$monthName} {$this->format('Y H:i')}"
     ];

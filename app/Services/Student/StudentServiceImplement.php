@@ -405,16 +405,18 @@ class StudentServiceImplement extends ServiceApi implements StudentService
         ]
       )->get();
 
+      $deletedCount = 0;
       foreach ($students as $student) {
         if ($student->student_photo_path) {
           Storage::delete($student->student_photo_path);
         }
         $student->delete();
+        $deletedCount++;
       }
 
       DB::commit();
 
-      return $this->setMessage($this->delete_message)->toJson();
+      return $this->setMessage("Berhasil menghapus {$deletedCount} Data Mahasiswa")->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
       $this->exceptionResponse($e);

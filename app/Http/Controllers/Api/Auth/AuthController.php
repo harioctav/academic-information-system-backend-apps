@@ -49,7 +49,7 @@ class AuthController extends Controller
 
     if ($user && $user->status->value == GeneralConstant::InActive->value) {
       return Response::json([
-        'message' => 'Login gagal',
+        'message' => 'Login gagal.',
         'errors' => [
           'email' => [
             'Akun sedang tidak aktif. Silakan hubungi Administrator untuk mengaktifkan.'
@@ -60,7 +60,7 @@ class AuthController extends Controller
 
     if ($user && $user->isLocked()) {
       return Response::json([
-        'message' => 'Login gagal',
+        'message' => 'Login gagal.',
         'errors' => [
           'email' => [
             'Akun terkunci. Silakan coba lagi nanti.'
@@ -77,7 +77,7 @@ class AuthController extends Controller
       }
 
       return Response::json([
-        'message' => 'Login gagal',
+        'message' => 'Login gagal.',
         'errors' => [
           'email' => [
             'Kredensial ini tidak cocok dengan catatan kami.'
@@ -95,7 +95,7 @@ class AuthController extends Controller
     );
 
     return Response::json([
-      'message' => 'User has been logged successfully.',
+      'message' => 'Berhasil masuk ke dalam sistem.',
       'user' => array_merge(
         (new UserResource($user))->toArray($request),
         ['token' => $token]

@@ -7,6 +7,7 @@ use App\Http\Resources\Locations\ProvinceResource;
 use App\Models\Province;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Province\ProvinceRepository;
+use Illuminate\Support\Facades\DB;
 
 class ProvinceServiceImplement extends ServiceApi implements ProvinceService
 {
@@ -118,6 +119,7 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
 
   public function handleBulkDelete(array $uuid)
   {
+    DB::beginTransaction();
     try {
       $provinces = $this->getWhere(
         wheres: [
@@ -128,16 +130,21 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
         ]
       )->get();
 
+      $deleted = 0;
+
       foreach ($provinces as $province) {
         $province->delete();
+        $deleted++;
       }
+
+      DB::commit();
 
       /**
        * Returns a JSON response with a success message indicating the province has been deleted.
        *
        * @return \Illuminate\Http\JsonResponse The JSON response.
        */
-      return $this->setMessage($this->delete_message)->toJson();
+      return $this->setMessage("Berhasil menghapus {$deleted} Data {$this->title}")->toJson();
     } catch (\Exception $exception) {
       $this->exceptionResponse($exception);
       return null;
