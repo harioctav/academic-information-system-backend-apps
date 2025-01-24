@@ -71,4 +71,26 @@ class Helper
 
     return number_format($gpa, 2);
   }
+
+  /**
+   * Generates a quality score based on the provided grade.
+   *
+   * @param string $grade The grade to use for calculating the quality score.
+   * @return float The quality score based on the provided grade.
+   */
+  public static function generateQuality($grade)
+  {
+    $gradePoints = [
+      GradeType::A->value => 4.00,
+      GradeType::AMin->value => 3.70,
+      GradeType::B->value => 3.00,
+      GradeType::BMin->value => 2.70,
+      GradeType::C->value => 2.00,
+      GradeType::CMin->value => 1.70,
+      GradeType::D->value => 1.00,
+      GradeType::E->value => 0.00,
+    ];
+
+    return $gradePoints[$grade] ?? 0.00;
+  }
 }

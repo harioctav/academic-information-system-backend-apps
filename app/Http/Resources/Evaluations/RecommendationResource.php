@@ -20,13 +20,20 @@ class RecommendationResource extends JsonResource
     return [
       'id' => $this->id,
       'uuid' => $this->uuid,
-      'subject_id' => $this->subject_id,
-      'student_id' => $this->student_id,
       'semester' => $this->semester,
       'exam_period' => $this->exam_period,
       'recommendation_note' => $this->recommendation_note,
-      'student' => StudentResource::make($this->student),
-      'subject' => SubjectResource::make($this->subject),
+      'subject' => [
+        'id' => $this->subject->id,
+        'code' => $this->subject->code,
+        'name' => $this->subject->name,
+        'course_credit' => $this->subject->course_credit,
+      ],
+      'grade' => $this->subject->grades->first() ? [
+        'grade' => $this->subject->grades->first()->grade,
+        'quality' => $this->subject->grades->first()->quality,
+        'mutu' => $this->subject->grades->first()->mutu,
+      ] : null,
       'created_at' => DateTimeResource::make($this->created_at),
       'updated_at' => DateTimeResource::make($this->updated_at)
     ];

@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Evaluations;
 
+use App\Enums\Evaluations\GradeType;
 use Illuminate\Foundation\Http\FormRequest;
 
-class RecommendationRequest extends FormRequest
+class GradeRequest extends FormRequest
 {
   /**
    * Determine if the user is authorized to make this request.
@@ -23,10 +24,20 @@ class RecommendationRequest extends FormRequest
   {
     return [
       'student_id' => 'required|exists:students,id',
-      'subjects' => 'required|array|min:1',
+      'subjects' => 'required|array|min:1|max:9',
       'subjects.*' => 'exists:subjects,id',
-      'exam_period' => 'required|string',
-      'recommendation_note' => 'required|string'
+      'grade' => [
+        'required',
+        'string',
+        'regex:/^[ABCDE][+-]?$/',
+        function ($attribute, $value, $fail) {
+          $validGrades = GradeType::toArray();
+          if (!in_array($value, $validGrades)) {
+            $fail('Nilai yang dimasukkan tidak valid.');
+          }
+        },
+      ],
+      'mutu' => 'nullable|string',
     ];
   }
 
@@ -36,15 +47,16 @@ class RecommendationRequest extends FormRequest
   public function messages(): array
   {
     return [
-      '*.required' => ':attribute minimal harus memilih salah satu atau tidak boleh dikosongkan',
-      '*.min' => ':attribute maksimal :min karakter',
+      '*.required' => ':attribute harus tidak boleh dikosongkan',
+      '*.min' => ':attribute maksimal :min',
       '*.in' => ':attribute harus salah satu dari jenis berikut: :values',
       '*.unique' => ':attribute sudah digunakan, silahkan pilih yang lain',
       '*.exists' => ':attribute tidak ditemukan atau tidak bisa diubah',
       '*.numeric' => ':attribute input tidak valid atau harus berupa angka',
       '*.image' => ':attribute tidak valid, pastikan memilih gambar',
       '*.mimes' => ':attribute tidak valid, masukkan gambar dengan format jpg atau png',
-      '*.max' => ':attribute terlalu besar, maksimal :max karakter',
+      '*.regex' => ':attribute dimasukkan tidak valid',
+      '*.max' => ':attribute terlalu besar, maksimal :max',
       '*.date' => ':attribute harus berupa tanggal',
       '*.digits' => ':attribute harus memiliki :digits angka',
       '*.between' => ':attribute harus berada diantara tahun :min sampai :max',
@@ -60,9 +72,9 @@ class RecommendationRequest extends FormRequest
   {
     return [
       'student_id' => 'Mahasiswa',
-      'subjects' => 'Matakuliah',
-      'exam_period' => 'Masa Ujian',
-      'recommendation_note' => 'Catatan Rekomendasi',
+      'subject_id' => 'Matakuliah',
+      'grade' => 'Nilai Mahasiswa',
+      'mutu' => 'Nilai Ujian Mahasiswa',
     ];
   }
 }

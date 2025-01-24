@@ -93,11 +93,17 @@ class RecommendationController extends Controller
     $query = SearchHelper::applySearchQuery(
       query: $this->recommendationService->getWhere(
         wheres: [
-          'student_id' => $student->id
+          'recommendations.student_id' => $student->id
         ],
         orderBy: 'semester',
         orderByType: 'asc'
-      ),
+      )->with([
+        'subject:id,code,name,course_credit',
+        'subject.grades' => function ($query) use ($student) {
+          $query->where('student_id', $student->id)
+            ->select('id', 'subject_id', 'grade', 'quality', 'mutu');
+        }
+      ]),
       request: $request,
       searchableFields: [
         'semester',

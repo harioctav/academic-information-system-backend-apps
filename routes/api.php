@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Academics\SubjectController;
 use App\Http\Controllers\Api\Auth\AccountController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\ForgotPasswordController;
+use App\Http\Controllers\Api\Evaluations\GradeController;
 use App\Http\Controllers\Api\Evaluations\RecommendationController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\Locations\DistrictController;
@@ -221,6 +222,22 @@ Route::middleware([
           Route::get('{student}', 'show')->name('show');
         });
       Route::apiResource('recommendations', RecommendationController::class)->except(
+        'store',
+        'show'
+      );
+
+      // Grades Resource
+      Route::prefix('grades')
+        ->name('grades.')
+        ->controller(GradeController::class)
+        ->group(function () {
+          // Custom routes with student parameter
+          Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+          Route::post('{student}', 'store')->name('store');
+          Route::get('{student}', 'show')->name('show');
+        });
+
+      Route::apiResource('grades', GradeController::class)->except(
         'store',
         'show'
       );
