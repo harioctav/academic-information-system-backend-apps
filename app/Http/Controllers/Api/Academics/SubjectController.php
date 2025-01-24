@@ -108,10 +108,40 @@ class SubjectController extends Controller
 
   public function condition(Request $request, Student $student)
   {
+    $query = $this->subjectService->getSubjectsForStudent($student);
+
+    // Add semester filter
+    if ($request->has('semester')) {
+      $query->where('major_has_subjects.semester', $request->semester);
+    }
+
+    // Add the recommendation filtering logic
+    $query->leftJoin('recommendations', function ($join) use ($student) {
+      $join->on('subjects.id', '=', 'recommendations.subject_id')
+        ->where('recommendations.student_id', '=', $student->id);
+    });
+
+    // Only show subjects that either:
+    // 1. Don't have recommendations OR
+    // 2. Have grade 'E'
+    if (!$request->has('grade_filter')) {
+      $query->where(function ($query) {
+        $query->whereNull('recommendations.id')
+          ->orWhereHas('grades', function ($q) {
+            $q->where('grade', 'E');
+          });
+      });
+    }
+
+    // Add grade filter if provided
+    if ($request->has('grade_filter')) {
+      $query->whereHas('grades', function ($q) use ($request) {
+        $q->where('grade', $request->grade_filter);
+      });
+    }
+
     $query = SearchHelper::applySearchQuery(
-      query: $this->subjectService->getSubjectsForStudent(
-        student: $student
-      ),
+      query: $query,
       request: $request,
       searchableFields: [
         'code',
@@ -128,7 +158,7 @@ class SubjectController extends Controller
       ]
     );
 
-    $perPage = $request->input('per_page', 5);
+    $perPage = $request->input('per_page', 20);
     $result = $query->latest();
 
     return SubjectResource::collection(

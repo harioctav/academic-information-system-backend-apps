@@ -94,8 +94,6 @@ class SubjectRepositoryImplement extends Eloquent implements SubjectRepository
       'major_has_subjects.semester',
       'major_has_subjects.semester as major_semester',
       DB::raw('CAST(subjects.course_credit AS SIGNED) as course_credit')
-    )
-      ->orderBy('major_semester', 'asc')
-      ->orderBy('subjects.created_at', 'desc');
+    )->orderBy('major_has_subjects.semester', 'asc');
   }
 }
