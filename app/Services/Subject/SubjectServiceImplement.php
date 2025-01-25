@@ -213,10 +213,20 @@ class SubjectServiceImplement extends ServiceApi implements SubjectService
     }
   }
 
-  public function getSubjectsForStudent(\App\Models\Student $student)
+  public function getListSubjectRecommendations(\App\Models\Student $student)
   {
     try {
-      return $this->mainRepository->getSubjectsForStudent($student);
+      return $this->mainRepository->getListSubjectRecommendations($student);
+    } catch (\Exception $e) {
+      $this->exceptionResponse($e);
+      return null;
+    }
+  }
+
+  public function getListSubjectGrades(\App\Models\Student $student)
+  {
+    try {
+      return $this->mainRepository->getListSubjectGrades($student);
     } catch (\Exception $e) {
       $this->exceptionResponse($e);
       return null;

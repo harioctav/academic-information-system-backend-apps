@@ -241,8 +241,11 @@ class RecommendationServiceImplement extends ServiceApi implements Recommendatio
         ]
       )->get();
 
+      $deleted = 0;
+
       foreach ($recommendations as $recommendation) {
         $recommendation->delete();
+        $deleted++;
       }
 
       /**
@@ -250,7 +253,7 @@ class RecommendationServiceImplement extends ServiceApi implements Recommendatio
        *
        * @return \Illuminate\Http\JsonResponse The JSON response.
        */
-      return $this->setMessage($this->delete_message)->toJson();
+      return $this->setMessage("Berhasil menghapus {$deleted} Data {$this->title}")->toJson();
     } catch (\Exception $e) {
       $this->exceptionResponse($e);
       return null;

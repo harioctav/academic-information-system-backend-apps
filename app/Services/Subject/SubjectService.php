@@ -20,5 +20,6 @@ interface SubjectService extends BaseService
   public function handleUpdate($request, Subject $subject);
   public function handleDelete(Subject $subject);
   public function handleBulkDelete(array $uuid);
-  public function getSubjectsForStudent(Student $student);
+  public function getListSubjectRecommendations(Student $student);
+  public function getListSubjectGrades(Student $student);
 }

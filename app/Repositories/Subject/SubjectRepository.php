@@ -15,5 +15,6 @@ interface SubjectRepository extends Repository
     $orderBy = null,
     $orderByType = null
   );
-  public function getSubjectsForStudent(Student $student);
+  public function getListSubjectRecommendations(Student $student);
+  public function getListSubjectGrades(Student $student);
 }

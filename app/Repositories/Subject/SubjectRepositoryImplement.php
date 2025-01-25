@@ -77,7 +77,7 @@ class SubjectRepositoryImplement extends Eloquent implements SubjectRepository
     return $query;
   }
 
-  public function getSubjectsForStudent(\App\Models\Student $student)
+  public function getListSubjectRecommendations(\App\Models\Student $student)
   {
     $query = $this->model->newQuery()
       ->join('major_has_subjects', 'subjects.id', '=', 'major_has_subjects.subject_id')
@@ -95,5 +95,30 @@ class SubjectRepositoryImplement extends Eloquent implements SubjectRepository
       'major_has_subjects.semester as major_semester',
       DB::raw('CAST(subjects.course_credit AS SIGNED) as course_credit')
     )->orderBy('major_has_subjects.semester', 'asc');
+  }
+
+  public function getListSubjectGrades(\App\Models\Student $student)
+  {
+    return $this->model->newQuery()
+      ->join('recommendations', 'subjects.id', '=', 'recommendations.subject_id')
+      ->leftJoin('grades', function ($join) use ($student) {
+        $join->on('subjects.id', '=', 'grades.subject_id')
+          ->where('grades.student_id', '=', $student->id);
+      })
+      ->where('recommendations.student_id', $student->id)
+      ->whereNull('grades.id')
+      ->select(
+        'subjects.*',
+        'recommendations.semester',
+        'recommendations.exam_period'
+      )
+      ->orderBy('recommendations.semester', 'asc')
+      ->groupBy(
+        'subjects.id',
+        'subjects.code',
+        'subjects.name',
+        'recommendations.semester',
+        'recommendations.exam_period'
+      );
   }
 }

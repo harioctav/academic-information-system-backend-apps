@@ -81,8 +81,8 @@ class Grade extends Model
    */
   public function recommendation(): HasOne
   {
-    return $this->hasOne(Recommendation::class, 'student_id', 'student_id')
-      ->where('subject_id', $this->subject_id);
+    return $this->hasOne(Recommendation::class, 'subject_id', 'subject_id')
+      ->where('recommendations.student_id', $this->student_id);
   }
 
   /**

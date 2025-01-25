@@ -100,7 +100,8 @@ Route::prefix('options')->name('options.')->group(function () {
         ->name('subjects.')
         ->group(function () {
           Route::get('subjects', 'index')->name('index');
-          Route::get('subjects/{student}/conditions', 'condition')->name('condition');
+          Route::get('subjects/{student}/recommendations', 'subjectListRecommendations')->name('recommendations');
+          Route::get('subjects/{student}/grades', 'subjectListGrades')->name('grades');
           Route::get('subjects/{subject}', 'show')->name('show');
         });
 

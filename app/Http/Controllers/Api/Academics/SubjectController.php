@@ -106,9 +106,9 @@ class SubjectController extends Controller
     return $this->subjectService->handleBulkDelete($request->ids);
   }
 
-  public function condition(Request $request, Student $student)
+  public function subjectListRecommendations(Request $request, Student $student)
   {
-    $query = $this->subjectService->getSubjectsForStudent($student);
+    $query = $this->subjectService->getListSubjectRecommendations($student);
 
     // Add semester filter
     if ($request->has('semester')) {
@@ -159,6 +159,36 @@ class SubjectController extends Controller
     );
 
     $perPage = $request->input('per_page', 20);
+    $result = $query->latest();
+
+    return SubjectResource::collection(
+      $perPage == -1 ? $result->get() : $result->paginate($perPage)
+    );
+  }
+
+  public function subjectListGrades(Request $request, Student $student)
+  {
+    $query = $this->subjectService->getListSubjectGrades($student);
+
+    $query = SearchHelper::applySearchQuery(
+      query: $query,
+      request: $request,
+      searchableFields: [
+        'code',
+        'name',
+      ],
+      sortableFields: [
+        'code',
+        'name',
+        'created_at',
+        'updated_at'
+      ],
+      filterFields: [
+        'subject_status'
+      ]
+    );
+
+    $perPage = $request->input('per_page', 5);
     $result = $query->latest();
 
     return SubjectResource::collection(

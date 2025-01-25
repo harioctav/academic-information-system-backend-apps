@@ -4,6 +4,7 @@ namespace App\Services\Grade;
 
 use App\Enums\Evaluations\GradeType;
 use App\Enums\Evaluations\RecommendationNote;
+use App\Enums\WhereOperator;
 use App\Helpers\Helper;
 use App\Http\Resources\Evaluations\GradeResource;
 use LaravelEasyRepository\ServiceApi;
@@ -135,5 +136,83 @@ class GradeServiceImplement extends ServiceApi implements GradeService
       $this->exceptionResponse($e);
       return null;
     }
+  }
+
+  public function handleDelete(\App\Models\Grade $grade)
+  {
+    try {
+      $this->updateRecommendationNoteWhenDeleteData($grade);
+      $grade->delete();
+
+      /**
+       * Returns a JSON response with a success message after deleting the Grade model.
+       *
+       * @return \Illuminate\Http\JsonResponse The JSON response.
+       */
+      return $this->setMessage($this->delete_message)->toJson();
+    } catch (\Exception $e) {
+      $this->exceptionResponse($e);
+      return null;
+    }
+  }
+
+  public function handleBulkDelete(array $uuid)
+  {
+    try {
+      /**
+       * Retrieves a collection of Grade models based on the provided UUIDs.
+       *
+       * @param array $uuid The UUIDs to filter the Grade models by.
+       * @return \Illuminate\Database\Eloquent\Collection The collection of Grade models.
+       */
+      $grades = $this->getWhere(
+        wheres: [
+          'uuid' => [
+            'operator' => WhereOperator::In->value,
+            'value' => $uuid
+          ]
+        ]
+      )->get();
+
+      $deleted = 0;
+
+      foreach ($grades as $grade) {
+        $this->updateRecommendationNoteWhenDeleteData($grade);
+
+        $grade->delete();
+        $deleted++;
+      }
+
+      /**
+       * Returns a JSON response with a success message after deleting the Grade model.
+       *
+       * @return \Illuminate\Http\JsonResponse The JSON response.
+       */
+      return $this->setMessage("Berhasil menghapus {$deleted} Data {$this->title}")->toJson();
+    } catch (\Exception $e) {
+      $this->exceptionResponse($e);
+      return null;
+    }
+  }
+
+  private function updateRecommendationNoteWhenDeleteData(\App\Models\Grade $grade)
+  {
+    $recommendation = $this->recommendationRepository->getWhere([
+      'student_id' => $grade->student_id,
+      'subject_id' => $grade->subject_id,
+    ])->first();
+
+    if ($this->shouldUpdateToRecommended($recommendation, $grade)) {
+      $recommendation->update([
+        'recommendation_note' => RecommendationNote::Direkomendasikan->value
+      ]);
+    }
+  }
+
+  private function shouldUpdateToRecommended(\App\Models\Recommendation $recommendation, \App\Models\Grade $grade): bool
+  {
+    return $recommendation->note->value === RecommendationNote::Lulus->value
+      || $recommendation->note->value === RecommendationNote::SudahDiperbaiki->value
+      || $grade->grade === GradeType::E->value;
   }
 }
