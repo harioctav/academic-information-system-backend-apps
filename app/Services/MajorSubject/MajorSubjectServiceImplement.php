@@ -93,8 +93,7 @@ class MajorSubjectServiceImplement extends ServiceApi implements MajorSubjectSer
         ->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -115,8 +114,7 @@ class MajorSubjectServiceImplement extends ServiceApi implements MajorSubjectSer
         ->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -137,8 +135,7 @@ class MajorSubjectServiceImplement extends ServiceApi implements MajorSubjectSer
       return $this->setMessage($this->delete_message)->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -154,15 +151,17 @@ class MajorSubjectServiceImplement extends ServiceApi implements MajorSubjectSer
         ]
       )->get();
 
+      $deleted = 0;
+
       foreach ($majorSubjects as $majorSubject) {
         $majorSubject->major->subjects()->detach($majorSubject->subject_id);
         $majorSubject->major->updateTotalCourseCredit();
+        $deleted++;
       }
 
-      return $this->setMessage($this->delete_message)->toJson();
+      return $this->setMessage("Berhasil menghapus {$deleted} Data {$this->title}")->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 }

@@ -2,8 +2,6 @@
 
 namespace App\Http\Resources\Evaluations;
 
-use App\Http\Resources\Academics\StudentResource;
-use App\Http\Resources\Academics\SubjectResource;
 use App\Http\Resources\Utils\DateTimeResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -27,12 +25,18 @@ class GradeResource extends JsonResource
       'exam_period' => $this->exam_period,
       'mutu' => $this->mutu,
       'grade_note' => $this->grade_note,
-      'student' => [
-        'id' => $this->student->id,
-        'uuid' => $this->student->uuid,
-        'nim' => $this->student->nim,
-        'name' => $this->student->name,
-      ],
+      'student' => $this->when($this->student, [
+        'id' => $this->student?->id,
+        'uuid' => $this->student?->uuid,
+        'nim' => $this->student?->nim,
+        'name' => $this->student?->name,
+        'major' => $this->when($this->student?->major, [
+          'id' => $this->student?->major?->id,
+          'uuid' => $this->student?->major?->uuid,
+          'name' => $this->student?->major?->name,
+          'code' => $this->student?->major?->code,
+        ]),
+      ]),
       'subject' => [
         'id' => $this->subject->id,
         'uuid' => $this->subject->uuid,

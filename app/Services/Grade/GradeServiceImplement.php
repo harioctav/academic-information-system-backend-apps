@@ -129,35 +129,90 @@ class GradeServiceImplement extends ServiceApi implements GradeService
         ->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
-      Log::error('Error in handleStore:', [
-        'message' => $e->getMessage(),
-        'trace' => $e->getTraceAsString()
-      ]);
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
+    }
+  }
+
+  public function handleUpdate($request, \App\Models\Grade $grade)
+  {
+    try {
+      DB::beginTransaction();
+
+      /** Get Payload */
+      $payload = $request->validated();
+
+      /** Get Student Data */
+      $student = $this->studentRepository->findOrFail($grade->student->id);
+
+      foreach ($payload['subjects'] as $subjectId):
+        /** Get Recommendation Data */
+        $recommendation = $this->recommendationRepository->getWhere(
+          wheres: [
+            'student_id' => $student->id,
+            'subject_id' => $subjectId,
+          ]
+        )->first();
+
+        if (
+          $grade->grade == GradeType::E->value ||
+          ($grade->grade !== GradeType::E->value && $recommendation->note === RecommendationNote::RequestPerbaikan->value)
+        ) {
+          $newRecommendationNote = RecommendationNote::SudahDiperbaiki->value;
+          $payload['grade_note'] = "Perbaikan nilai dari {$grade->grade} menjadi {$payload['grade']}.";
+        } else {
+          $newRecommendationNote = RecommendationNote::Lulus->value;
+          $payload['grade_note'] = "Nilai sudah memenuhi standar kelulusan";
+        }
+
+        if ($payload['grade'] == GradeType::E->value) {
+          $newRecommendationNote = RecommendationNote::PerluPerbaikan->value;
+          $payload['grade_note'] = "Nilai perlu perbaikan";
+        }
+
+        /** Update Recommendation Note Data */
+        $recommendation->update(['recommendation_note' => $newRecommendationNote]);
+
+        /** Tambahkan Nilai Mutu Mahasiswa */
+        $quality = Helper::generateQuality($payload['grade']);
+        $payload['quality'] = $quality;
+
+        $grade->update($payload);
+      endforeach;
+
+      DB::commit();
+
+      return $this->setMessage($this->update_message)
+        ->setData(
+          new GradeResource($grade)
+        )
+        ->toJson();
+    } catch (\Exception $e) {
+      DB::rollBack();
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
   public function handleDelete(\App\Models\Grade $grade)
   {
     try {
+      DB::beginTransaction();
+
       $this->updateRecommendationNoteWhenDeleteData($grade);
       $grade->delete();
 
-      /**
-       * Returns a JSON response with a success message after deleting the Grade model.
-       *
-       * @return \Illuminate\Http\JsonResponse The JSON response.
-       */
+      DB::commit();
+
       return $this->setMessage($this->delete_message)->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      DB::rollBack();
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
   public function handleBulkDelete(array $uuid)
   {
+    DB::beginTransaction();
+
     try {
       /**
        * Retrieves a collection of Grade models based on the provided UUIDs.
@@ -178,10 +233,11 @@ class GradeServiceImplement extends ServiceApi implements GradeService
 
       foreach ($grades as $grade) {
         $this->updateRecommendationNoteWhenDeleteData($grade);
-
         $grade->delete();
         $deleted++;
       }
+
+      DB::commit();
 
       /**
        * Returns a JSON response with a success message after deleting the Grade model.
@@ -190,8 +246,8 @@ class GradeServiceImplement extends ServiceApi implements GradeService
        */
       return $this->setMessage("Berhasil menghapus {$deleted} Data {$this->title}")->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      DB::rollBack();
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -209,10 +265,14 @@ class GradeServiceImplement extends ServiceApi implements GradeService
     }
   }
 
-  private function shouldUpdateToRecommended(\App\Models\Recommendation $recommendation, \App\Models\Grade $grade): bool
+  private function shouldUpdateToRecommended(?\App\Models\Recommendation $recommendation, \App\Models\Grade $grade): bool
   {
-    return $recommendation->note->value === RecommendationNote::Lulus->value
-      || $recommendation->note->value === RecommendationNote::SudahDiperbaiki->value
+    if (!$recommendation || !$recommendation->recommendation_note) {
+      return false;
+    }
+
+    return $recommendation->recommendation_note->value === RecommendationNote::Lulus->value
+      || $recommendation->recommendation_note->value === RecommendationNote::SudahDiperbaiki->value
       || $grade->grade === GradeType::E->value;
   }
 }

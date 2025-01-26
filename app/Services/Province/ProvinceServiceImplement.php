@@ -70,9 +70,8 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
           new ProvinceResource($result)
         )
         ->toJson();
-    } catch (\Exception $exception) {
-      $this->exceptionResponse($exception);
-      return null;
+    } catch (\Exception $e) {
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -94,9 +93,8 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
           new ProvinceResource($province)
         )
         ->toJson();
-    } catch (\Exception $exception) {
-      $this->exceptionResponse($exception);
-      return null;
+    } catch (\Exception $e) {
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -111,9 +109,8 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
        * @return \Illuminate\Http\JsonResponse The JSON response.
        */
       return $this->setMessage($this->delete_message)->toJson();
-    } catch (\Exception $exception) {
-      $this->exceptionResponse($exception);
-      return null;
+    } catch (\Exception $e) {
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -145,9 +142,8 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
        * @return \Illuminate\Http\JsonResponse The JSON response.
        */
       return $this->setMessage("Berhasil menghapus {$deleted} Data {$this->title}")->toJson();
-    } catch (\Exception $exception) {
-      $this->exceptionResponse($exception);
-      return null;
+    } catch (\Exception $e) {
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 }

@@ -17,6 +17,7 @@ interface GradeService extends BaseService
     $orderByType = null
   );
   public function handleStore($request, Student $student);
+  public function handleUpdate($request, Grade $grade);
   public function handleDelete(Grade $grade);
   public function handleBulkDelete(array $uuid);
 }

@@ -79,8 +79,7 @@ class MajorServiceImplement extends ServiceApi implements MajorService
         ->setData(new MajorResource($result))
         ->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -104,8 +103,7 @@ class MajorServiceImplement extends ServiceApi implements MajorService
         ->setData(new MajorResource($major))
         ->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -127,8 +125,7 @@ class MajorServiceImplement extends ServiceApi implements MajorService
        */
       return $this->setMessage($this->delete_message)->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -150,6 +147,8 @@ class MajorServiceImplement extends ServiceApi implements MajorService
         ]
       )->get();
 
+      $deleted = 0;
+
       /**
        * Deletes the specified collection of Major models.
        *
@@ -158,6 +157,7 @@ class MajorServiceImplement extends ServiceApi implements MajorService
        */
       foreach ($majors as $major) {
         $major->delete();
+        $deleted++;
       }
 
       /**
@@ -165,10 +165,9 @@ class MajorServiceImplement extends ServiceApi implements MajorService
        *
        * @return \Illuminate\Http\JsonResponse The JSON response.
        */
-      return $this->setMessage($this->delete_message)->toJson();
+      return $this->setMessage("Berhasil menghapus {$deleted} Data {$this->title}")->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 }

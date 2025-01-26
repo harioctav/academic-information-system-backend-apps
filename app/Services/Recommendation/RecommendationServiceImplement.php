@@ -89,12 +89,7 @@ class RecommendationServiceImplement extends ServiceApi implements Recommendatio
       return $this->setMessage($this->create_message)->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
-      Log::error('Error in handleStore:', [
-        'message' => $e->getMessage(),
-        'trace' => $e->getTraceAsString()
-      ]);
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -201,8 +196,7 @@ class RecommendationServiceImplement extends ServiceApi implements Recommendatio
        */
       return $this->setMessage($this->update_message)->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -218,8 +212,7 @@ class RecommendationServiceImplement extends ServiceApi implements Recommendatio
        */
       return $this->setMessage($this->delete_message)->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -255,8 +248,7 @@ class RecommendationServiceImplement extends ServiceApi implements Recommendatio
        */
       return $this->setMessage("Berhasil menghapus {$deleted} Data {$this->title}")->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 }

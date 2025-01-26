@@ -77,8 +77,7 @@ class RegencyServiceImplement extends ServiceApi implements RegencyService
         )
         ->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -97,9 +96,8 @@ class RegencyServiceImplement extends ServiceApi implements RegencyService
           new RegencyResource($regency)
         )
         ->toJson();
-    } catch (\Exception $exception) {
-      $this->exceptionResponse($exception);
-      return null;
+    } catch (\Exception $e) {
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -108,9 +106,8 @@ class RegencyServiceImplement extends ServiceApi implements RegencyService
     try {
       $regency->delete();
       return $this->setMessage($this->delete_message)->toJson();
-    } catch (\Exception $exception) {
-      $this->exceptionResponse($exception);
-      return null;
+    } catch (\Exception $e) {
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -126,14 +123,16 @@ class RegencyServiceImplement extends ServiceApi implements RegencyService
         ]
       )->get();
 
+      $deleted = 0;
+
       foreach ($regencies as $regency) {
         $regency->delete();
+        $deleted++;
       }
 
-      return $this->setMessage($this->delete_message)->toJson();
-    } catch (\Exception $exception) {
-      $this->exceptionResponse($exception);
-      return null;
+      return $this->setMessage("Berhasil menghapus {$deleted} Data {$this->title}")->toJson();
+    } catch (\Exception $e) {
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 }

@@ -33,6 +33,34 @@ class GradeController extends Controller
   }
 
   /**
+   * Retrieves a query for grades with associated recommendations.
+   *
+   * @param  \Illuminate\Database\Eloquent\Builder|null  $query  The base query to start from, or null to use the default Grade query.
+   * @return \Illuminate\Database\Eloquent\Builder  The modified query with the recommendations data.
+   */
+  private function getGradeQueryWithRecommendations($query = null)
+  {
+    $query = $query ?? Grade::query();
+
+    return $query->select('grades.*')
+      ->leftJoin('recommendations', function ($join) {
+        $join->on('grades.subject_id', '=', 'recommendations.subject_id')
+          ->where('recommendations.student_id', '=', DB::raw('grades.student_id'));
+      })
+      ->addSelect([
+        'recommendations.id as recommendation_id',
+        'recommendations.uuid as recommendation_uuid',
+        'recommendations.recommendation_note',
+        'recommendations.semester as recommendation_semester'
+      ])
+      ->with([
+        'subject:id,uuid,code,name,course_credit',
+        'student.major:id,uuid,code,name',
+        'student:id,uuid,nim,name,major_id'
+      ]);
+  }
+
+  /**
    * Display a listing of the resource.
    */
   public function index(Request $request)
@@ -90,24 +118,19 @@ class GradeController extends Controller
    */
   public function show(Student $student, Request $request)
   {
+    $query = $this->getGradeQueryWithRecommendations()
+      ->where('grades.student_id', $student->id);
+
+    if ($request->has('recommendation_note')) {
+      $query->where('recommendations.recommendation_note', $request->recommendation_note);
+    }
+
+    if ($request->has('semester')) {
+      $query->where('recommendations.semester', $request->semester);
+    }
+
     $query = SearchHelper::applySearchQuery(
-      query: $this->gradeService->query()
-        ->select('grades.*')
-        ->where('grades.student_id', $student->id)
-        ->leftJoin('recommendations', function ($join) {
-          $join->on('grades.subject_id', '=', 'recommendations.subject_id')
-            ->where('recommendations.student_id', '=', DB::raw('grades.student_id'));
-        })
-        ->addSelect([
-          'recommendations.id as recommendation_id',
-          'recommendations.uuid as recommendation_uuid',
-          'recommendations.recommendation_note',
-          'recommendations.semester as recommendation_semester'
-        ])
-        ->with([
-          'subject:id,uuid,code,name,course_credit',
-          'student:id,uuid,nim,name'
-        ]),
+      query: $query,
       request: $request,
       searchableFields: [
         'grade',
@@ -122,7 +145,8 @@ class GradeController extends Controller
       ],
       filterFields: [
         'grade_note',
-        'exam_period'
+        'exam_period',
+        'grade'
       ]
     );
 
@@ -134,12 +158,21 @@ class GradeController extends Controller
     );
   }
 
+  public function detail(Grade $grade): GradeResource
+  {
+    $grade = $this->getGradeQueryWithRecommendations()
+      ->where('grades.id', $grade->id)
+      ->first();
+
+    return new GradeResource($grade);
+  }
+
   /**
    * Update the specified resource in storage.
    */
-  public function update(Request $request, Grade $grade)
+  public function update(GradeRequest $request, Grade $grade)
   {
-    //
+    return $this->gradeService->handleUpdate($request, $grade);
   }
 
   /**

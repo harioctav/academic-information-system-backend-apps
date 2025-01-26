@@ -78,8 +78,7 @@ class DistrictServiceImplement extends ServiceApi implements DistrictService
         )
         ->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -98,8 +97,7 @@ class DistrictServiceImplement extends ServiceApi implements DistrictService
         )
         ->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -109,8 +107,7 @@ class DistrictServiceImplement extends ServiceApi implements DistrictService
       $district->delete();
       return $this->setMessage($this->delete_message)->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -126,14 +123,16 @@ class DistrictServiceImplement extends ServiceApi implements DistrictService
         ]
       )->get();
 
+      $deleted = 0;
+
       foreach ($districts as $district) {
         $district->delete();
+        $deleted++;
       }
 
-      return $this->setMessage($this->delete_message)->toJson();
+      return $this->setMessage("Berhasil menghapus {$deleted} Data {$this->title}")->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 }

@@ -72,7 +72,7 @@ class GradeRequest extends FormRequest
   {
     return [
       'student_id' => 'Mahasiswa',
-      'subject_id' => 'Matakuliah',
+      'subjects' => 'Matakuliah',
       'grade' => 'Nilai Mahasiswa',
       'mutu' => 'Nilai Ujian Mahasiswa',
     ];
