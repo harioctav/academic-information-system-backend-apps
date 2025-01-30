@@ -63,8 +63,8 @@ Route::middleware([
     ->controller(AccountController::class)
     ->group(function () {
       Route::get('users/{user}/delete-image', 'deleteImage');
-      Route::patch('change-profile/{user}', 'profile');
-      Route::post('change-password', 'changePassword');
+      Route::patch('change-profile/{user}', 'profile')->name('users.profile');
+      Route::post('change-password', 'changePassword')->name('users.password');
     });
 
   // delete user image

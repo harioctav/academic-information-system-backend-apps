@@ -28,6 +28,7 @@ class PermissionSeeder extends Seeder
     'users.password',
     'users.update',
     'users.destroy',
+    'users.bulk',
 
     // API Roles
     'roles.index',
@@ -35,6 +36,7 @@ class PermissionSeeder extends Seeder
     'roles.show',
     'roles.update',
     'roles.destroy',
+    'roles.bulk',
 
     // API Provinces
     'provinces.index',
@@ -42,6 +44,7 @@ class PermissionSeeder extends Seeder
     'provinces.show',
     'provinces.update',
     'provinces.destroy',
+    'provinces.bulk',
 
     // API Regencies
     'regencies.index',
@@ -49,6 +52,7 @@ class PermissionSeeder extends Seeder
     'regencies.show',
     'regencies.update',
     'regencies.destroy',
+    'regencies.bulk',
 
     // API Districts
     'districts.index',
@@ -56,6 +60,7 @@ class PermissionSeeder extends Seeder
     'districts.show',
     'districts.update',
     'districts.destroy',
+    'districts.bulk',
 
     // API Villages
     'villages.index',
@@ -63,6 +68,7 @@ class PermissionSeeder extends Seeder
     'villages.show',
     'villages.update',
     'villages.destroy',
+    'villages.bulk',
 
     // API Majors
     'majors.index',
@@ -70,6 +76,7 @@ class PermissionSeeder extends Seeder
     'majors.show',
     'majors.update',
     'majors.destroy',
+    'majors.bulk',
 
     // API Subjects
     'subjects.index',
@@ -77,6 +84,7 @@ class PermissionSeeder extends Seeder
     'subjects.show',
     'subjects.update',
     'subjects.destroy',
+    'subjects.bulk',
 
     // API Students
     'students.index',
@@ -84,6 +92,7 @@ class PermissionSeeder extends Seeder
     'students.show',
     'students.update',
     'students.destroy',
+    'students.bulk',
 
     // API Grades
     'grades.index',
@@ -91,6 +100,7 @@ class PermissionSeeder extends Seeder
     'grades.show',
     'grades.update',
     'grades.destroy',
+    'grades.bulk',
 
     // API Recommendations
     'recommendations.index',
@@ -98,12 +108,14 @@ class PermissionSeeder extends Seeder
     'recommendations.show',
     'recommendations.update',
     'recommendations.destroy',
+    'recommendations.bulk',
 
     // Api Major Subjects
     'majors.subjects.index',
     'majors.subjects.store',
     'majors.subjects.update',
     'majors.subjects.destroy',
+    'majors.subjects.bulk',
   ];
 
   /**
