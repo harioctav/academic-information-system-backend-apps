@@ -42,12 +42,33 @@ class RoleSeeder extends Seeder
       'users.password'
     ];
 
+    // Permissions khusus untuk SubjectRegisTeam
+    $regisTeamPermissions = [
+      // Grades
+      'grades.index',
+      'grades.store',
+      'grades.show',
+      'grades.update',
+      'grades.destroy',
+
+      // Recommendations
+      'recommendations.index',
+      'recommendations.store',
+      'recommendations.show',
+      'recommendations.update',
+      'recommendations.destroy',
+    ];
+
     // Berikan semua permission ke SuperAdmin
     $adminRole = Role::where('name', UserRole::SuperAdmin->value)->first();
     $adminRole->syncPermissions(Permission::all());
 
+    // Berikan permissions ke SubjectRegisTeam
+    $regisTeamRole = Role::where('name', UserRole::SubjectRegisTeam->value)->first();
+    $regisTeamRole->syncPermissions(array_merge($defaultPermissions, $regisTeamPermissions));
+
     // Berikan default permissions ke role lainnya
-    $otherRoles = Role::where('name', '!=', UserRole::SuperAdmin->value)->get();
+    $otherRoles = Role::whereNotIn('name', [UserRole::SuperAdmin->value, UserRole::SubjectRegisTeam->value])->get();
     foreach ($otherRoles as $role) {
       $role->syncPermissions($defaultPermissions);
     }

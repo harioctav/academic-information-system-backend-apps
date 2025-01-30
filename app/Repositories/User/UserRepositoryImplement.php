@@ -69,4 +69,11 @@ class UserRepositoryImplement extends Eloquent implements UserRepository
 
     return $query;
   }
+
+  public function getUserByRelations(string $relation, string $column, $value)
+  {
+    return $this->model->whereHas($relation, function ($query) use ($column, $value) {
+      $query->whereIn($column, $value);
+    });
+  }
 }

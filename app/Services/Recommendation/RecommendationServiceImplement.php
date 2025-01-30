@@ -4,11 +4,16 @@ namespace App\Services\Recommendation;
 
 use App\Enums\Evaluations\GradeType;
 use App\Enums\Evaluations\RecommendationNote;
+use App\Enums\UserRole;
 use App\Enums\WhereOperator;
+use App\Notifications\Evaluations\Recommendations\RecommendationCreated;
+use App\Notifications\Evaluations\Recommendations\RecommendationDeleted;
 use App\Repositories\Grade\GradeRepository;
 use App\Repositories\Major\MajorRepository;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Recommendation\RecommendationRepository;
+use App\Repositories\User\UserRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -31,15 +36,18 @@ class RecommendationServiceImplement extends ServiceApi implements Recommendatio
   protected GradeRepository $gradeRepository;
   protected MajorRepository $majorRepository;
   protected RecommendationRepository $mainRepository;
+  protected UserRepository $userRepository;
 
   public function __construct(
     GradeRepository $gradeRepository,
     MajorRepository $majorRepository,
     RecommendationRepository $mainRepository,
+    UserRepository $userRepository
   ) {
     $this->mainRepository = $mainRepository;
     $this->gradeRepository = $gradeRepository;
     $this->majorRepository = $majorRepository;
+    $this->userRepository = $userRepository;
   }
 
   public function query()
@@ -68,24 +76,39 @@ class RecommendationServiceImplement extends ServiceApi implements Recommendatio
     DB::beginTransaction();
 
     try {
-      // Tangkap form yang disubmit
       $payload = $request->validated();
+      $processedRecommendations = collect(); // Initialize as Collection
 
-      // Find Student & major
-      $major = $this->majorRepository->findOrFail($student->major_id);
-
-      $processedRecommendations = [];
-
-      foreach ($payload['subjects'] as $subjectIds) {
-        if (!in_array($subjectIds, $processedRecommendations)) {
-          $semester = $this->getSubjectSemester($major->id, $subjectIds);
-          $this->getOrCreateRecommendation($student->id, $subjectIds, $semester, $payload);
-          $processedRecommendations[] = $subjectIds; // Simpan subjectId yang sudah diproses
+      foreach ($payload['subjects'] as $subjectId) {
+        if (!$processedRecommendations->contains('subject_id', $subjectId)) {
+          $semester = $this->getSubjectSemester($student->major_id, $subjectId);
+          $recommendation = $this->getOrCreateRecommendation($student->id, $subjectId, $semester, $payload);
+          $processedRecommendations->push($recommendation);
         }
       }
 
-      DB::commit();
+      // Send notification
+      $users = $this->userRepository->getUserByRelations(
+        'roles',
+        'name',
+        [
+          UserRole::SuperAdmin->value,
+          UserRole::SubjectRegisTeam->value
+        ]
+      )->get();
 
+      $notification = new RecommendationCreated(
+        $processedRecommendations,
+        $student,
+        Auth::user()
+      );
+
+      $users->each(function ($user) use ($notification) {
+        $user->notify($notification);
+      });
+      // Send notification
+
+      DB::commit();
       return $this->setMessage($this->create_message)->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
@@ -203,6 +226,29 @@ class RecommendationServiceImplement extends ServiceApi implements Recommendatio
   public function handleDelete(\App\Models\Recommendation $recommendation)
   {
     try {
+      $student = $recommendation->student;
+      $recommendations = collect([$recommendation]);
+
+      $users = $this->userRepository->getUserByRelations(
+        'roles',
+        'name',
+        [
+          UserRole::SuperAdmin->value,
+          UserRole::SubjectRegisTeam->value
+        ]
+      )->get();
+
+      $notification = new RecommendationDeleted(
+        $recommendations,
+        $student,
+        Auth::user()
+      );
+
+      $users->each(function ($user) use ($notification) {
+        $user->notify($notification);
+      });
+      // Send notification
+
       $recommendation->delete();
 
       /**
@@ -233,6 +279,31 @@ class RecommendationServiceImplement extends ServiceApi implements Recommendatio
           ]
         ]
       )->get();
+
+      if ($recommendations->isNotEmpty()) {
+        $student = $recommendations->first()->student;
+
+        // Send notification
+        $users = $this->userRepository->getUserByRelations(
+          'roles',
+          'name',
+          [
+            UserRole::SuperAdmin->value,
+            UserRole::SubjectRegisTeam->value
+          ]
+        )->get();
+
+        $notification = new RecommendationDeleted(
+          $recommendations,
+          $student,
+          Auth::user()
+        );
+
+        $users->each(function ($user) use ($notification) {
+          $user->notify($notification);
+        });
+        // Send notification
+      }
 
       $deleted = 0;
 

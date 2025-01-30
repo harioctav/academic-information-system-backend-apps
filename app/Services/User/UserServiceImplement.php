@@ -73,6 +73,20 @@ class UserServiceImplement extends ServiceApi implements UserService
     );
   }
 
+  public function getUserByRelations(string $relation, string $column, $value)
+  {
+    try {
+      return $this->mainRepository->getUserByRelations(
+        relation: $relation,
+        column: $column,
+        value: $value
+      );
+    } catch (\Exception $e) {
+      $this->exceptionResponse($e);
+      return null;
+    }
+  }
+
   public function handleStore($request)
   {
     DB::beginTransaction();

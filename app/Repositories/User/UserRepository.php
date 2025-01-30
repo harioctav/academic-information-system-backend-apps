@@ -14,4 +14,5 @@ interface UserRepository extends Repository
     $orderBy = null,
     $orderByType = null
   );
+  public function getUserByRelations(string $relation, string $column, $value);
 }

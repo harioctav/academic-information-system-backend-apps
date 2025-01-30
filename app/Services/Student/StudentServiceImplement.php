@@ -272,6 +272,9 @@ class StudentServiceImplement extends ServiceApi implements StudentService
 
       $payload['student_photo_path'] = $imagePath;
       $payload['major_id'] = $major->id;
+      $payload['birth_place'] = !empty($payload['birth_place']) ? strtoupper($payload['birth_place']) : null;
+      $payload['origin_department'] = !empty($payload['origin_department']) ? strtoupper($payload['origin_department']) : null;
+      $payload['upbjj'] = !empty($payload['upbjj']) ? strtoupper($payload['upbjj']) : null;
 
       // Save to database
       $created = $this->mainRepository->create($payload);
@@ -332,6 +335,9 @@ class StudentServiceImplement extends ServiceApi implements StudentService
       }
 
       $payload['major_id'] = $major->id;
+      $payload['birth_place'] = !empty($payload['birth_place']) ? strtoupper($payload['birth_place']) : null;
+      $payload['origin_department'] = !empty($payload['origin_department']) ? strtoupper($payload['origin_department']) : null;
+      $payload['upbjj'] = !empty($payload['upbjj']) ? strtoupper($payload['upbjj']) : null;
 
       // Update student data
       $student->update($payload);

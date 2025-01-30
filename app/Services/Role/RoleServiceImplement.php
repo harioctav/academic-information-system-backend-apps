@@ -107,10 +107,10 @@ class RoleServiceImplement extends ServiceApi implements RoleService
   public function handleUpdate($request, \App\Models\Role $role)
   {
     try {
-      if ($message = $this->checkProtectedRole($role)) {
-        return $this->setMessage($message)->toJson();
-      }
 
+      /**
+       * Get Payload
+       */
       $payload = $request->validated();
 
       DB::beginTransaction();

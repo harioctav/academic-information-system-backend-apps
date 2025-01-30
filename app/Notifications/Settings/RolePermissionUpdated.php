@@ -2,6 +2,7 @@
 
 namespace App\Notifications\Settings;
 
+use App\Enums\NotificationType;
 use App\Enums\UserRole;
 use App\Models\Role;
 use Illuminate\Bus\Queueable;
@@ -56,7 +57,7 @@ class RolePermissionUpdated extends Notification
       'role_id' => $this->role->id,
       'role_name' => $name,
       'title' => "Perubahan Hak Akses",
-      'notification_type' => "permission",
+      'notification_type' => NotificationType::Permission->value,
       'message' => "Hak akses untuk peran {$name} telah diperbarui. Silahkan lakukan Refresh untuk memperbarui Hak Akses anda."
     ];
   }

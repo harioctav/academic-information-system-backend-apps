@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
       DistrictSeeder::class,
       VillageSeeder::class,
       MajorSubjectSeeder::class,
-      StudentSeeder::class,
+      // StudentSeeder::class,
       // RecommendationSeeder::class,
       // GradeSeeder::class,
       // NotificationSeeder::class

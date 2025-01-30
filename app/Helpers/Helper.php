@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class Helper
 {
   public const All = 'Semua Data';
-  public const DefaultPassword = 'IniP4ssw0rd@!!';
+  public const DefaultPassword = 'Password@123';
   public const NewPassword = 'IniP4ssw0rd@!!B4ru';
 
   const LocationHierarchy = [
@@ -25,6 +25,31 @@ class Helper
     'regency' => [
       'province' => 'province'
     ]
+  ];
+
+  private static $indonesianDays = [
+    'Sunday' => 'Min',
+    'Monday' => 'Sen',
+    'Tuesday' => 'Sel',
+    'Wednesday' => 'Rab',
+    'Thursday' => 'Kam',
+    'Friday' => 'Jum',
+    'Saturday' => 'Sab'
+  ];
+
+  private static $indonesianMonths = [
+    'January' => 'Jan',
+    'February' => 'Feb',
+    'March' => 'Mar',
+    'April' => 'Apr',
+    'May' => 'Mei',
+    'June' => 'Jun',
+    'July' => 'Jul',
+    'August' => 'Agu',
+    'September' => 'Sep',
+    'October' => 'Okt',
+    'November' => 'Nov',
+    'December' => 'Des'
   ];
 
   public static function handleDeleteFile(
@@ -92,5 +117,19 @@ class Helper
     ];
 
     return $gradePoints[$grade] ?? 0.00;
+  }
+
+  /**
+   * Formats a date in the Indonesian locale.
+   *
+   * @param \DateTime $date The date to format.
+   * @return string The formatted date string in the Indonesian locale.
+   */
+  public static function formatIndonesianDate($date)
+  {
+    $dayName = self::$indonesianDays[$date->format('l')];
+    $monthName = self::$indonesianMonths[$date->format('F')];
+
+    return "{$dayName}, {$date->format('d')} {$monthName} {$date->format('Y H:i')}";
   }
 }

@@ -15,6 +15,7 @@ interface UserService extends BaseService
     $orderBy = null,
     $orderByType = null
   );
+  public function getUserByRelations(string $relation, string $column, $value);
   public function handleStore($request);
   public function handleUpdate($request, User $user);
   public function handleDeleteImage(User $user);
