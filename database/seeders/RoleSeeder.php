@@ -59,6 +59,7 @@ class RoleSeeder extends Seeder
       'grades.update',
       'grades.destroy',
       'grades.bulk',
+      'grades.export',
 
       // Recommendations
       'recommendations.index',

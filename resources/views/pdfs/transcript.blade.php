@@ -192,7 +192,7 @@
         <td>{{ $value['mutu'] ?? '-' }}</td>
         <td>{{ $value['has_grade'] ? ($value['grade']->grade === "E" ? 'BL' : 'LL') : 'BL' }}</td>
         <td>{{ $value['exam_period'] ?? '-' }}</td>
-        <td>{{ $value['subject']->status === 'I' ? 'I' : 'N' }}</td>
+        <td>{{ $value['subject']->subject_status }}</td>
       </tr>
       @endforeach
       @endforeach

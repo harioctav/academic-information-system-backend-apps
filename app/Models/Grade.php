@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HasUuid;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -102,5 +103,20 @@ class Grade extends Model
     $pivot = $this->subject->majors->where('id', $majorId)->first();
 
     return $pivot ? $pivot->pivot->semester : 'Unknown Semester';
+  }
+
+  /**
+   * Formats the `mutu` attribute as a trimmed string with two decimal places.
+   *
+   * This attribute accessor method is used to format the `mutu` attribute of the Grade model
+   * by removing any trailing zeros and decimal points from the formatted number.
+   *
+   * @return string The formatted `mutu` value.
+   */
+  public function mutuLabel(): Attribute
+  {
+    return Attribute::make(
+      get: fn() => rtrim(rtrim(number_format($this->mutu, 2), '0'), '.')
+    );
   }
 }
