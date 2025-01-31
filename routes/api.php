@@ -58,6 +58,15 @@ Route::middleware([
 
   require __DIR__ . '/option.php';
 
+  // Notifications
+  Route::controller(NotificationController::class)
+    ->group(function () {
+      Route::get('notifications', 'index');
+      Route::delete('notifications/delete-all', 'destroyAll');
+      Route::post('notifications/{id}/read', 'markAsRead');
+      Route::delete('notifications/{id}', 'destroy');
+    });
+
   // Accounts
   Route::prefix('accounts')
     ->controller(AccountController::class)
@@ -89,15 +98,6 @@ Route::middleware([
   'session.check',
   'is.in-active.user'
 ])->group(function () {
-
-  // Notifications
-  Route::controller(NotificationController::class)
-    ->group(function () {
-      Route::get('notifications', 'index');
-      Route::delete('notifications/delete-all', 'destroyAll');
-      Route::post('notifications/{id}/read', 'markAsRead');
-      Route::delete('notifications/{id}', 'destroy');
-    });
 
   // Locations routes
   Route::prefix('locations')->group(function () {
@@ -235,6 +235,7 @@ Route::middleware([
           Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
           Route::post('{student}', 'store')->name('store');
           Route::get('{student}', 'show')->name('show');
+          Route::get('{student}/export', 'export')->name('export');
         });
 
       Route::apiResource('grades', GradeController::class)->except(

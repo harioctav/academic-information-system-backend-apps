@@ -13,8 +13,11 @@ use App\Repositories\Major\MajorRepository;
 use App\Repositories\Recommendation\RecommendationRepository;
 use App\Repositories\Student\StudentRepository;
 use App\Repositories\Subject\SubjectRepository;
+use App\Services\Student\StudentService;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class GradeServiceImplement extends ServiceApi implements GradeService
 {
@@ -34,6 +37,7 @@ class GradeServiceImplement extends ServiceApi implements GradeService
   protected GradeRepository $mainRepository;
   protected SubjectRepository $subjectRepository;
   protected StudentRepository $studentRepository;
+  protected StudentService $studentService;
   protected RecommendationRepository $recommendationRepository;
   protected MajorRepository $majorRepository;
 
@@ -43,12 +47,14 @@ class GradeServiceImplement extends ServiceApi implements GradeService
     StudentRepository $studentRepository,
     RecommendationRepository $recommendationRepository,
     MajorRepository $majorRepository,
+    StudentService $studentService
   ) {
     $this->mainRepository = $mainRepository;
     $this->subjectRepository = $subjectRepository;
     $this->studentRepository = $studentRepository;
     $this->recommendationRepository = $recommendationRepository;
     $this->majorRepository = $majorRepository;
+    $this->studentService = $studentService;
   }
 
   public function query()
@@ -274,5 +280,59 @@ class GradeServiceImplement extends ServiceApi implements GradeService
     return $recommendation->recommendation_note->value === RecommendationNote::Lulus->value
       || $recommendation->recommendation_note->value === RecommendationNote::SudahDiperbaiki->value
       || $grade->grade === GradeType::E->value;
+  }
+
+  public function handleExport(\App\Models\Student $student)
+  {
+    try {
+      /** Get Data Student w/ Prodi + Subjects */
+      $student->with([
+        'grades',
+        'major.subjects',
+        'domicileAddress'
+      ]);
+
+      /** Group subjects by semester and check if they have grades */
+      $groupedSubjects = $student->major->subjects->mapToGroups(function ($subject) use ($student) {
+        $grade = $student->grades->firstWhere('subject_id', $subject->id);
+        $semester = $subject->pivot->semester;
+
+        $subject->course_credit = ($subject->course_credit === '') ? 0 : $subject->course_credit;
+
+        return [$semester => [
+          'subject' => $subject,
+          'has_grade' => !is_null($grade),
+          'grade' => $grade,
+          'mutu' => $grade ? $grade->mutuLabel : null,
+          'exam_period' => $grade ? $grade->exam_period : null,
+        ]];
+      });
+
+      $formattedDate = now()->locale('id')->isoFormat('D-MM-YYYY');
+      $sanitizedName = Str::upper(Str::slug($student->name, '-'));
+      $full_name_of_file = "transcripts/{$formattedDate}/{$sanitizedName}/TRANSCRIPT-SEMENTARA.pdf";
+
+      $academicInfo = $this->studentService->getAcademicInfo($student);
+
+      // Generate PDF using a PDF library like DomPDF
+      $pdf = Pdf::loadView('pdfs.transcript', [
+        'student' => $student,
+        'groupedSubjects' => $groupedSubjects,
+        'academicInfo' => $academicInfo
+      ]);
+
+      // Store PDF temporarily
+      Storage::put($full_name_of_file, $pdf->output());
+
+      // Get the full URL for the stored PDF
+      $url = Storage::url($full_name_of_file);
+
+      return $this->setMessage("Berhasil membuat PDF Nilai Atas Nama {$student->name} ({$student->nim}).")
+        ->setData(['pdf_url' => $url])->toJson();
+    } catch (\Exception $e) {
+      DB::rollBack();
+      $this->exceptionResponse($e);
+      return null;
+    }
   }
 }

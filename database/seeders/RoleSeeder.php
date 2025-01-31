@@ -44,12 +44,21 @@ class RoleSeeder extends Seeder
 
     // Permissions khusus untuk SubjectRegisTeam
     $regisTeamPermissions = [
+      // Students
+      'students.index',
+      'students.store',
+      'students.show',
+      'students.update',
+      'students.destroy',
+      'students.bulk',
+
       // Grades
       'grades.index',
       'grades.store',
       'grades.show',
       'grades.update',
       'grades.destroy',
+      'grades.bulk',
 
       // Recommendations
       'recommendations.index',
@@ -57,6 +66,7 @@ class RoleSeeder extends Seeder
       'recommendations.show',
       'recommendations.update',
       'recommendations.destroy',
+      'recommendations.bulk',
     ];
 
     // Berikan semua permission ke SuperAdmin

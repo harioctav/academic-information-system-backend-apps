@@ -195,4 +195,9 @@ class GradeController extends Controller
 
     return $this->gradeService->handleBulkDelete($request->ids);
   }
+
+  public function export(Student $student): JsonResponse
+  {
+    return $this->gradeService->handleExport($student);
+  }
 }

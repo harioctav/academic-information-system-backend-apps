@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 
@@ -12,7 +13,8 @@ class AppServiceProvider extends ServiceProvider
    */
   public function register(): void
   {
-    //
+    $loader = AliasLoader::getInstance();
+    $loader->alias('GradeType', \App\Enums\Evaluations\GradeType::class);
   }
 
   /**

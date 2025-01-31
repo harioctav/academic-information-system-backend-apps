@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class Student extends Model
@@ -150,6 +151,20 @@ class Student extends Model
     return $this->student_photo_path
       ? Storage::url($this->student_photo_path)
       : null;
+  }
+
+  /**
+   * Get brith day formatted attribute
+   */
+  public function getFormattedBirthDateAttribute(): string
+  {
+    // Pastikan bahwa birth_day ada sebelum memformatnya
+    if ($this->birth_date) {
+      return Carbon::parse($this->birth_date)->translatedFormat('d F Y');
+    }
+
+    // Kembalikan nilai default jika birth_day tidak ada
+    return '-';
   }
 
   /**
