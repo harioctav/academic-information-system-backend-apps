@@ -128,6 +128,11 @@ class RecommendationController extends Controller
     );
   }
 
+  public function detail(Recommendation $recommendation)
+  {
+    return new RecommendationResource($recommendation);
+  }
+
   /**
    * Update the specified resource in storage.
    */

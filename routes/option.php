@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Academics\MajorSubjectController;
 use App\Http\Controllers\Api\Academics\StudentController;
 use App\Http\Controllers\Api\Academics\SubjectController;
 use App\Http\Controllers\Api\Evaluations\GradeController;
+use App\Http\Controllers\Api\Evaluations\RecommendationController;
 use App\Http\Controllers\Api\Locations\DistrictController;
 use App\Http\Controllers\Api\Locations\ProvinceController;
 use App\Http\Controllers\Api\Locations\RegencyController;
@@ -125,6 +126,13 @@ Route::prefix('options')->name('options.')->group(function () {
         ->name('grades.')
         ->group(function () {
           Route::get('grades/{grade}/detail', 'detail')->name('detail');
+        });
+
+      /** Recommendations */
+      Route::controller(RecommendationController::class)
+        ->name('recommendation.')
+        ->group(function () {
+          Route::get('recommendations/{recommendation}/detail', 'detail')->name('detail');
         });
     });
 

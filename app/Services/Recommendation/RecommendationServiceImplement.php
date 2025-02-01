@@ -6,6 +6,7 @@ use App\Enums\Evaluations\GradeType;
 use App\Enums\Evaluations\RecommendationNote;
 use App\Enums\UserRole;
 use App\Enums\WhereOperator;
+use App\Http\Resources\Evaluations\RecommendationResource;
 use App\Notifications\Evaluations\Recommendations\RecommendationCreated;
 use App\Notifications\Evaluations\Recommendations\RecommendationDeleted;
 use App\Repositories\Grade\GradeRepository;
@@ -217,7 +218,9 @@ class RecommendationServiceImplement extends ServiceApi implements Recommendatio
        *
        * @return \Illuminate\Http\JsonResponse
        */
-      return $this->setMessage($this->update_message)->toJson();
+      return $this->setMessage($this->update_message)->setData(
+        new RecommendationResource($recommendation)
+      )->toJson();
     } catch (\Exception $e) {
       return $this->setMessage($e->getMessage())->toJson();
     }
