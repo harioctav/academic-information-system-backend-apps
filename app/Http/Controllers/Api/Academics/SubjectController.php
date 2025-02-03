@@ -135,8 +135,9 @@ class SubjectController extends Controller
 
     // Add grade filter if provided
     if ($request->has('grade_filter')) {
-      $query->whereHas('grades', function ($q) use ($request) {
-        $q->where('grade', $request->grade_filter);
+      $query->whereHas('grades', function ($q) use ($request, $student) {
+        $q->where('grade', $request->grade_filter)
+          ->where('student_id', $student->id);
       });
     }
 

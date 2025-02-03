@@ -51,6 +51,11 @@ class RoleController extends Controller
       ]
     );
 
+    // Tambahkan kondisi untuk exclude super_admin jika parameter exclude_super_admin=true
+    if ($request->has('exclude_super_admin') && $request->exclude_super_admin === 'true') {
+      $query->where('name', '!=', UserRole::SuperAdmin->value);
+    }
+
     return RoleResource::collection(
       $query->latest()->paginate($request->input('per_page', 5))
     );

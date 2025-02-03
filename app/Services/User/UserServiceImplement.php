@@ -193,7 +193,10 @@ class UserServiceImplement extends ServiceApi implements UserService
 
       DB::commit();
 
-      return $this->setMessage($this->delete_image_message)->toJson();
+      return $this->setMessage($this->delete_image_message)
+        ->setData(
+          new UserResource($user)
+        )->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
       $this->exceptionResponse($e);
