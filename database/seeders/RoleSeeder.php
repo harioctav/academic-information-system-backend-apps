@@ -44,6 +44,25 @@ class RoleSeeder extends Seeder
 
     // Permissions khusus untuk SubjectRegisTeam
     $regisTeamPermissions = [
+      // Majors
+      'majors.index',
+      'majors.show',
+
+      // Major Subjects
+      'majors.subjects.index',
+      'majors.subjects.store',
+      'majors.subjects.update',
+      'majors.subjects.destroy',
+      'majors.subjects.bulk',
+
+      // Subjects
+      'subjects.index',
+      'subjects.store',
+      'subjects.show',
+      'subjects.update',
+      'subjects.destroy',
+      'subjects.bulk',
+
       // Students
       'students.index',
       'students.store',
@@ -60,6 +79,7 @@ class RoleSeeder extends Seeder
       'grades.destroy',
       'grades.bulk',
       'grades.export',
+      'grades.import',
 
       // Recommendations
       'recommendations.index',

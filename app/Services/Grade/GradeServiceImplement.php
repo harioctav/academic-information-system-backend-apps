@@ -7,6 +7,7 @@ use App\Enums\Evaluations\RecommendationNote;
 use App\Enums\WhereOperator;
 use App\Helpers\Helper;
 use App\Http\Resources\Evaluations\GradeResource;
+use App\Imports\GradeImport;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Grade\GradeRepository;
 use App\Repositories\Major\MajorRepository;
@@ -17,7 +18,10 @@ use App\Services\Student\StudentService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class GradeServiceImplement extends ServiceApi implements GradeService
 {
@@ -333,6 +337,130 @@ class GradeServiceImplement extends ServiceApi implements GradeService
       DB::rollBack();
       $this->exceptionResponse($e);
       return null;
+    }
+  }
+
+  public function handleImport($request, \App\Models\Student $student)
+  {
+    DB::beginTransaction();
+    try {
+      if ($request->hasFile('file') && $request->file('file')->isValid()) {
+        $import = new GradeImport();
+        Excel::import($import, $request->file('file'));
+
+        // Get import results
+        $errors = $import->getErrors();
+        if (!empty($errors)) {
+          return $this->setMessage($errors)->toJson();
+        }
+
+        $nim = $import->getNim();
+        $majorName = $import->getMajor();
+        $courses = $import->getCourses();
+
+        // Validate student and major
+        $major = $this->majorRepository->findOrFail($student->major->id);
+
+        if ($nim !== $student->nim || strtolower($majorName) !== strtolower($major->name)) {
+          return Response::json([
+            'message' => 'Import File Gagal.',
+            'errors' => [
+              'file' => [
+                "Nim atau Program Studi tidak sama dengan data {$student->name}."
+              ]
+            ]
+          ], HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        // Get major subjects
+        $majorSubjects = $major->subjects->pluck('id', 'code')->toArray();
+        $existingGrades = $student->grades()->pluck('subject_id')->toArray();
+
+        $duplicateSubjects = [];
+        $newGrades = [];
+        $newRecommendations = [];
+
+        foreach ($courses as $semester => $semesterCourses):
+          foreach ($semesterCourses as $course):
+            $code = trim($course['kode_matakuliah']);
+            $subjectName = trim($course['matakuliah']);
+            $grade = trim($course['nilai']);
+            $examPeriod = trim($course['masa_ujian']);
+
+            if (!isset($majorSubjects[$code])) {
+              return Response::json([
+                'message' => 'Import File Gagal.',
+                'errors' => [
+                  'file' => [
+                    "Matakuliah dengan kode {$code} tidak ditemukan dalam daftar matakuliah jurusan {$major->name}."
+                  ]
+                ]
+              ], HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            $subjectId = $majorSubjects[$code];
+            if (in_array($subjectId, $existingGrades)) {
+              $duplicateSubjects[] = "{$code} - {$subjectName}";
+              continue;
+            }
+
+            // Build recommendations and grades arrays
+            $recommendationNote = ($grade === GradeType::E->value)
+              ? RecommendationNote::PerluPerbaikan->value
+              : RecommendationNote::Lulus->value;
+
+            $gradeNote = ($grade === GradeType::E->value)
+              ? "Nilai perlu dilakukan direkomendasikan ulang dan diperbaiki"
+              : "Nilai sudah memenuhi standar kelulusan matakuliah";
+
+            $newRecommendations[] = [
+              'uuid' => Str::uuid(),
+              'student_id' => $student->id,
+              'subject_id' => $subjectId,
+              'semester' => $semester,
+              'exam_period' => $examPeriod,
+              'recommendation_note' => $recommendationNote,
+              'created_at' => now(),
+              'updated_at' => now(),
+            ];
+
+            $newGrades[] = [
+              'uuid' => Str::uuid(),
+              'student_id' => $student->id,
+              'subject_id' => $subjectId,
+              'grade' => $grade ?? null,
+              'quality' => Helper::generateQuality($grade),
+              'mutu' => $course['nilai_mutu'] ?? null,
+              'exam_period' => $examPeriod ?? null,
+              'grade_note' => $gradeNote,
+              'created_at' => now(),
+              'updated_at' => now(),
+            ];
+          endforeach;
+        endforeach;
+        if (!empty($newGrades)) {
+          DB::table('recommendations')->insert($newRecommendations);
+          DB::table('grades')->insert($newGrades);
+        }
+
+        DB::commit();
+
+        $response = [
+          'duplicate_subjects' => $duplicateSubjects,
+          'imported_count' => count($newGrades)
+        ];
+
+        return $this->setMessage("Berhasil Import Nilai atas nama: {$student->name} ({$student->nim})")
+          ->setData($response)
+          ->toJson();
+      }
+
+      return $this->setMessage('File tidak valid')->toJson();
+    } catch (\Exception $e) {
+      DB::rollBack();
+      return $this->setCode(500)
+        ->setError($e->getMessage())
+        ->toJson();
     }
   }
 }

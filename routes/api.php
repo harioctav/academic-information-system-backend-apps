@@ -236,6 +236,7 @@ Route::middleware([
           Route::post('{student}', 'store')->name('store');
           Route::get('{student}', 'show')->name('show');
           Route::get('{student}/export', 'export')->name('export');
+          Route::post('{student}/import', 'import')->name('import');
         });
 
       Route::apiResource('grades', GradeController::class)->except(

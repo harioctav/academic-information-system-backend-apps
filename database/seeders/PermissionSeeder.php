@@ -102,6 +102,7 @@ class PermissionSeeder extends Seeder
     'grades.destroy',
     'grades.bulk',
     'grades.export',
+    'grades.import',
 
     // API Recommendations
     'recommendations.index',

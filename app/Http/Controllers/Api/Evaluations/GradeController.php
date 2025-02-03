@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Evaluations;
 use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Evaluations\GradeRequest;
+use App\Http\Requests\ImportRequest;
 use App\Http\Resources\Academics\StudentResource;
 use App\Http\Resources\Evaluations\GradeResource;
 use App\Models\Grade;
@@ -196,8 +197,19 @@ class GradeController extends Controller
     return $this->gradeService->handleBulkDelete($request->ids);
   }
 
+  /**
+   * Export the grades for the specified student.
+   */
   public function export(Student $student): JsonResponse
   {
     return $this->gradeService->handleExport($student);
+  }
+
+  /**
+   * Import grades for the specified student.
+   */
+  public function import(ImportRequest $request, Student $student)
+  {
+    return $this->gradeService->handleImport($request, $student);
   }
 }

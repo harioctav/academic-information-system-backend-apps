@@ -21,4 +21,5 @@ interface GradeService extends BaseService
   public function handleDelete(Grade $grade);
   public function handleBulkDelete(array $uuid);
   public function handleExport(Student $student);
+  public function handleImport($request, Student $student);
 }
