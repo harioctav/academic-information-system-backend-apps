@@ -351,7 +351,7 @@ class GradeServiceImplement extends ServiceApi implements GradeService
         // Get import results
         $errors = $import->getErrors();
         if (!empty($errors)) {
-          return $this->setMessage($errors)->toJson();
+          return Response::json($errors, HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $nim = $import->getNim();

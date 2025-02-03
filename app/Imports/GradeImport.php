@@ -90,11 +90,14 @@ class GradeImport implements ToCollection, WithHeadingRow
          * The error message includes the expected format for the NIM and major.
          */
         if (empty($this->nim) || empty($this->major)) {
-          $this->addError("
-          Nim atau Program Studi tidak boleh dikosongkan<br>
-          Format:<br>
-          NIM(spasi):(spasi)NIM MAHASISWA<br>
-          PROGRAM STUDI(spasi):(spasi)JURUSAN MAHASISWA");
+          $this->errors = [
+            'message' => 'Import File Gagal.',
+            'errors' => [
+              'file' => [
+                "Nim atau Program Studi tidak boleh dikosongkan. Format yang benar adalah \nNIM : NIM MAHASISWA ||\nPROGRAM STUDI : JURUSAN MAHASISWA"
+              ]
+            ]
+          ];
         }
 
         /**
