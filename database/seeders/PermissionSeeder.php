@@ -93,6 +93,7 @@ class PermissionSeeder extends Seeder
     'students.update',
     'students.destroy',
     'students.bulk',
+    'students.import',
 
     // API Grades
     'grades.index',

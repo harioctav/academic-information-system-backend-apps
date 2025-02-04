@@ -6,12 +6,15 @@ use App\Enums\GeneralConstant;
 use App\Helpers\SearchHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Academics\StudentRequest;
+use App\Http\Requests\ImportRequest;
 use App\Http\Resources\Academics\StudentResource;
 use App\Http\Resources\Academics\Students\AcademicInfoResource;
 use App\Models\Student;
 use App\Services\Student\StudentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 class StudentController extends Controller
 {
@@ -131,16 +134,30 @@ class StudentController extends Controller
     return $this->studentService->handleDeleteImage($student);
   }
 
-  public function info(Student $student)
+  /**
+   * Retrieves the academic information for the specified student.
+   *
+   * @param Student $student The student to retrieve the academic information for.
+   * @return AcademicInfoResource|JsonResponse The academic information for the student, or a JSON response indicating an error.
+   */
+  public function info(Student $student): AcademicInfoResource | JsonResponse
   {
     $academicInfo = $this->studentService->getAcademicInfo($student);
 
     if (!$academicInfo) {
-      return response()->json([
-        'message' => 'Failed to get academic information'
-      ], 500);
+      return Response::json([
+        'message' => 'Failed to get academic information.',
+      ], HttpFoundationResponse::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     return new AcademicInfoResource($academicInfo);
+  }
+
+  /**
+   * Handles the import of student data.
+   */
+  public function import(ImportRequest $request): JsonResponse
+  {
+    return $this->studentService->handleImport($request);
   }
 }

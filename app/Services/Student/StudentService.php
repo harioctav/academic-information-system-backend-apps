@@ -21,4 +21,5 @@ interface StudentService extends BaseService
   public function handleDestroy(Student $student);
   public function handleDeleteImage(Student $student);
   public function handleBulkDelete(array $uuid);
+  public function handleImport($request);
 }

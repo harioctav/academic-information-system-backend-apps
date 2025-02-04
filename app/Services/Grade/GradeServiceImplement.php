@@ -458,7 +458,7 @@ class GradeServiceImplement extends ServiceApi implements GradeService
       return $this->setMessage('File tidak valid')->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
-      return $this->setCode(500)
+      return $this->setCode(HttpFoundationResponse::HTTP_INTERNAL_SERVER_ERROR)
         ->setError($e->getMessage())
         ->toJson();
     }

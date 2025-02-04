@@ -8,6 +8,7 @@ use App\Enums\Evaluations\RecommendationNote;
 use App\Enums\WhereOperator;
 use App\Helpers\Helper;
 use App\Http\Resources\Academics\StudentResource;
+use App\Imports\StudentImport;
 use App\Repositories\Grade\GradeRepository;
 use App\Repositories\Major\MajorRepository;
 use App\Repositories\Recommendation\RecommendationRepository;
@@ -17,6 +18,8 @@ use App\Repositories\Student\StudentRepository;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 class StudentServiceImplement extends ServiceApi implements StudentService
 {
@@ -449,8 +452,47 @@ class StudentServiceImplement extends ServiceApi implements StudentService
       return $this->setMessage($this->delete_image_message)->toJson();
     } catch (\Exception $e) {
       DB::rollBack();
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setCode(500)
+        ->setError($e->getMessage())
+        ->toJson();
+    }
+  }
+
+  public function handleImport($request)
+  {
+    DB::beginTransaction();
+    try {
+      $payload = $request->validated();
+      $file = $payload['file'];
+
+      $import = new StudentImport();
+      Excel::import($import, $file);
+
+      $response = [
+        'imported' => $import->getImportedCount(),
+        'skipped' => $import->getSkippedCount(),
+        'skipped_records' => $import->getSkippedRecords(),
+        'errors' => $import->getErrors()
+      ];
+
+      DB::commit();
+
+      return $this->setMessage("Berhasil mengimport {$import->getImportedCount()} data mahasiswa. {$import->getSkippedCount()} data dilewati.")
+        ->setData($response)
+        ->toJson();
+    } catch (\Exception $e) {
+      DB::rollBack();
+
+      // Check if there are validation errors
+      if (!empty($import->getErrors())) {
+        return $this->setCode(HttpFoundationResponse::HTTP_UNPROCESSABLE_ENTITY)
+          ->setError($import->getErrors())
+          ->toJson();
+      }
+
+      return $this->setCode(HttpFoundationResponse::HTTP_INTERNAL_SERVER_ERROR)
+        ->setError($e->getMessage())
+        ->toJson();
     }
   }
 }

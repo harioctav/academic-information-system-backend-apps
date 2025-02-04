@@ -70,6 +70,7 @@ class RoleSeeder extends Seeder
       'students.update',
       'students.destroy',
       'students.bulk',
+      'students.import',
 
       // Grades
       'grades.index',

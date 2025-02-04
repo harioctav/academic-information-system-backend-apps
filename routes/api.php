@@ -203,6 +203,7 @@ Route::middleware([
         ->controller(StudentController::class)
         ->group(function () {
           Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+          Route::post('import', 'import')->name('import');
         });
       Route::apiResource('students', StudentController::class);
     });
