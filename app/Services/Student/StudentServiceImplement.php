@@ -8,7 +8,7 @@ use App\Enums\Evaluations\RecommendationNote;
 use App\Enums\WhereOperator;
 use App\Helpers\Helper;
 use App\Http\Resources\Academics\StudentResource;
-use App\Imports\StudentImport;
+use App\Imports\Academics\StudentImport;
 use App\Repositories\Grade\GradeRepository;
 use App\Repositories\Major\MajorRepository;
 use App\Repositories\Recommendation\RecommendationRepository;
