@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 use Laravel\Passport\Client;
@@ -161,25 +162,44 @@ class AuthController extends Controller
    */
   private function getOAuthToken(string $email, string $password, bool $remember = false): array
   {
-    $response = Http::post(config('app.url') . '/oauth/token', [
-      'grant_type' => 'password',
-      'client_id' => config('passport.client_id'),
-      'client_secret' => config('passport.client_secret'),
-      'username' => $email,
-      'password' => $password,
-      'scope' => '',
-      'remember' => $remember
-    ]);
+    try {
+      // Gunakan URL absolut internal (127.0.0.1 atau alamat container) 
+      // untuk mencegah masalah SSL dan routing
+      $response = Http::withoutVerifying()->post(config('app.url') . '/oauth/token', [
+        'grant_type' => 'password',
+        'client_id' => config('passport.client_id'),
+        'client_secret' => config('passport.client_secret'),
+        'username' => $email,
+        'password' => $password,
+        'scope' => '',
+      ]);
 
-    if (!$response->successful()) {
+      if (!$response->successful()) {
+        Log::error('OAuth token error', [
+          'status' => $response->status(),
+          'body' => $response->body()
+        ]);
+
+        return [
+          'error' => 'oauth_error',
+          'message' => $response->json()['message'] ?? 'Failed to get OAuth token',
+          'status' => $response->status()
+        ];
+      }
+
+      return $response->json();
+    } catch (\Exception $e) {
+      Log::error('OAuth exception', [
+        'message' => $e->getMessage(),
+        'trace' => $e->getTraceAsString()
+      ]);
+
       return [
-        'error' => 'oauth_error',
-        'message' => $response->json()['message'] ?? 'Failed to get OAuth token',
-        'status' => $response->status()
+        'error' => 'oauth_exception',
+        'message' => 'Failed to get OAuth token: ' . $e->getMessage(),
+        'status' => 500
       ];
     }
-
-    return $response->json();
   }
 
   /**
@@ -192,14 +212,40 @@ class AuthController extends Controller
   {
     $client = Client::findOrFail(config('passport.client_id'));
 
-    $response = Http::asForm()->post(config('app.url') . '/oauth/token', [
-      'grant_type' => 'refresh_token',
-      'refresh_token' => $refreshToken,
-      'client_id' => $client->id,
-      'client_secret' => $client->secret,
-      'scope' => '',
-    ]);
+    try {
+      $response = Http::withoutVerifying()->post(config('app.url') . '/oauth/token', [
+        'grant_type' => 'refresh_token',
+        'refresh_token' => $refreshToken,
+        'client_id' => $client->id,
+        'client_secret' => $client->secret,
+        'scope' => '',
+      ]);
 
-    return $response->json();
+      if (!$response->successful()) {
+        Log::error('OAuth token error', [
+          'status' => $response->status(),
+          'body' => $response->body()
+        ]);
+
+        return [
+          'error' => 'oauth_error',
+          'message' => $response->json()['message'] ?? 'Failed to get OAuth token',
+          'status' => $response->status()
+        ];
+      }
+
+      return $response->json();
+    } catch (\Exception $e) {
+      Log::error('OAuth exception', [
+        'message' => $e->getMessage(),
+        'trace' => $e->getTraceAsString()
+      ]);
+
+      return [
+        'error' => 'oauth_exception',
+        'message' => 'Failed to get OAuth token: ' . $e->getMessage(),
+        'status' => 500
+      ];
+    }
   }
 }
