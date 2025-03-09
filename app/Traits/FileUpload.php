@@ -44,7 +44,7 @@ trait FileUpload
       }
 
       $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
-      $filePath = $file->storeAs($path, $filename);
+      $filePath = $file->storeAs($path, $filename, 'public');
 
       return [
         'success' => true,
