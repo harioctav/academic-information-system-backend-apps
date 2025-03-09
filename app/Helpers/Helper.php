@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class Helper
 {
   public const All = 'Semua Data';
-  public const DefaultPassword = 'Password@123';
+  public const DefaultPassword = 'P4ssw0rd@123!!';
   public const NewPassword = 'IniP4ssw0rd@!!B4ru';
 
   const LocationHierarchy = [

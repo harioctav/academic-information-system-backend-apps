@@ -15,10 +15,11 @@ return [
   |
   */
 
-  'paths' => ['api/*', 'sanctum/csrf-cookie'],
+  'paths' => ['api/*', 'sanctum/csrf-cookie', 'auth/*'],
   'allowed_methods' => ['*'],
   'allowed_origins' => [
-    config('app.frontend_url')
+    'https://scscendekia.com',
+    env('APP_FRONTEND_URL', 'http://localhost')
   ],
   'allowed_origins_patterns' => [],
   'allowed_headers' => ['*'],
