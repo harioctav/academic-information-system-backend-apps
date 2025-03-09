@@ -2,7 +2,7 @@ FROM php:8.2-fpm
 
 WORKDIR /var/www/html
 
-# Install dependencies
+# Install dependencies in docker
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
