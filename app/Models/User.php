@@ -104,9 +104,19 @@ class User extends Authenticatable
    */
   public function getPhotoUrlAttribute()
   {
-    return $this->photo_profile_path
-      ? Storage::url($this->photo_profile_path)
-      : null;
+    if (!$this->photo_profile_path) {
+      return null;
+    }
+
+    $path = Storage::url($this->photo_profile_path);
+
+    // Cek apakah path sudah berisi URL lengkap
+    if (filter_var($path, FILTER_VALIDATE_URL)) {
+      return $path;
+    }
+
+    // Tambahkan APP_URL secara eksplisit
+    return rtrim(config('app.url'), '/') . $path;
   }
 
   /**
