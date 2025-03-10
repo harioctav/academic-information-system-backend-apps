@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\DB;
 class Helper
 {
   public const All = 'Semua Data';
-  public const DefaultPassword = 'P4ssw0rd@123!!';
-  public const NewPassword = 'IniP4ssw0rd@!!B4ru';
+  public const DefaultPassword = 'ScsC3ndik14@Suk4bumi!!';
+  public const NewPassword = 'ScsC3ndik14@Suk4bumi!!B4ru';
 
   const LocationHierarchy = [
     'village' => [
