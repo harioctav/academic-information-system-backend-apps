@@ -18,13 +18,9 @@ class VillageServiceImplement extends ServiceApi implements VillageService
    * @param string $title
    */
   protected string $title = "Desa atau Kelurahan";
-
   protected string $create_message = "Data Desa atau Kelurahan berhasil dibuat";
-
   protected string $update_message = "Data Desa atau Kelurahan berhasil diperbarui";
-
   protected string $delete_message = "Data Desa atau Kelurahan berhasil dihapus";
-
   protected string $error_message = "Terjadi kesalahan saat melakukan tindakan, silakan periksa log";
 
   /**
@@ -70,8 +66,7 @@ class VillageServiceImplement extends ServiceApi implements VillageService
 
       return $this->setData(new VillageResource($village))->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -90,8 +85,7 @@ class VillageServiceImplement extends ServiceApi implements VillageService
         )
         ->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -110,8 +104,7 @@ class VillageServiceImplement extends ServiceApi implements VillageService
         )
         ->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -121,8 +114,7 @@ class VillageServiceImplement extends ServiceApi implements VillageService
       $village->delete();
       return $this->setMessage($this->delete_message)->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 
@@ -138,14 +130,16 @@ class VillageServiceImplement extends ServiceApi implements VillageService
         ]
       )->get();
 
+      $deleted = 0;
+
       foreach ($villages as $village) {
         $village->delete();
+        $deleted++;
       }
 
-      return $this->setMessage($this->delete_message)->toJson();
+      return $this->setMessage("Berhasil menghapus {$deleted} Data {$this->title}")->toJson();
     } catch (\Exception $e) {
-      $this->exceptionResponse($e);
-      return null;
+      return $this->setMessage($e->getMessage())->toJson();
     }
   }
 }
