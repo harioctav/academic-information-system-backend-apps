@@ -44,6 +44,7 @@ class HomeController extends Controller
     ];
 
     return Response::json([
+      'message' => "Berhasil mengambil data dashboard.",
       'data' => $data
     ], 200);
   }
