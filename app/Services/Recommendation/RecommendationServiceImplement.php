@@ -9,6 +9,7 @@ use App\Enums\WhereOperator;
 use App\Http\Resources\Evaluations\RecommendationResource;
 use App\Notifications\Evaluations\Recommendations\RecommendationCreated;
 use App\Notifications\Evaluations\Recommendations\RecommendationDeleted;
+use App\Notifications\Evaluations\Recommendations\RecommendationUpdated;
 use App\Repositories\Grade\GradeRepository;
 use App\Repositories\Major\MajorRepository;
 use LaravelEasyRepository\ServiceApi;
@@ -202,16 +203,60 @@ class RecommendationServiceImplement extends ServiceApi implements Recommendatio
 
   public function handleUpdate($request, \App\Models\Recommendation $recommendation)
   {
+    DB::beginTransaction();
+
     try {
       /**
        * Retrieves the validated request payload.
        */
       $payload = $request->validated();
 
+      // Simpan note lama sebelum update
+      $oldNote = $recommendation->recommendation_note;
+
       /**
        * Updates the recommendation model with the provided payload data.
        */
       $recommendation->update($payload);
+
+      // Jika note diubah menjadi "submit_ke_web_universitas_terbuka"
+      if (
+        isset($payload['recommendation_note']) &&
+        $payload['recommendation_note'] === RecommendationNote::Submitted->value &&
+        $oldNote !== RecommendationNote::Submitted->value
+      ) {
+
+        // Kirim notifikasi ke tim keuangan
+        $financeTeamUsers = $this->userRepository->getUserByRelations(
+          'roles',
+          'name',
+          [UserRole::FinanceTeam->value]
+        )->get();
+
+        // Cara yang lebih aman untuk mendapatkan label
+        if ($oldNote instanceof RecommendationNote) {
+          $oldNoteLabel = $oldNote->label();
+        } else {
+          $oldNoteEnum = RecommendationNote::tryFrom($oldNote);
+          $oldNoteLabel = $oldNoteEnum ? $oldNoteEnum->label() : $oldNote;
+        }
+
+        $newNoteLabel = RecommendationNote::Submitted->label();
+
+        $notification = new RecommendationUpdated(
+          $recommendation,
+          $recommendation->student,
+          Auth::user(),
+          $oldNoteLabel,
+          $newNoteLabel
+        );
+
+        $financeTeamUsers->each(function ($user) use ($notification) {
+          $user->notify($notification);
+        });
+      }
+
+      DB::commit();
 
       /**
        * Returns the updated recommendation as a JSON response, with a success message set.
@@ -222,6 +267,7 @@ class RecommendationServiceImplement extends ServiceApi implements Recommendatio
         new RecommendationResource($recommendation)
       )->toJson();
     } catch (\Exception $e) {
+      DB::rollBack();
       return $this->setMessage($e->getMessage())->toJson();
     }
   }
