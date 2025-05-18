@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\Settings\UserController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
+require_once __DIR__ . '/api/finance.php';
 // Auth routes with rate limiting
 Route::prefix('auth')
   ->controller(AuthController::class)
