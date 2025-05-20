@@ -3,21 +3,28 @@
 namespace App\Http\Controllers\Api\Finances;
 
 use App\Http\Controllers\Controller;
-use App\Models\Payment;
+use App\Services\Payment\PaymentService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends Controller
 {
+    protected $paymentService;
+
+    public function __construct(PaymentService $paymentService)
+    {
+        $this->paymentService = $paymentService;
+    }
+
     public function index()
     {
-        $payments = Payment::with(['student', 'registration', 'billing'])->latest()->paginate(10);
+        $payments = $this->paymentService->getAllPaginated(10);
         return response()->json($payments);
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'student_id' => 'required|exists:students,id',
             'registration_id' => 'nullable|exists:registrations,id',
             'billing_id' => 'nullable|exists:billings,id',
@@ -29,13 +36,13 @@ class PaymentController extends Controller
             'proof_of_payment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-        $validated['uuid'] = Str::uuid();
-
-        if ($request->hasFile('proof_of_payment')) {
-            $validated['proof_of_payment'] = $request->file('proof_of_payment')->store('payment_proofs', 'public');
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $payment = Payment::create($validated);
+        $request->merge($validator->validated());
+
+        $payment = $this->paymentService->handleStore($request);
 
         return response()->json([
             'message' => 'Payment recorded successfully.',
@@ -45,15 +52,13 @@ class PaymentController extends Controller
 
     public function show($id)
     {
-        $payment = Payment::with(['student', 'registration', 'billing'])->findOrFail($id);
+        $payment = $this->paymentService->showById($id);
         return response()->json($payment);
     }
 
     public function update(Request $request, $id)
     {
-        $payment = Payment::findOrFail($id);
-
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'payment_type' => 'sometimes|string',
             'payment_method' => 'sometimes|string',
             'payment_status' => 'sometimes|string',
@@ -62,11 +67,13 @@ class PaymentController extends Controller
             'proof_of_payment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-        if ($request->hasFile('proof_of_payment')) {
-            $validated['proof_of_payment'] = $request->file('proof_of_payment')->store('payment_proofs', 'public');
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $payment->update($validated);
+        $request->merge($validator->validated());
+
+        $payment = $this->paymentService->handleUpdate($request, $id);
 
         return response()->json([
             'message' => 'Payment updated successfully.',
@@ -76,8 +83,7 @@ class PaymentController extends Controller
 
     public function destroy($id)
     {
-        $payment = Payment::findOrFail($id);
-        $payment->delete();
+        $this->paymentService->handleDelete($id);
 
         return response()->json([
             'message' => 'Payment deleted successfully.',

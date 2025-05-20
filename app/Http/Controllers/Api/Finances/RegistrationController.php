@@ -3,80 +3,79 @@
 namespace App\Http\Controllers\Api\Finances;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
+use App\Http\Requests\Finances\RegistrationRequest;
+use App\Http\Resources\Finances\RegistrationResource;
 use App\Models\Registration;
-use App\Models\Student;
-use App\Models\StudentAddress;
-use Illuminate\Support\Str;
+use App\Services\Registration\RegistrationService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class RegistrationController extends Controller
 {
-    public function index()
+    protected RegistrationService $registrationService;
+
+    public function __construct(RegistrationService $registrationService)
     {
-        $registrations = Registration::with(['student', 'address'])->latest()->paginate(10);
-        return response()->json($registrations);
+        $this->registrationService = $registrationService;
     }
 
-    public function store(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'student_id' => 'required|exists:students,id',
-            'address_id' => 'required|exists:student_addresses,id',
-            'student_category' => 'required|string',
-            'payment_method' => 'required|string',
-            'program_type' => 'required|string',
-            'tutorial_service' => 'required|boolean',
-            'semester' => 'required|string',
-            'interested_spp' => 'required|boolean',
-        ]);
+        $perPage = $request->input('per_page', 10);
+        $query = Registration::with(['student', 'address'])->latest();
+        $registrations = $perPage == -1 ? $query->get() : $query->paginate($perPage);
 
-        $validated['uuid'] = Str::uuid();
+        return response()->json(
+            RegistrationResource::collection($registrations)
+        );
+    }
 
-        $registration = Registration::create($validated);
+    public function store(RegistrationRequest $request): JsonResponse
+    {
+        $registration = $this->registrationService->handleStore($request);
 
         return response()->json([
             'message' => 'Registration created successfully.',
-            'data' => $registration
+            'data' => new RegistrationResource($registration)
         ], 201);
     }
 
-    public function show($id)
+    public function show(Registration $registration): RegistrationResource
     {
-        $registration = Registration::with(['student', 'address'])->findOrFail($id);
-        return response()->json($registration);
+        $registration->load(['student', 'address']);
+        return new RegistrationResource($registration);
     }
 
-    public function update(Request $request, $id)
+    public function update(RegistrationRequest $request, Registration $registration): JsonResponse
     {
-        $registration = Registration::findOrFail($id);
-
-        $validated = $request->validate([
-            'student_id' => 'sometimes|exists:students,id',
-            'address_id' => 'sometimes|exists:student_addresses,id',
-            'student_category' => 'sometimes|string',
-            'payment_method' => 'sometimes|string',
-            'program_type' => 'sometimes|string',
-            'tutorial_service' => 'sometimes|boolean',
-            'semester' => 'sometimes|string',
-            'interested_spp' => 'sometimes|boolean',
-        ]);
-
-        $registration->update($validated);
+        $registration = $this->registrationService->handleUpdate($request, $registration);
 
         return response()->json([
             'message' => 'Registration updated successfully.',
-            'data' => $registration
+            'data' => new RegistrationResource($registration)
         ]);
     }
 
-    public function destroy($id)
+    public function destroy(Registration $registration): JsonResponse
     {
-        $registration = Registration::findOrFail($id);
-        $registration->delete();
+        $this->registrationService->handleDelete($registration);
 
         return response()->json([
             'message' => 'Registration deleted successfully.'
+        ]);
+    }
+
+    public function bulkDestroy(Request $request): JsonResponse
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:registrations,uuid',
+        ]);
+
+        $this->registrationService->handleBulkDelete($request->ids);
+
+        return response()->json([
+            'message' => 'Registrations deleted successfully.'
         ]);
     }
 }
