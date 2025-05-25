@@ -6,13 +6,30 @@ use App\Http\Controllers\Api\Finances\BillingController;
 use App\Http\Controllers\Api\Finances\InvoiceController;
 use App\Http\Controllers\Api\Finances\PaymentController;
 
-Route::prefix('finances')->middleware([
-    'auth:api',
-    'permission',
-    'session.check',
-    'is.in-active.user'
-])->group(function () {
+// Public route untuk cek UUID (tanpa auth)
+Route::prefix('finances/registrations')
+    ->name('public.registrations.')
+    ->controller(RegistrationController::class)
+    ->group(function () {
+        // Cek apakah batch dengan UUID masih aktif
+        Route::get('check-batch/{uuid}', 'checkRegistrationBatch')
+            ->name('checkBatch');
 
+        // Ambil data mahasiswa berdasarkan NIM
+        Route::get('student/{nim}', 'getMahasiswaByNim')
+            ->name('getMahasiswaByNim');
+
+        // Kirim registrasi dari mahasiswa
+        Route::post('{uuid}', 'postRegistration')
+            ->name('submitRegistration');
+    });
+
+Route::prefix('finances')->middleware([
+    // 'auth:api',
+    // 'permission',
+    // 'session.check',
+    // 'is.in-active.user'
+])->group(function () {
 
     // Registrations (biaya pendaftaran UKT)
     Route::prefix('registrations')
@@ -21,9 +38,9 @@ Route::prefix('finances')->middleware([
         ->group(function () {
             Route::get('/', 'index')->name('index');
             Route::post('/', 'store')->name('store');
-            Route::get('{id}', 'show')->name('show');
-            Route::put('{id}', 'update')->name('update');
-            Route::delete('{id}', 'destroy')->name('destroy');
+            Route::get('{registration}', 'show')->name('show');
+            Route::put('{registration}', 'update')->name('update');
+            Route::delete('{registration}', 'destroy')->name('destroy');
         });
 
     // Billings

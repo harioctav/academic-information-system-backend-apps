@@ -4,7 +4,7 @@ namespace App\Http\Requests\Finances;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegistrationRequest extends FormRequest
+class RegistrationMhsRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -16,8 +16,8 @@ class RegistrationRequest extends FormRequest
         $isUpdate = $this->method() !== 'POST';
 
         return [
-            'registration_batch_id' => ($isUpdate ? 'sometimes' : 'required') . '|exists:registration_batches,id',
-            'student_id' => ($isUpdate ? 'sometimes' : 'required') . '|exists:students,id',
+            'registration_batch_uuid' => ($isUpdate ? 'sometimes' : 'required') . '|exists:registration_batches,uuid',
+            'nim' => ($isUpdate ? 'sometimes' : 'required') . '|exists:students,nim',
             'shipping_address' => ($isUpdate ? 'sometimes' : 'required') . '|string',
             'student_category' => ($isUpdate ? 'sometimes' : 'required') . '|string',
             'payment_method' => ($isUpdate ? 'sometimes' : 'required') . '|string',
@@ -25,6 +25,7 @@ class RegistrationRequest extends FormRequest
             'tutorial_service' => ($isUpdate ? 'sometimes' : 'required') . '|boolean',
             'semester' => ($isUpdate ? 'sometimes' : 'required') . '|string',
             'interested_spp' => ($isUpdate ? 'sometimes' : 'required') . '|boolean',
+            'is_update' => 'sometimes|boolean',
         ];
     }
 }

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 use App\Http\Resources\Academics\StudentResource;
-use App\Http\Resources\Academics\StudentAddressResource;
+use App\Http\Resources\Finances\RegistrationBatchResource;
 
 class RegistrationResource extends JsonResource
 {
@@ -16,8 +16,10 @@ class RegistrationResource extends JsonResource
             'uuid' => $this->uuid,
             'student_id' => $this->student_id,
             'student' => new StudentResource($this->whenLoaded('student')),
-            'address_id' => $this->address_id,
-            'address' => new StudentAddressResource($this->whenLoaded('address')),
+            'registration_batch_id' => $this->registration_batch_id,
+            'registration_batch' => new RegistrationBatchResource($this->whenLoaded('registrationBatch')),
+            'registration_number' => $this->registration_number,
+            'shipping_address' => $this->shipping_address,
             'student_category' => $this->student_category,
             'payment_method' => $this->payment_method,
             'program_type' => $this->program_type,
