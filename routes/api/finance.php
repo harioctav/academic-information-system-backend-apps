@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Finances\RegistrationController;
+use App\Http\Controllers\Api\Finances\RegistrationBatchController;
 use App\Http\Controllers\Api\Finances\BillingController;
 use App\Http\Controllers\Api\Finances\InvoiceController;
 use App\Http\Controllers\Api\Finances\PaymentController;
@@ -31,7 +32,21 @@ Route::prefix('finances')->middleware([
     // 'is.in-active.user'
 ])->group(function () {
 
-    // Registrations (biaya pendaftaran UKT)
+    // Batch Registrations
+    Route::prefix('registration-batches')
+        ->name('registration-batches.')
+        ->controller(RegistrationBatchController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'store')->name('store');
+            Route::get('{registration_batch}', 'show')->name('show');
+            Route::put('{registration_batch}', 'update')->name('update');
+            Route::delete('{registration_batch}', 'destroy')->name('destroy');
+        });
+
+
+
+    // Registrations
     Route::prefix('registrations')
         ->name('registrations.')
         ->controller(RegistrationController::class)

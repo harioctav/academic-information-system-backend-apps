@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasUuid;
 
 class RegistrationBatch extends Model
 {
     use HasFactory;
+    use HasUuid;
 
     protected $fillable = [
         'name',
@@ -21,6 +23,11 @@ class RegistrationBatch extends Model
         'start_date' => 'date',
         'end_date' => 'date',
     ];
+
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 
     public function registrations()
     {

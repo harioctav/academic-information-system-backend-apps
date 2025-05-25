@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\RegistrationBatch;
+namespace App\Http\Requests\Finances;
 
 use Illuminate\Foundation\Http\FormRequest;
 

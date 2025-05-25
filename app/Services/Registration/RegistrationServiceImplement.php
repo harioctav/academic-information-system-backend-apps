@@ -3,11 +3,11 @@
 namespace App\Services\Registration;
 
 use App\Enums\WhereOperator;
-use App\Models\Registration;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Registration\RegistrationRepository;
 use App\Http\Resources\Finances\RegistrationResource;
 use App\Models\Student;
+use App\Models\Registration;
 use App\Models\RegistrationBatch;
 use Illuminate\Support\Str;
 

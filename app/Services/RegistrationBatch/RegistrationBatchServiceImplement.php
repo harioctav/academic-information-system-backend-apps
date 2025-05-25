@@ -2,37 +2,79 @@
 
 namespace App\Services\RegistrationBatch;
 
-use Illuminate\Support\Str;
+use LaravelEasyRepository\ServiceApi;
 use App\Repositories\RegistrationBatch\RegistrationBatchRepository;
+use App\Http\Resources\Finances\RegistrationBatchResource;
+use App\Models\RegistrationBatch;
+use Illuminate\Support\Str;
 
-class RegistrationBatchServiceImplement implements RegistrationBatchService
+class RegistrationBatchServiceImplement extends ServiceApi implements RegistrationBatchService
 {
-    protected $repository;
+    protected string $title = "Pendaftaran";
 
-    public function __construct(RegistrationBatchRepository $repository)
+    protected string $create_message = "Data Pendaftaran berhasil dibuat";
+    protected string $update_message = "Data Pendaftaran berhasil diperbarui";
+    protected string $delete_message = "Data Pendaftaran berhasil dihapus";
+
+    protected RegistrationBatchRepository $mainRepository;
+
+    public function __construct(RegistrationBatchRepository $mainRepository)
     {
-        $this->repository = $repository;
+        $this->mainRepository = $mainRepository;
     }
 
-    public function store(array $data)
+    public function query()
     {
-        $data['uuid'] = Str::uuid();
-        return $this->repository->create($data);
+        return $this->mainRepository->query();
     }
 
-    public function updateByUuid(string $uuid, array $data)
+    public function getWhere(
+        $wheres = [],
+        $columns = '*',
+        $comparisons = '=',
+        $orderBy = null,
+        $orderByType = null
+    ) {
+        return $this->mainRepository->getWhere(
+            wheres: $wheres,
+            columns: $columns,
+            comparisons: $comparisons,
+            orderBy: $orderBy,
+            orderByType: $orderByType
+        );
+    }
+
+    public function handleStore($request)
     {
-        $batch = $this->repository->findByUuid($uuid);
-        if ($batch) {
-            $batch->update($data);
-            return $batch;
+        try {
+            $payload = $request->validated();
+            $result = $this->mainRepository->create($payload);
+
+            return $this->setMessage($this->create_message)
+                ->setData(
+                    new RegistrationBatchResource($result)
+                )
+                ->toJson();
+        } catch (\Exception $e) {
+            return $this->setMessage($e->getMessage())->toJson();
         }
-        return null;
     }
 
-    public function deleteByUuid(string $uuid)
+    public function handleUpdate($request, RegistrationBatch $registrationBatch): RegistrationBatch
     {
-        $batch = $this->repository->findByUuid($uuid);
-        return $batch ? $batch->delete() : false;
+        $registrationBatch->update($request->validated());
+
+        return $registrationBatch;
+    }
+
+    public function handleDelete(RegistrationBatch $registrationBatch)
+    {
+        try {
+            $registrationBatch->delete();
+
+            return $this->setMessage($this->delete_message)->toJson();
+        } catch (\Exception $e) {
+            return $this->setMessage($e->getMessage())->toJson();
+        }
     }
 }

@@ -2,9 +2,20 @@
 
 namespace App\Services\RegistrationBatch;
 
-interface RegistrationBatchService
+use App\Models\RegistrationBatch;
+use LaravelEasyRepository\BaseService;
+
+interface RegistrationBatchService extends BaseService
 {
-    public function store(array $data);
-    public function updateByUuid(string $uuid, array $data);
-    public function deleteByUuid(string $uuid);
+  public function query();
+  public function getWhere(
+    $wheres = [],
+    $columns = '*',
+    $comparisons = '=',
+    $orderBy = null,
+    $orderByType = null
+  );
+  public function handleStore($request);
+  public function handleUpdate($request, RegistrationBatch $registrationBatch);
+  public function handleDelete(RegistrationBatch $registrationBatch);
 }

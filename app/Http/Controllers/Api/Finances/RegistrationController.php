@@ -109,7 +109,7 @@ class RegistrationController extends Controller
         return $this->registrationService->handleRegistration($request);
     }
 
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
         $query = SearchHelper::applySearchQuery(
             query: Registration::with(['student', 'registrationBatch']),
@@ -136,10 +136,8 @@ class RegistrationController extends Controller
         $perPage = $request->input('per_page', 10);
         $result = $query->latest();
 
-        return response()->json(
-            RegistrationResource::collection(
-                $perPage == -1 ? $result->get() : $result->paginate($perPage)
-            )
+        return RegistrationResource::collection(
+            $perPage == -1 ? $result->get() : $result->paginate($perPage)
         );
     }
 

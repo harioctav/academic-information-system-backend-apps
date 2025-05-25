@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Registration;
 
-use App\Models\Registration; // ganti sesuai model kamu
+use App\Models\Registration;
 use LaravelEasyRepository\Implementations\Eloquent;
 use Illuminate\Support\Facades\DB;
 

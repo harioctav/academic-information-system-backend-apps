@@ -2,7 +2,7 @@
 
 namespace App\Repositories\RegistrationBatch;
 
-use App\Models\RegistrationBatch; // ganti sesuai model kamu
+use App\Models\RegistrationBatch;
 use LaravelEasyRepository\Implementations\Eloquent;
 use Illuminate\Support\Facades\DB;
 
@@ -18,11 +18,6 @@ class RegistrationBatchRepositoryImplement extends Eloquent implements Registrat
     public function __construct(RegistrationBatch $model)
     {
         $this->model = $model;
-    }
-
-    public function findByUuid(string $uuid)
-    {
-        return $this->model->where('uuid', $uuid)->first();
     }
 
     public function query()
