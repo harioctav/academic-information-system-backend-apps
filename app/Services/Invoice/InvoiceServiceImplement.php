@@ -3,13 +3,13 @@
 namespace App\Services\Invoice;
 
 use App\Models\Invoice;
-use App\Models\Student;
+use Illuminate\Support\Str;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Invoice\InvoiceRepository;
+use App\Services\Invoice\InvoiceService;
 
 class InvoiceServiceImplement extends ServiceApi implements InvoiceService
 {
-    protected string $title = "Invoice";
     protected InvoiceRepository $mainRepository;
 
     public function __construct(InvoiceRepository $mainRepository)
@@ -22,59 +22,46 @@ class InvoiceServiceImplement extends ServiceApi implements InvoiceService
         return $this->mainRepository->query();
     }
 
-    public function getWhere($wheres = [], $columns = '*', $comparisons = '=', $orderBy = null, $orderByType = null)
+    public function getWhere(array $wheres = [], $columns = '*', $comparisons = '=', $orderBy = null, $orderByType = null)
     {
         return $this->mainRepository->getWhere($wheres, $columns, $comparisons, $orderBy, $orderByType);
     }
 
-    public function handleStore($request)
+    public function handleStore(array $data): Invoice
     {
-        try {
-            $student = Student::where('nim', $request->nim)->first();
+        $data['uuid'] = Str::uuid()->toString();
 
-            if (!$student) {
-                return $this->setMessage('Student with given NIM not found.')->setStatus(404)->toJson();
-            }
+        // Buat invoice utama
+        $invoice = $this->mainRepository->create($data);
 
-            $total_fee = ($request->bank_fee ?? 0) + ($request->subscription_fee ?? 0);
-
-            $invoice = $this->mainRepository->create([
-                'student_id' => $student->id,
-                'payment_method' => $request->payment_method,
-                'bank_fee' => $request->bank_fee ?? 0,
-                'subscription_fee' => $request->subscription_fee ?? 0,
-                'subscription_code' => $request->subscription_code,
-                'total_fee' => $total_fee,
-                'billing_code' => $request->billing_code,
-                'payment_status' => 'unpaid',
-            ]);
-
-            return $this->setMessage("Invoice berhasil dibuat")->setData($invoice)->toJson();
-        } catch (\Exception $e) {
-            return $this->setMessage($e->getMessage())->toJson();
+        // Tambahkan detail invoice jika ada
+        if (!empty($data['details']) && is_array($data['details'])) {
+            $invoice->details()->createMany($data['details']);
         }
+
+        return $invoice->load(['student', 'billing', 'details']);
     }
 
-    public function handleUpdate($request, Invoice $invoice)
+    public function handleUpdate(array $data, Invoice $invoice): Invoice
     {
-        try {
-            $invoice->update([
-                'payment_status' => $request->payment_status,
-            ]);
+        // Update data invoice
+        $invoice->update($data);
 
-            return $this->setMessage("Invoice berhasil diperbarui")->setData($invoice)->toJson();
-        } catch (\Exception $e) {
-            return $this->setMessage($e->getMessage())->toJson();
+        // Hapus semua detail sebelumnya, lalu insert ulang
+        if (isset($data['details']) && is_array($data['details'])) {
+            $invoice->details()->delete();
+            $invoice->details()->createMany($data['details']);
         }
+
+        return $invoice->load(['student', 'billing', 'details']);
     }
 
-    public function handleShow($id)
+    public function handleShow(string $uuid): Invoice
     {
-        try {
-            $invoice = Invoice::with('student')->findOrFail($id);
-            return $this->setMessage("Detail invoice ditemukan")->setData($invoice)->toJson();
-        } catch (\Exception $e) {
-            return $this->setMessage($e->getMessage())->setStatus(404)->toJson();
-        }
+        return $this->mainRepository
+            ->query()
+            ->where('uuid', $uuid)
+            ->with(['student', 'billing', 'details'])
+            ->firstOrFail();
     }
 }

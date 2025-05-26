@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace Database\Seeders;
 
@@ -28,8 +28,8 @@ class RegistrationSeeder extends Seeder
                 'registration_number'   => 'REG-2024-' . str_pad($i + 1, 4, '0', STR_PAD_LEFT),
                 'student_id'            => $student->id,
                 'shipping_address'      => $address ?? null,
-                'student_category'      => 'new_member',
-                'payment_method'        => 'sipas',
+                'student_category'      => 'maba', // maba = mahasiswa baru
+                'payment_system'        => 'sipas', // fix di sini
                 'program_type'          => 'spp',
                 'tutorial_service'      => true,
                 'semester'              => '1',

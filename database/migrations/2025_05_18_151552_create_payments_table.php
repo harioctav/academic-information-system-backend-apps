@@ -12,14 +12,18 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->index();
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->foreignId('registration_id')->nullable()->constrained('registrations')->onDelete('set null');
             $table->foreignId('billing_id')->nullable()->constrained('billings')->onDelete('set null');
-            $table->string('payment_type'); // e.g. tuition, spp, etc.
-            $table->string('payment_method'); // e.g. bank transfer, cash
-            $table->string('payment_status')->default('pending');
-            $table->date('payment_date');
-            $table->decimal('amount_paid', 12, 2);
-            $table->string('proof_of_payment')->nullable(); // path to file
+
+            $table->enum('payment_method', ['transfer', 'cash'])->default('transfer');
+            $table->enum('payment_plan', ['cicil', 'lunas'])->default('lunas');
+
+            $table->date('payment_date')->nullable();
+            $table->decimal('amount_paid', 12, 2)->default(0); // tambah default
+
+            $table->string('transfer_to')->nullable(); // e.g. BCA a.n Yayasan Pendidikan
+            $table->string('proof_of_payment')->nullable(); // optional file path
+            $table->enum('payment_status', ['pending', 'confirmed', 'rejected'])->default('pending');
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }

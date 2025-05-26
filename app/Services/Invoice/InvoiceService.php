@@ -9,13 +9,13 @@ interface InvoiceService extends BaseService
 {
     public function query();
     public function getWhere(
-        $wheres = [],
+        array $wheres = [],
         $columns = '*',
         $comparisons = '=',
         $orderBy = null,
         $orderByType = null
     );
-    public function handleStore($request);
-    public function handleUpdate($request, Invoice $invoice);
-    public function handleShow($id);
+    public function handleStore(array $data): Invoice;
+    public function handleUpdate(array $data, Invoice $invoice): Invoice;
+    public function handleShow(string $uuid): Invoice;
 }

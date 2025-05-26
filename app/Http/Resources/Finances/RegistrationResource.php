@@ -21,7 +21,7 @@ class RegistrationResource extends JsonResource
             'registration_number' => $this->registration_number,
             'shipping_address' => $this->shipping_address,
             'student_category' => $this->student_category,
-            'payment_method' => $this->payment_method,
+            'payment_system' => $this->payment_system,
             'program_type' => $this->program_type,
             'tutorial_service' => $this->tutorial_service,
             'semester' => $this->semester,

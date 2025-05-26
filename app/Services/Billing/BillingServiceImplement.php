@@ -46,6 +46,27 @@ class BillingServiceImplement extends ServiceApi implements BillingService
             $data = $request->validated();
             $data['uuid'] = Str::uuid();
 
+            // Format tanggal: yyyyMMdd
+            $datePrefix = now()->format('Ymd'); // Contoh: 20250326
+
+            // Cari billing terakhir hari ini
+            $lastBilling = $this->mainRepository->query()
+                ->whereDate('created_at', now()->toDateString())
+                ->orderByDesc('billing_code')
+                ->first();
+
+            // Ambil nomor terakhir jika ada
+            $lastNumber = 0;
+            if ($lastBilling && preg_match('/BILL-' . $datePrefix . '(\d+)/', $lastBilling->billing_code, $matches)) {
+                $lastNumber = (int) $matches[1];
+            }
+
+            // Tambahkan 1, dan format jadi 4 digit (misal: 0001)
+            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+
+            // Gabungkan jadi billing code akhir
+            $data['billing_code'] = 'BILL-' . $datePrefix . $newNumber;
+
             $billing = $this->mainRepository->create($data);
 
             return $this->setMessage($this->create_message)

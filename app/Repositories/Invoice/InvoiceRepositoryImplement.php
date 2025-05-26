@@ -14,6 +14,11 @@ class InvoiceRepositoryImplement extends Eloquent implements InvoiceRepository
         $this->model = $model;
     }
 
+    public function query()
+    {
+        return $this->model->newQuery();
+    }
+
     public function getWhere(
         $wheres = [],
         $columns = '*',

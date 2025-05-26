@@ -2,11 +2,13 @@
 
 namespace App\Services\Payment;
 
+use App\Models\Payment;
 use Illuminate\Support\Str;
-use LaravelEasyRepository\Service;
+use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Payment\PaymentRepository;
+use Illuminate\Support\Facades\Storage;
 
-class PaymentServiceImplement extends Service implements PaymentService
+class PaymentServiceImplement extends ServiceApi implements PaymentService
 {
     protected PaymentRepository $mainRepository;
 
@@ -15,46 +17,54 @@ class PaymentServiceImplement extends Service implements PaymentService
         $this->mainRepository = $mainRepository;
     }
 
-    public function getAllPaginated($perPage = 10)
+    public function query()
     {
-        return $this->mainRepository->getWithRelationsPaginated($perPage);
+        return $this->mainRepository->query();
     }
 
-    public function showById($id)
+    public function handleStore(array $data): Payment
     {
-        return $this->mainRepository->findWithRelations($id);
-    }
+        $data['uuid'] = Str::uuid()->toString();
 
-    public function handleStore($request)
-    {
-        $validated = $request->validated();
-        $validated['uuid'] = Str::uuid();
-
-        if ($request->hasFile('proof_of_payment')) {
-            $validated['proof_of_payment'] = $request->file('proof_of_payment')->store('payment_proofs', 'public');
+        if (isset($data['proof_of_payment'])) {
+            $data['proof_of_payment'] = $this->handleBase64Upload($data['proof_of_payment']);
         }
 
-        return $this->mainRepository->create($validated);
+        return Payment::create($data)->load(['student', 'billing']);
     }
 
-    public function handleUpdate($request, $id)
+    public function handleUpdate(array $data, string $uuid): Payment
     {
-        $payment = $this->mainRepository->find($id);
+        $payment = Payment::where('uuid', $uuid)->firstOrFail();
 
-        $validated = $request->validated();
-
-        if ($request->hasFile('proof_of_payment')) {
-            $validated['proof_of_payment'] = $request->file('proof_of_payment')->store('payment_proofs', 'public');
+        if (isset($data['proof_of_payment'])) {
+            $data['proof_of_payment'] = $this->handleBase64Upload($data['proof_of_payment']);
         }
 
-        $payment->update($validated);
-
-        return $payment;
+        $payment->update($data);
+        return $payment->load(['student', 'billing']);
     }
 
-    public function handleDelete($id)
+    public function handleShow(string $uuid): Payment
     {
-        $payment = $this->mainRepository->find($id);
-        return $payment->delete();
+        return Payment::where('uuid', $uuid)->with(['student', 'billing'])->firstOrFail();
+    }
+
+    protected function handleBase64Upload(?string $base64, string $directory = 'payments'): ?string
+    {
+        if (!$base64 || !preg_match('/^data:image\/(\w+);base64,/', $base64, $type)) {
+            return null;
+        }
+
+        $data = substr($base64, strpos($base64, ',') + 1);
+        $data = base64_decode($data);
+
+        $extension = strtolower($type[1]);
+        $filename = $directory . '/' . uniqid() . '.' . $extension;
+
+
+        Storage::disk('public')->put($filename, $data);
+
+        return $filename;
     }
 }

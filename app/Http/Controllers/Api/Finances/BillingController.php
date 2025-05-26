@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Finances;
 
 use App\Http\Controllers\Controller;
+use App\Helpers\SearchHelper;
 use App\Http\Requests\Finances\BillingRequest;
 use App\Http\Resources\Finances\BillingResource;
 use App\Models\Billing;
@@ -21,8 +22,30 @@ class BillingController extends Controller
 
     public function index(Request $request)
     {
-        $billings = $this->billingService->query()->latest()->paginate($request->input('per_page', 10));
-        return BillingResource::collection($billings);
+        $query = SearchHelper::applySearchQuery(
+            query: Billing::with(['student', 'registration']),
+            request: $request,
+            searchableFields: [
+                'student.name',
+                'student.nim',
+            ],
+            sortableFields: [
+                'created_at',
+                'updated_at',
+            ],
+            filterFields: [
+                'student_category',
+                'payment_system',
+                'program_type',
+                'semester',
+            ]
+        );
+        $perPage = $request->input('per_page', 10);
+        $result = $query->latest();
+
+        return BillingResource::collection(
+            $perPage == -1 ? $result->get() : $result->paginate($perPage)
+        );
     }
 
     public function store(BillingRequest $request): JsonResponse
@@ -32,7 +55,8 @@ class BillingController extends Controller
 
     public function show(Billing $billing): BillingResource
     {
-        return new BillingResource($billing->load('student'));
+        $billing->load(['student']);
+        return new BillingResource($billing);
     }
 
     public function update(BillingRequest $request, Billing $billing): JsonResponse

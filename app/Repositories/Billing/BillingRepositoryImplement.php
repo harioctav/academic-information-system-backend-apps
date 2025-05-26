@@ -14,16 +14,11 @@ class BillingRepositoryImplement extends Eloquent implements BillingRepository
         $this->model = $model;
     }
 
-    /**
-     * Get data with dynamic where clause
-     *
-     * @param array $wheres
-     * @param mixed $columns
-     * @param string|array $comparisons
-     * @param string|null $orderBy
-     * @param string|null $orderByType
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
+    public function query()
+    {
+        return $this->model->newQuery();
+    }
+
     public function getWhere(
         $wheres = [],
         $columns = '*',

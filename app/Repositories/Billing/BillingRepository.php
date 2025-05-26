@@ -6,6 +6,7 @@ use LaravelEasyRepository\Repository;
 
 interface BillingRepository extends Repository
 {
+    public function query();
     public function getWhere(
         $wheres = [],
         $columns = '*',

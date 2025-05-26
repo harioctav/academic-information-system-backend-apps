@@ -13,12 +13,12 @@ class Registration extends Model
 
     protected $fillable = [
         'uuid',
-        'registration_batch_id',
         'registration_number',
+        'registration_batch_id',
         'student_id',
         'shipping_address',
         'student_category',
-        'payment_method',
+        'payment_system',
         'program_type',
         'tutorial_service',
         'semester',

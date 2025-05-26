@@ -2,13 +2,13 @@
 
 namespace App\Services\Payment;
 
+use App\Models\Payment;
 use LaravelEasyRepository\BaseService;
 
 interface PaymentService extends BaseService
 {
-    public function getAllPaginated($perPage);
-    public function showById($id);
-    public function handleStore($request);
-    public function handleUpdate($request, $id);
-    public function handleDelete($id);
+    public function query();
+    public function handleStore(array $data): Payment;
+    public function handleShow(string $uuid): Payment;
+    public function handleUpdate(array $data, string $uuid): Payment;
 }

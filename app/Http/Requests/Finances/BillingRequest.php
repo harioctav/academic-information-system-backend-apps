@@ -12,13 +12,16 @@ class BillingRequest extends FormRequest
 
         return [
             'student_id' => 'required|exists:students,id',
-            'billing_code' => 'required|string|unique:billings,billing_code' . ($billingId ? ',' . $billingId : ''),
+            'registration_id' => 'required|exists:registrations,id',
+            'registration_period' => 'nullable|string',
+            'billing_code' => 'nullable|string',
+            'billing_status' => 'nullable|string',
             'bank_fee' => 'required|numeric',
             'salut_member_fee' => 'required|numeric',
             'semester_fee' => 'required|numeric',
             'total_fee' => 'required|numeric',
-            'payment_method' => 'required|string',
-            'payment_status' => 'required|string',
+            'settlement_status' => 'required|string',
+            'settlement_date' => 'nullable|date',
             'note' => 'nullable|string',
         ];
     }

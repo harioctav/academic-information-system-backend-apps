@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\Finances\RegistrationBatchController;
 use App\Http\Controllers\Api\Finances\BillingController;
 use App\Http\Controllers\Api\Finances\InvoiceController;
 use App\Http\Controllers\Api\Finances\PaymentController;
+use App\Models\Payment;
+
 
 // Public route untuk cek UUID (tanpa auth)
 Route::prefix('finances/registrations')
@@ -21,6 +23,14 @@ Route::prefix('finances/registrations')
             ->name('getMahasiswaByNim');
 
         // Kirim registrasi dari mahasiswa
+        Route::post('{uuid}', 'postRegistration')
+            ->name('submitRegistration');
+    });
+
+Route::prefix('finances/payments')
+    ->name('public.payments.')
+    ->controller(PaymentController::class)
+    ->group(function () {
         Route::post('{uuid}', 'postRegistration')
             ->name('submitRegistration');
     });
@@ -65,9 +75,9 @@ Route::prefix('finances')->middleware([
         ->group(function () {
             Route::get('/', 'index')->name('index');
             Route::post('/', 'store')->name('store');
-            Route::get('{id}', 'show')->name('show');
-            Route::put('{id}', 'update')->name('update');
-            Route::delete('{id}', 'destroy')->name('destroy');
+            Route::get('{billing}', 'show')->name('show');
+            Route::put('{billing}', 'update')->name('update');
+            Route::delete('{billing}', 'destroy')->name('destroy');
         });
 
 

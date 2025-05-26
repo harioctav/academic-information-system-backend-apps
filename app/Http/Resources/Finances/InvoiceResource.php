@@ -2,25 +2,29 @@
 
 namespace App\Http\Resources\Finances;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class InvoiceResource extends JsonResource
 {
-    public function toArray(Request $request): array
+    public function toArray($request): array
     {
         return [
-            'id' => $this->id,
-            'nim' => $this->student?->nim,
-            'student_name' => $this->student?->name,
-            'payment_method' => $this->payment_method,
-            'bank_fee' => $this->bank_fee,
-            'subscription_fee' => $this->subscription_fee,
-            'subscription_code' => $this->subscription_code,
-            'billing_code' => $this->billing_code,
+            'uuid' => $this->uuid,
+            'student' => $this->student->only(['id', 'name', 'nim']),
+            'billing' => $this->billing->only(['uuid', 'billing_code']),
+            'total_amount' => $this->total_amount,
+            'due_date' => $this->due_date,
             'payment_status' => $this->payment_status,
-            'created_at' => $this->created_at?->toDateTimeString(),
-            'updated_at' => $this->updated_at?->toDateTimeString(),
+            'payment_method' => $this->payment_method,
+            'payment_type' => $this->payment_type,
+            'note' => $this->note,
+            'details' => $this->details->map(function ($item) {
+                return [
+                    'item_name' => $item->item_name,
+                    'item_type' => $item->item_type,
+                    'amount' => $item->amount,
+                ];
+            }),
         ];
     }
 }

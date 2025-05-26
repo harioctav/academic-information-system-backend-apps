@@ -17,11 +17,10 @@ return new class extends Migration
             $table->string('registration_number')->unique()->nullable();
             $table->foreignId('registration_batch_id')->constrained('registration_batches')->onDelete('cascade');
             $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
-            // $table->foreignId('address_id')->constrained('student_addresses')->onDelete('cascade');
             $table->string('shipping_address');
-            $table->string('student_category');
-            $table->string('payment_method');
-            $table->string('program_type');
+            $table->string('student_category'); // maba,mala,rpl
+            $table->string('payment_system'); // sipas, non-sipas
+            $table->string('program_type'); // spp, non-spp
             $table->boolean('tutorial_service')->default(false);
             $table->string('semester');
             $table->boolean('interested_spp')->default(false);

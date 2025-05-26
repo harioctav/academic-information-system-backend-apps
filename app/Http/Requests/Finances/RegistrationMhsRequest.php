@@ -20,7 +20,7 @@ class RegistrationMhsRequest extends FormRequest
             'nim' => ($isUpdate ? 'sometimes' : 'required') . '|exists:students,nim',
             'shipping_address' => ($isUpdate ? 'sometimes' : 'required') . '|string',
             'student_category' => ($isUpdate ? 'sometimes' : 'required') . '|string',
-            'payment_method' => ($isUpdate ? 'sometimes' : 'required') . '|string',
+            'payment_system' => ($isUpdate ? 'sometimes' : 'required') . '|string',
             'program_type' => ($isUpdate ? 'sometimes' : 'required') . '|string',
             'tutorial_service' => ($isUpdate ? 'sometimes' : 'required') . '|boolean',
             'semester' => ($isUpdate ? 'sometimes' : 'required') . '|string',

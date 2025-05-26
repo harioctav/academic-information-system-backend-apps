@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
@@ -12,27 +13,23 @@ class Payment extends Model
     protected $fillable = [
         'uuid',
         'student_id',
-        'registration_id',
         'billing_id',
-        'payment_type',
         'payment_method',
-        'payment_status',
+        'payment_plan',
         'payment_date',
         'amount_paid',
+        'transfer_to',
         'proof_of_payment',
+        'payment_status',
+        'note'
     ];
 
-    public function student()
+    public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
     }
 
-    public function registration()
-    {
-        return $this->belongsTo(Registration::class);
-    }
-
-    public function billing()
+    public function billing(): BelongsTo
     {
         return $this->belongsTo(Billing::class);
     }

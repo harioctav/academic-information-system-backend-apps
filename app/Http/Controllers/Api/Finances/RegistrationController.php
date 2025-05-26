@@ -127,7 +127,7 @@ class RegistrationController extends Controller
             ],
             filterFields: [
                 'student_category',
-                'payment_method',
+                'payment_system',
                 'program_type',
                 'semester',
             ]
@@ -140,7 +140,6 @@ class RegistrationController extends Controller
             $perPage == -1 ? $result->get() : $result->paginate($perPage)
         );
     }
-
 
     public function store(RegistrationRequest $request): JsonResponse
     {
