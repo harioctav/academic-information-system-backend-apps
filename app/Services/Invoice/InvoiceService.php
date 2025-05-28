@@ -18,4 +18,6 @@ interface InvoiceService extends BaseService
     public function handleStore(array $data): Invoice;
     public function handleUpdate(array $data, Invoice $invoice): Invoice;
     public function handleShow(string $uuid): Invoice;
+    public function handleShowByBilling(string $billingUuid);
+    public function handleShowByNim(string $nim);
 }

@@ -10,6 +10,7 @@ use App\Models\Student;
 use App\Models\Registration;
 use App\Models\RegistrationBatch;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class RegistrationServiceImplement extends ServiceApi implements RegistrationService
 {
@@ -131,7 +132,7 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
     {
         $registration->update($request->validated());
 
-        return $registration; 
+        return $registration;
     }
 
     public function handleDelete(Registration $registration)
@@ -186,5 +187,78 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
 
         $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
         return "REG-{$year}-{$month}-{$nextNumber}";
+    }
+
+    public function getStudentByNim(string $nim): ?array
+    {
+        $student = Student::with('addresses')
+            ->where('nim', $nim)
+            ->first();
+
+        if (!$student) return null;
+
+        return [
+            'nim'   => $student->nim,
+            'name'  => $student->name,
+            'phone' => $student->phone,
+            'address_line' => ($student->province?->name ?? '') . ' ' .
+                ($student->regency?->name ?? '') . ' ' .
+                ($student->district?->name ?? '') . ' ' .
+                ($student->village?->name ?? '') . ' ' .
+                (optional($student->domicileAddress)->address ?? ''),
+            'address' => [
+                'province' => $student->province?->name,
+                'regency'  => $student->regency?->name,
+                'district' => $student->district?->name,
+                'village'  => $student->village?->name,
+                'detail'   => optional($student->domicileAddress)->address,
+            ],
+        ];
+    }
+
+    public function getBatchByUuid(string $uuid): array
+    {
+        $batch = RegistrationBatch::where('uuid', $uuid)->first();
+
+        if (!$batch) {
+            return [
+                'error' => true,
+                'message' => 'Data pendaftaran tidak ditemukan.',
+                'code' => 404,
+            ];
+        }
+
+        $startDate = Carbon::parse($batch->start_date);
+        $endDate   = Carbon::parse($batch->end_date);
+        $today     = Carbon::today();
+
+        if ($today->lt($startDate)) {
+            return [
+                'error' => true,
+                'message' => 'Pendaftaran belum dibuka.',
+                'start_date' => $startDate->format('d-m-Y'),
+                'code' => 403,
+            ];
+        }
+
+        if ($today->gt($endDate)) {
+            return [
+                'error' => true,
+                'message' => 'Pendaftaran telah ditutup.',
+                'end_date' => $endDate->format('d-m-Y'),
+                'code' => 403,
+            ];
+        }
+
+        return [
+            'uuid'        => $batch->uuid,
+            'name'        => $batch->name,
+            'description' => $batch->description,
+            'notes'       => $batch->notes,
+            'start_date'  => $startDate->format('d-m-Y'),
+            'end_date'    => $endDate->format('d-m-Y'),
+            'created_at'  => Carbon::parse($batch->created_at)->format('d-m-Y H:i:s'),
+            'updated_at'  => Carbon::parse($batch->updated_at)->format('d-m-Y H:i:s'),
+        ];
     }
 }

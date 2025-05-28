@@ -9,35 +9,25 @@ use App\Http\Controllers\Api\Finances\PaymentController;
 use App\Models\Payment;
 
 
-// Public route untuk cek UUID (tanpa auth)
-Route::prefix('finances/registrations')
-    ->name('public.registrations.')
-    ->controller(RegistrationController::class)
-    ->group(function () {
-        // Cek apakah batch dengan UUID masih aktif
-        Route::get('check-batch/{uuid}', 'checkRegistrationBatch')
-            ->name('checkBatch');
+//untuk mengecek batch & student  dan submit registration
+Route::prefix('registrations')->name('public.registrations.')->group(function () {
+    Route::get('batch/{uuid}', [RegistrationController::class, 'showBatch'])->name('batch');
+    Route::get('student/{nim}', [RegistrationController::class, 'showStudent'])->name('student');
+    Route::post('/submit', [RegistrationController::class, 'submit'])->name('submit');
+});
 
-        // Ambil data mahasiswa berdasarkan NIM
-        Route::get('student/{nim}', 'getMahasiswaByNim')
-            ->name('getMahasiswaByNim');
+//menampilkan daftar tagihan by billing & student
+Route::prefix('invoices')->name('public.invoices.')->group(function () {
+    Route::get('billing/{uuid}', [InvoiceController::class, 'showByBilling'])->name('billing');
+    Route::get('student/{nim}', [InvoiceController::class, 'showByNim'])->name('student');
+});
 
-        // Kirim registrasi dari mahasiswa
-        Route::post('{uuid}', 'postRegistration')
-            ->name('submitRegistration');
-    });
+//untuk submit payment
+Route::prefix('payments')->name('public.payments.')->group(function () {
+    Route::post('submit', [PaymentController::class, 'submit'])->name('submit');
+});
 
-Route::prefix('finances/payments')
-    ->name('public.payments.')
-    ->controller(PaymentController::class)
-    ->group(function () {
 
-        Route::get('student/{nim}', 'getMahasiswaByNim')
-            ->name('getMahasiswaByNim');
-
-        Route::post('submit', 'postRegistration')
-            ->name('submitRegistration');
-    });
 
 Route::prefix('finances')->middleware([
     // 'auth:api',

@@ -24,59 +24,24 @@ class RegistrationController extends Controller
     {
         $this->registrationService = $registrationService;
     }
-
-    public function checkRegistrationBatch($uuid): JsonResponse
+    # ==================== PUBIC ==================== #
+    public function showBatch($uuid): JsonResponse
     {
-        $batch = RegistrationBatch::where('uuid', $uuid)->first();
+        $batch = $this->registrationService->getBatchByUuid($uuid);
 
-        if (!$batch) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data pendaftaran tidak ditemukan.'
-            ], 404);
-        }
-
-        // Pastikan start_date dan end_date adalah instance Carbon
-        $startDate = Carbon::parse($batch->start_date);
-        $endDate = Carbon::parse($batch->end_date);
-        $today = Carbon::today();
-
-        if ($today->lt($startDate)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Pendaftaran belum dibuka.',
-                'start_date' => $startDate->format('d-m-Y'),
-            ], 403);
-        }
-
-        if ($today->gt($endDate)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Pendaftaran telah ditutup.',
-                'end_date' => $endDate->format('d-m-Y'),
-            ], 403);
+        if (isset($batch['error'])) {
+            return response()->json($batch, $batch['code']);
         }
 
         return response()->json([
             'success' => true,
-            'data' => [
-                'uuid' => $batch->uuid,
-                'name' => $batch->name,
-                'description' => $batch->description,
-                'notes' => $batch->notes,
-                'start_date' => $startDate->format('d-m-Y'),
-                'end_date' => $endDate->format('d-m-Y'),
-                'created_at' => Carbon::parse($batch->created_at)->format('d-m-Y H:i:s'),
-                'updated_at' => Carbon::parse($batch->updated_at)->format('d-m-Y H:i:s'),
-            ]
+            'data' => $batch
         ]);
     }
 
-    public function getMahasiswaByNim($nim)
+    public function showStudent($nim): JsonResponse
     {
-        $student = Student::with('addresses')
-            ->where('nim', $nim)
-            ->first();
+        $student = $this->registrationService->getStudentByNim($nim);
 
         if (!$student) {
             return response()->json([
@@ -86,29 +51,18 @@ class RegistrationController extends Controller
         }
 
         return response()->json([
-            'nim' => $student->nim,
-            'name' => $student->name,
-            'phone' => $student->phone,
-            'address_line' => ($student->province?->name ?? '') . ' ' .
-                ($student->regency?->name ?? '') . ' ' .
-                ($student->district?->name ?? '') . ' ' .
-                ($student->village?->name ?? '') . ' ' .
-                (optional($student->domicileAddress)->address ?? ''),
-            'address' => [
-                'province' => $student->province?->name ?? null,
-                'regency'  => $student->regency?->name ?? null,
-                'district' => $student->district?->name ?? null,
-                'village'  => $student->village?->name ?? null,
-                'detail'   => optional($student->domicileAddress)->address ?? null,
-            ],
+            'success' => true,
+            'data' => $student
         ]);
     }
 
-    public function postRegistration(RegistrationMhsRequest $request): JsonResponse
+
+    public function submit(RegistrationMhsRequest $request): JsonResponse
     {
         return $this->registrationService->handleRegistration($request);
     }
 
+    # ==================== FINANCE ==================== #
     public function index(Request $request)
     {
         $query = SearchHelper::applySearchQuery(

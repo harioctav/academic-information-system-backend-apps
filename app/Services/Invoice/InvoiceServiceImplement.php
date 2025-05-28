@@ -8,6 +8,8 @@ use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Invoice\InvoiceRepository;
 use App\Services\Invoice\InvoiceService;
 
+use App\Models\Billing;
+use App\Models\Student;
 class InvoiceServiceImplement extends ServiceApi implements InvoiceService
 {
     protected InvoiceRepository $mainRepository;
@@ -63,5 +65,28 @@ class InvoiceServiceImplement extends ServiceApi implements InvoiceService
             ->where('uuid', $uuid)
             ->with(['student', 'billing', 'details'])
             ->firstOrFail();
+    }
+
+
+    public function handleShowByBilling(string $billingUuid)
+    {
+        $billing = Billing::where('uuid', $billingUuid)->firstOrFail();
+
+        return $this->mainRepository
+            ->query()
+            ->where('billing_id', $billing->id)
+            ->with(['student', 'billing', 'details'])
+            ->get(); // Banyak invoice per billing
+    }
+
+    public function handleShowByNim(string $nim)
+    {
+        $student = Student::where('nim', $nim)->firstOrFail();
+
+        return $this->mainRepository
+            ->query()
+            ->where('student_id', $student->id)
+            ->with(['student', 'billing', 'details'])
+            ->get(); // Bisa banyak invoice juga
     }
 }

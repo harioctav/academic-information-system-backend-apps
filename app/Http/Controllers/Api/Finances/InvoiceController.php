@@ -49,4 +49,17 @@ class InvoiceController extends Controller
 
         return new InvoiceResource($updatedInvoice);
     }
+
+    public function showByBilling(string $uuid)
+    {
+        $invoices = $this->invoiceService->handleShowByBilling($uuid);
+        return InvoiceResource::collection($invoices);
+    }
+
+    public function showByNim(string $nim)
+    {
+        $invoices = $this->invoiceService->handleShowByNim($nim);
+        return InvoiceResource::collection($invoices);
+    }
+
 }

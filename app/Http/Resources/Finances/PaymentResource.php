@@ -13,6 +13,7 @@ class PaymentResource extends JsonResource
             'uuid' => $this->uuid,
             'student' => new StudentResource($this->whenLoaded('student')),
             'billing' => new BillingResource($this->whenLoaded('billing')),
+            'invoice' => new InvoiceResource($this->whenLoaded('invoice')),
             'payment_method' => $this->payment_method,
             'payment_plan' => $this->payment_plan,
             'payment_date' => $this->payment_date,
