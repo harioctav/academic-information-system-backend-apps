@@ -31,7 +31,11 @@ Route::prefix('finances/payments')
     ->name('public.payments.')
     ->controller(PaymentController::class)
     ->group(function () {
-        Route::post('{uuid}', 'postRegistration')
+
+        Route::get('student/{nim}', 'getMahasiswaByNim')
+            ->name('getMahasiswaByNim');
+
+        Route::post('submit', 'postRegistration')
             ->name('submitRegistration');
     });
 
