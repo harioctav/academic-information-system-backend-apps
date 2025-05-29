@@ -14,13 +14,32 @@ class SearchHelper
     return $search ? trim(str_replace(['%', '_'], ['\%', '\_'], $search)) : '';
   }
 
+  // Old function
+  // private static function buildSearchCondition(Builder $query, string $field, string $search): void
+  // {
+  //   $cacheKey = "search_{$field}_{$search}";
+  //   Cache::remember($cacheKey, now()->addHours(1), function () use ($query, $field, $search) {
+  //     $query->orWhere($field, 'LIKE', "%{$search}%");
+  //   });
+  // }
+
   private static function buildSearchCondition(Builder $query, string $field, string $search): void
   {
     $cacheKey = "search_{$field}_{$search}";
+
     Cache::remember($cacheKey, now()->addHours(1), function () use ($query, $field, $search) {
-      $query->orWhere($field, 'LIKE', "%{$search}%");
+      if (str_contains($field, '.')) {
+        [$relation, $column] = explode('.', $field, 2);
+        $query->orWhereHas($relation, function ($q) use ($column, $search) {
+          $q->where($column, 'like', "%{$search}%");
+        });
+      } else {
+        $query->orWhere($field, 'LIKE', "%{$search}%");
+      }
     });
   }
+
+
 
   public static function applySearchQuery(
     Builder $query,
