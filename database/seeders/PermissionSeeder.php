@@ -119,6 +119,14 @@ class PermissionSeeder extends Seeder
     'majors.subjects.update',
     'majors.subjects.destroy',
     'majors.subjects.bulk',
+
+    // API Billings
+    'billings.index',
+    'billings.store',
+    'billings.show',
+    'billings.update',
+    'billings.destroy',
+    'billings.bulk',
   ];
 
   /**
@@ -136,7 +144,8 @@ class PermissionSeeder extends Seeder
     'subjects' => 8,
     'students' => 9,
     'grades' => 10,
-    'recommendations' => 11
+    'recommendations' => 11,
+    'billings' => 12,
   ];
 
   /**

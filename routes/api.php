@@ -1,24 +1,25 @@
 <?php
 
-use App\Http\Controllers\Api\Academics\MajorController;
-use App\Http\Controllers\Api\Academics\MajorSubjectController;
-use App\Http\Controllers\Api\Academics\StudentController;
-use App\Http\Controllers\Api\Academics\SubjectController;
-use App\Http\Controllers\Api\Auth\AccountController;
-use App\Http\Controllers\Api\Auth\AuthController;
-use App\Http\Controllers\Api\Auth\ForgotPasswordController;
-use App\Http\Controllers\Api\Evaluations\GradeController;
-use App\Http\Controllers\Api\Evaluations\RecommendationController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\HomeController;
-use App\Http\Controllers\Api\Locations\DistrictController;
-use App\Http\Controllers\Api\Locations\ProvinceController;
-use App\Http\Controllers\Api\Locations\RegencyController;
-use App\Http\Controllers\Api\Locations\VillageController;
-use App\Http\Controllers\Api\Settings\PermissionCategoryController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\Auth\AccountController;
 use App\Http\Controllers\Api\Settings\RoleController;
 use App\Http\Controllers\Api\Settings\UserController;
-use App\Http\Controllers\NotificationController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Academics\MajorController;
+use App\Http\Controllers\Api\Finances\BillingController;
+use App\Http\Controllers\Api\Academics\StudentController;
+use App\Http\Controllers\Api\Academics\SubjectController;
+use App\Http\Controllers\Api\Evaluations\GradeController;
+use App\Http\Controllers\Api\Locations\RegencyController;
+use App\Http\Controllers\Api\Locations\VillageController;
+use App\Http\Controllers\Api\Locations\DistrictController;
+use App\Http\Controllers\Api\Locations\ProvinceController;
+use App\Http\Controllers\Api\Auth\ForgotPasswordController;
+use App\Http\Controllers\Api\Academics\MajorSubjectController;
+use App\Http\Controllers\Api\Evaluations\RecommendationController;
+use App\Http\Controllers\Api\Settings\PermissionCategoryController;
 
 require_once __DIR__ . '/api/finance.php';
 // Auth routes with rate limiting
@@ -245,5 +246,18 @@ Route::middleware([
         'store',
         'show'
       );
+    });
+
+  // Finances Resources
+  Route::prefix('finances')
+    ->group(function () {
+      // Billings Menu
+      Route::prefix('billings')
+        ->name('billings.')
+        ->controller(BillingController::class)
+        ->group(function () {
+          Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+        });
+      Route::apiResource('billings', BillingController::class);
     });
 });

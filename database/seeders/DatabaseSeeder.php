@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
       StudentSeeder::class,
       RegistrationBatchSeeder::class,
       RegistrationSeeder::class,
+      BillingSeeder::class,
     ]);
   }
 }

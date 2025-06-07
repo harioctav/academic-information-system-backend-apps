@@ -155,17 +155,11 @@ class AuthController extends Controller
 
   /**
    * Get an OAuth token using the provided email and password.
-   *
-   * @param string $email The email address to use for authentication.
-   * @param string $password The password to use for authentication.
-   * @return array The OAuth token response.
    */
   private function getOAuthToken(string $email, string $password, bool $remember = false): array
   {
     try {
-      // Gunakan URL absolut internal (127.0.0.1 atau alamat container) 
-      // untuk mencegah masalah SSL dan routing
-      $response = Http::withoutVerifying()->post(config('app.url') . '/oauth/token', [
+      $request = Request::create('/oauth/token', 'POST', [
         'grant_type' => 'password',
         'client_id' => config('passport.client_id'),
         'client_secret' => config('passport.client_secret'),
@@ -174,26 +168,19 @@ class AuthController extends Controller
         'scope' => '',
       ]);
 
-      if (!$response->successful()) {
-        Log::error('OAuth token error', [
-          'status' => $response->status(),
-          'body' => $response->body()
-        ]);
+      $response = app()->handle($request);
+      $content = $response->getContent();
 
+      if ($response->getStatusCode() !== 200) {
         return [
           'error' => 'oauth_error',
-          'message' => $response->json()['message'] ?? 'Failed to get OAuth token',
-          'status' => $response->status()
+          'message' => 'Failed to get OAuth token',
+          'status' => $response->getStatusCode()
         ];
       }
 
-      return $response->json();
+      return json_decode($content, true);
     } catch (\Exception $e) {
-      Log::error('OAuth exception', [
-        'message' => $e->getMessage(),
-        'trace' => $e->getTraceAsString()
-      ]);
-
       return [
         'error' => 'oauth_exception',
         'message' => 'Failed to get OAuth token: ' . $e->getMessage(),
@@ -204,46 +191,34 @@ class AuthController extends Controller
 
   /**
    * Refresh an OAuth token using the provided refresh token.
-   *
-   * @param string $refreshToken The refresh token to use for refreshing the OAuth token.
-   * @return array The refreshed OAuth token response.
    */
   private function refreshOAuthToken(string $refreshToken): array
   {
-    $client = Client::findOrFail(config('passport.client_id'));
-
     try {
-      $response = Http::withoutVerifying()->post(config('app.url') . '/oauth/token', [
+      $request = Request::create('/oauth/token', 'POST', [
         'grant_type' => 'refresh_token',
         'refresh_token' => $refreshToken,
-        'client_id' => $client->id,
-        'client_secret' => $client->secret,
+        'client_id' => config('passport.client_id'),
+        'client_secret' => config('passport.client_secret'),
         'scope' => '',
       ]);
 
-      if (!$response->successful()) {
-        Log::error('OAuth token error', [
-          'status' => $response->status(),
-          'body' => $response->body()
-        ]);
+      $response = app()->handle($request);
+      $content = $response->getContent();
 
+      if ($response->getStatusCode() !== 200) {
         return [
           'error' => 'oauth_error',
-          'message' => $response->json()['message'] ?? 'Failed to get OAuth token',
-          'status' => $response->status()
+          'message' => 'Failed to refresh OAuth token',
+          'status' => $response->getStatusCode()
         ];
       }
 
-      return $response->json();
+      return json_decode($content, true);
     } catch (\Exception $e) {
-      Log::error('OAuth exception', [
-        'message' => $e->getMessage(),
-        'trace' => $e->getTraceAsString()
-      ]);
-
       return [
         'error' => 'oauth_exception',
-        'message' => 'Failed to get OAuth token: ' . $e->getMessage(),
+        'message' => 'Failed to refresh OAuth token: ' . $e->getMessage(),
         'status' => 500
       ];
     }
