@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Invoice;
+use App\Models\Payment;
 use App\Models\Registration;
 use App\Models\Student;
 use Illuminate\Database\Seeder;
@@ -29,6 +31,8 @@ class DatabaseSeeder extends Seeder
       RegistrationBatchSeeder::class,
       RegistrationSeeder::class,
       BillingSeeder::class,
+      InvoiceSeeder::class,
+      PaymentSeeder::class,
     ]);
   }
 }
