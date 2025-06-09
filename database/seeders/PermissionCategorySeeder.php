@@ -27,6 +27,7 @@ class PermissionCategorySeeder extends Seeder
     'recommendations.name',
     'registration-batches.name',
     'registrations.name',
+    'billings.name',
     'invoices.name',
     'payments.name'
   ];

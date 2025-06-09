@@ -89,6 +89,65 @@ class RoleSeeder extends Seeder
       'recommendations.update',
       'recommendations.destroy',
       'recommendations.bulk',
+
+      // Registration Batches
+      'registration-batches.index',
+      'registration-batches.store',
+      'registration-batches.show',
+      'registration-batches.update',
+      'registration-batches.destroy',
+      'registration-batches.bulk',
+
+      // Registrations
+      'registrations.index',
+      'registrations.store',
+      'registrations.show',
+      'registrations.update',
+      'registrations.destroy',
+      'registrations.bulk',
+
+    ];
+
+    $financeTeamPermissions = [
+      // Registration Batches
+      'registration-batches.index',
+      'registration-batches.store',
+      'registration-batches.show',
+      'registration-batches.update',
+      'registration-batches.destroy',
+      'registration-batches.bulk',
+
+      // Registrations
+      'registrations.index',
+      'registrations.store',
+      'registrations.show',
+      'registrations.update',
+      'registrations.destroy',
+      'registrations.bulk',
+
+      // Billings
+      'billings.index',
+      'billings.store',
+      'billings.show',
+      'billings.update',
+      'billings.destroy',
+      'billings.bulk',
+
+      // Invoices
+      'invoices.index',
+      'invoices.store',
+      'invoices.show',
+      'invoices.update',
+      'invoices.destroy',
+      'invoices.bulk',
+
+      // Payments
+      'payments.index',
+      'payments.store',
+      'payments.show',
+      'payments.update',
+      'payments.destroy',
+      'payments.bulk',
     ];
 
     // Berikan semua permission ke SuperAdmin
@@ -99,8 +158,19 @@ class RoleSeeder extends Seeder
     $regisTeamRole = Role::where('name', UserRole::SubjectRegisTeam->value)->first();
     $regisTeamRole->syncPermissions(array_merge($defaultPermissions, $regisTeamPermissions));
 
+    // Berikan permission ke FinanceTeam
+    $financeRole = Role::where('name', UserRole::FinanceTeam->value)->first();
+    $financeRole->syncPermissions(array_merge($defaultPermissions, $financeTeamPermissions));
+
     // Berikan default permissions ke role lainnya
-    $otherRoles = Role::whereNotIn('name', [UserRole::SuperAdmin->value, UserRole::SubjectRegisTeam->value])->get();
+    $otherRoles = Role::whereNotIn(
+      'name',
+      [
+        UserRole::SuperAdmin->value,
+        UserRole::SubjectRegisTeam->value,
+        UserRole::FinanceTeam->value
+      ]
+    )->get();
     foreach ($otherRoles as $role) {
       $role->syncPermissions($defaultPermissions);
     }

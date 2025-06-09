@@ -99,10 +99,10 @@ Route::middleware([
 
 // Protected routes with enhanced security
 Route::middleware([
-  // 'auth:api',
-  // 'permission',
-  // 'session.check',
-  // 'is.in-active.user'
+  'auth:api',
+  'permission',
+  'session.check',
+  'is.in-active.user'
 ])->group(function () {
 
   // Locations routes
