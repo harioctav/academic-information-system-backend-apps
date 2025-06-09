@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api\Finances;
 
 use App\Http\Controllers\Controller;
+use App\Helpers\SearchHelper;
 use App\Http\Requests\Finances\PaymentStoreRequest;
 use App\Http\Requests\Finances\PaymentUpdateRequest;
 use App\Http\Resources\Finances\PaymentResource;
 use App\Services\Payment\PaymentService;
+use Illuminate\Http\Request;
+
 
 class PaymentController extends Controller
 {
@@ -17,10 +20,32 @@ class PaymentController extends Controller
         $this->paymentService = $paymentService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $payments = $this->paymentService->query()->with(['student', 'billing'])->latest()->get();
-        return PaymentResource::collection($payments);
+        $query = SearchHelper::applySearchQuery(
+            query: $this->paymentService->query()->with(['student', 'billing']),
+            request: $request,
+            searchableFields: [
+                'student.name',
+                'student.nim',
+            ],
+            sortableFields: [
+                'created_at',
+                'updated_at',
+            ],
+            filterFields: [
+                'payment_type',
+                'status',
+                'semester',
+            ]
+        );
+
+        $perPage = $request->input('per_page', 10);
+        $result = $query->latest();
+
+        return PaymentResource::collection(
+            $perPage == -1 ? $result->get() : $result->paginate($perPage)
+        );
     }
 
     public function store(PaymentStoreRequest $request)

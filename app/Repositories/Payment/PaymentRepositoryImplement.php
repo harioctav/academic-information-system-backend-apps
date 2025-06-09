@@ -14,6 +14,11 @@ class PaymentRepositoryImplement extends Eloquent implements PaymentRepository
         $this->model = $model;
     }
 
+    public function query()
+    {
+        return $this->model->newQuery();
+    }
+
     public function getWithRelationsPaginated($perPage)
     {
         return $this->model->with(['student', 'registration', 'billing'])->latest()->paginate($perPage);

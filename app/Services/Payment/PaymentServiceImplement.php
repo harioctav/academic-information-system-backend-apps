@@ -22,6 +22,23 @@ class PaymentServiceImplement extends ServiceApi implements PaymentService
         return $this->mainRepository->query();
     }
 
+    public function getWhere(
+        $wheres = [],
+        $columns = '*',
+        $comparisons = '=',
+        $orderBy = null,
+        $orderByType = null
+    ) {
+        return $this->mainRepository->getWhere(
+            wheres: $wheres,
+            columns: $columns,
+            comparisons: $comparisons,
+            orderBy: $orderBy,
+            orderByType: $orderByType
+        );
+    }
+
+
     public function handleStore(array $data): Payment
     {
         $data['uuid'] = Str::uuid()->toString();
