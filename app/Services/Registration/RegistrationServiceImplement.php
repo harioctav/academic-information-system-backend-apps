@@ -97,6 +97,7 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
 
                 // Update data registrasi
                 $registration->update($payload);
+                $registration->load(['student']);
 
                 return $this->setMessage("Registration updated successfully")
                     ->setData(new RegistrationResource($registration))
@@ -117,6 +118,7 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
                 $payload['uuid'] = Str::uuid();
 
                 $result = $this->mainRepository->create($payload);
+                $result->load(['student']);
 
                 return $this->setMessage($this->create_message)
                     ->setData(new RegistrationResource($result))

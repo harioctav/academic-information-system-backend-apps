@@ -65,4 +65,10 @@ class PaymentController extends Controller
         $payment = $this->paymentService->handleUpdate($request->validated(), $uuid);
         return new PaymentResource($payment);
     }
+
+    public function submit(PaymentStoreRequest $request)
+    {
+        $payment = $this->paymentService->handleSubmit($request->validated());
+        return new PaymentResource($payment);
+    }
 }

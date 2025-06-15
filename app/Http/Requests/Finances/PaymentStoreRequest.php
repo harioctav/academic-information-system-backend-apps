@@ -9,8 +9,9 @@ class PaymentStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'student_id' => 'required|exists:students,id',
-            'billing_id' => 'nullable|exists:billings,id',
+            'student_uuid' => 'required|exists:students,uuid',
+            'billing_uuid' => 'nullable|exists:billings,uuid',
+            'invoice_uuid' => 'nullable|exists:invoices,uuid',
             'payment_method' => 'required|in:transfer,cash',
             'payment_plan' => 'required|in:cicil,lunas',
             'payment_date' => 'nullable|date',

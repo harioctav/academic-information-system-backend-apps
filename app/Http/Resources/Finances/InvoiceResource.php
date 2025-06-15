@@ -10,7 +10,7 @@ class InvoiceResource extends JsonResource
   {
     return [
       'uuid' => $this->uuid,
-      'student' => $this->student->only(['id', 'name', 'nim']),
+      'student' => $this->student->only(['uuid', 'name', 'nim']),
       'billing' => $this->billing->only(['uuid', 'billing_code']),
       'total_amount' => $this->total_amount,
       'due_date' => $this->due_date,

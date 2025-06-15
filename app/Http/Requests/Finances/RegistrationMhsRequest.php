@@ -22,7 +22,7 @@ class RegistrationMhsRequest extends FormRequest
             'student_category' => ($isUpdate ? 'sometimes' : 'required') . '|string',
             'payment_system' => ($isUpdate ? 'sometimes' : 'required') . '|string',
             'program_type' => ($isUpdate ? 'sometimes' : 'required') . '|string',
-            'tutorial_service' => ($isUpdate ? 'sometimes' : 'required') . '|boolean',
+            'tutorial_service' => ($isUpdate ? 'sometimes' : 'required') . '|string',
             'semester' => ($isUpdate ? 'sometimes' : 'required') . '|string',
             'interested_spp' => ($isUpdate ? 'sometimes' : 'required') . '|boolean',
             'is_update' => 'sometimes|boolean',

@@ -25,7 +25,6 @@ use App\Http\Controllers\Api\Finances\BillingController;
 use App\Http\Controllers\Api\Finances\InvoiceController;
 use App\Http\Controllers\Api\Finances\PaymentController;
 
-require_once __DIR__ . '/api/finance.php';
 // Auth routes with rate limiting
 Route::prefix('auth')
   ->controller(AuthController::class)
@@ -99,12 +98,11 @@ Route::middleware([
 
 // Protected routes with enhanced security
 Route::middleware([
-  'auth:api',
-  'permission',
-  'session.check',
-  'is.in-active.user'
+  // 'auth:api',
+  // 'permission',
+  // 'session.check',
+  // 'is.in-active.user'
 ])->group(function () {
-
   // Locations routes
   Route::prefix('locations')->group(function () {
     // Province routes
@@ -141,7 +139,6 @@ Route::middleware([
       });
     Route::apiResource('villages', VillageController::class);
   });
-
   // Settings routes
   Route::prefix('settings')->group(function () {
     // Roles
@@ -168,7 +165,6 @@ Route::middleware([
       });
     Route::apiResource('users', UserController::class);
   });
-
   // Academic Resources
   Route::prefix('academics')
     ->group(function () {
@@ -300,4 +296,23 @@ Route::middleware([
         });
       Route::apiResource('payments', PaymentController::class);
     });
+});
+
+// Public routes
+// untuk mengecek batch & student  dan submit registration
+Route::prefix('registrations')->name('public.registrations.')->group(function () {
+  Route::get('batch/{uuid}', [RegistrationController::class, 'showBatch'])->name('batch');
+  Route::get('student/{nim}', [RegistrationController::class, 'showStudent'])->name('student');
+  Route::post('/submit', [RegistrationController::class, 'submit'])->name('submit');
+});
+
+// menampilkan daftar tagihan by billing & student
+Route::prefix('invoices')->name('public.invoices.')->group(function () {
+  Route::get('billing/{uuid}', [InvoiceController::class, 'showByBilling'])->name('billing');
+  Route::get('student/{nim}', [InvoiceController::class, 'showByNim'])->name('student');
+});
+
+// untuk submit payment
+Route::prefix('payments')->name('public.payments.')->group(function () {
+  Route::post('submit', [PaymentController::class, 'submit'])->name('submit');
 });

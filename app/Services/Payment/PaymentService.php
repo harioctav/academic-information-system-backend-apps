@@ -18,4 +18,5 @@ interface PaymentService extends BaseService
     public function handleStore(array $data): Payment;
     public function handleShow(string $uuid): Payment;
     public function handleUpdate(array $data, string $uuid): Payment;
+    public function handleSubmit(array $data): Payment;
 }

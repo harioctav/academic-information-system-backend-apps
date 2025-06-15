@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Finances\RegistrationStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,9 +22,10 @@ return new class extends Migration
       $table->string('student_category'); // maba,mala,rpl
       $table->string('payment_system'); // sipas, non-sipas
       $table->string('program_type'); // spp, non-spp
-      $table->boolean('tutorial_service')->default(false);
+      $table->string('tutorial_service');
       $table->string('semester');
       $table->boolean('interested_spp')->default(false);
+      $table->enum('registration_status', array_column(RegistrationStatus::cases(), 'value'))->nullable();
       $table->timestamps();
       $table->index(['student_id', 'registration_batch_id']);
     });
