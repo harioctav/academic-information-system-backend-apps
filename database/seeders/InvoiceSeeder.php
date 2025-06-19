@@ -41,6 +41,11 @@ class InvoiceSeeder extends Seeder
                 $studentId = $faker->randomElement($studentIds);
                 $billingId = $faker->randomElement($billingIds);
 
+                $prefix = 'INV-';
+                $datePart = now()->format('Ymd');
+                $randomPart = str_pad(mt_rand(0, 99999), 5, '0', STR_PAD_LEFT);
+                $invoiceCode = $prefix . $datePart . $randomPart;
+
                 $status = $faker->randomElement([
                     SettlementStatus::Unpaid->value,
                     SettlementStatus::Paid->value,
@@ -62,12 +67,14 @@ class InvoiceSeeder extends Seeder
                     $details[] = ['item_name' => 'Biaya Pengiriman', 'item_type' => 'shipping', 'amount' => $faker->randomElement([10000, 15000, 20000])];
                 }
 
+
                 $totalAmount = collect($details)->sum('amount');
 
                 $invoice = Invoice::create([
                     'uuid' => Str::uuid(),
                     'student_id' => $studentId,
                     'billing_id' => $billingId,
+                    'invoice_code' => $invoiceCode,
                     'total_amount' => $totalAmount,
                     'due_date' => $dueDate,
                     'payment_status' => $status,
