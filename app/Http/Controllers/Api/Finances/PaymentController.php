@@ -70,5 +70,6 @@ class PaymentController extends Controller
     {
         $payment = $this->paymentService->handleSubmit($request->validated());
         return new PaymentResource($payment);
+        // return new PaymentResource($payment->load('student')); 
     }
 }
