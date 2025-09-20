@@ -14,6 +14,7 @@ return new class extends Migration
       $table->uuid('uuid')->unique()->index();
       $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
       $table->foreignId('billing_id')->constrained('billings')->onDelete('cascade');
+      $table->foreignId('payment_id')->nullable()->constrained('payments')->onDelete('set null');
       $table->decimal('total_amount', 12, 2)->default(0.00);
       $table->date('due_date')->nullable();
       $table->enum('payment_status', array_column(SettlementStatus::cases(), 'value'))->default(SettlementStatus::Unpaid->value);
