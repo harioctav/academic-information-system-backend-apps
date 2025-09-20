@@ -28,7 +28,7 @@ class PaymentRequest extends FormRequest
             'payment_date' => 'nullable|date',
             'amount_paid' => 'required|numeric|min:0',
             'transfer_to' => 'nullable|string',
-            'proof_of_payment' => 'required',
+            'proof_of_payment' => 'required|image',
             'payment_status' => 'required|in:pending,confirmed,rejected',
             'note' => 'nullable|string'
         ];
