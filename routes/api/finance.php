@@ -80,7 +80,7 @@ Route::prefix('finances')->middleware([
     ->controller(PaymentController::class)
     ->group(function () {
       Route::get('/', 'index')->name('index');
-      Route::post('/', 'store')->name('store');
+      Route::post('/pay', 'store');
       Route::get('{id}', 'show')->name('show');
       Route::put('{id}', 'update')->name('update');
       Route::delete('{id}', 'destroy')->name('destroy');
