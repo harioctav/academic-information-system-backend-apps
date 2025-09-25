@@ -101,9 +101,9 @@ Route::middleware([
     ->group(function () {
       Route::get('/', 'index')->name('index');
       Route::post('/', 'store')->name('store');
-      Route::get('{id}', 'show')->name('show');
-      Route::put('{id}', 'update')->name('update');
-      Route::delete('{id}', 'destroy')->name('destroy');
+      Route::get('{payment}', 'show')->name('show');
+      Route::put('{payment}', 'update')->name('update');
+      Route::delete('{payment}', 'destroy')->name('destroy');
     });
 
 // Protected routes with enhanced security
