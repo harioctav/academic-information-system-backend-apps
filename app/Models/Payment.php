@@ -24,11 +24,6 @@ class Payment extends Model
         'note'
     ];
 
-    public function getRouteKeyName(): string
-    {
-        return 'uuid';
-    }
-
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
@@ -38,10 +33,4 @@ class Payment extends Model
     {
         return $this->belongsTo(Billing::class);
     }
-
-    public function invoice()
-    {
-        return $this->hasOne(Invoice::class);
-    }
-
 }

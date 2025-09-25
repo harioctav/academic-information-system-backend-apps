@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Api\Finances;
 
-use App\Models\Payment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Finances\PaymentRequest;
-use App\Http\Requests\Finances\PaymentStatusRequest;
 use App\Http\Resources\Finances\PaymentResource;
 use App\Services\Payment\PaymentService;
 use Illuminate\Http\JsonResponse;
@@ -30,14 +28,15 @@ class PaymentController extends Controller
         return $this->paymentService->handleStore($request);
     }
 
-    public function show(Payment $payment)
+    public function show(string $uuid)
     {
-        $payment = $this->paymentService->handleShow($payment->uuid);
+        $payment = $this->paymentService->handleShow($uuid);
         return new PaymentResource($payment);
     }
 
-    public function update(PaymentStatusRequest $request, Payment $payment) : JsonResponse
-    {
-        return $this->paymentService->handleUpdate($request->input('payment_status'), $payment);
-    }
+    // public function update(PaymentUpdateRequest $request, string $uuid)
+    // {
+    //     $payment = $this->paymentService->handleUpdate($request->validated(), $uuid);
+    //     return new PaymentResource($payment);
+    // }
 }
