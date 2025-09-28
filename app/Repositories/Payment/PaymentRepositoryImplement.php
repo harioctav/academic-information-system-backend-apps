@@ -9,6 +9,11 @@ class PaymentRepositoryImplement extends Eloquent implements PaymentRepository
 {
     protected $model;
 
+    public function query()
+    {
+        return $this->model->newQuery();
+    }
+
     public function __construct(Payment $model)
     {
         $this->model = $model;

@@ -16,7 +16,6 @@ return new class extends Migration
       $table->uuid('uuid')->index();
       $table->foreignId('student_id')->constrained()->onDelete('cascade');
       $table->foreignId('billing_id')->nullable()->constrained('billings')->onDelete('set null');
-      $table->foreignId('invoice_id')->nullable()->constrained('invoices')->onDelete('set null');
 
       $table->enum(
         'payment_method',

@@ -14,6 +14,7 @@ class Invoice extends Model
         'uuid',
         'student_id',
         'billing_id',
+        'payment_id',
         'total_amount',
         'due_date',
         'payment_status',
@@ -52,6 +53,11 @@ class Invoice extends Model
     public function billing()
     {
         return $this->belongsTo(Billing::class);
+    }
+
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class);
     }
 
     public function details()

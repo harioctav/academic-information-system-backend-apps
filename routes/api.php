@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\Auth\ForgotPasswordController;
 use App\Http\Controllers\Api\Academics\MajorSubjectController;
 use App\Http\Controllers\Api\Evaluations\RecommendationController;
 use App\Http\Controllers\Api\Settings\PermissionCategoryController;
+use App\Http\Controllers\Api\Finances\PaymentController;
 
 require_once __DIR__ . '/api/finance.php';
 // Auth routes with rate limiting
@@ -92,6 +93,18 @@ Route::middleware([
       Route::get('students/{student}/delete-image', 'deleteImage');
     });
 });
+
+// Payments
+  Route::prefix('payments')
+    ->name('payments.')
+    ->controller(PaymentController::class)
+    ->group(function () {
+      Route::get('/', 'index')->name('index');
+      Route::post('/', 'store')->name('store');
+      Route::get('{payment}', 'show')->name('show');
+      Route::put('{payment}', 'update')->name('update');
+      Route::delete('{payment}', 'destroy')->name('destroy');
+    });
 
 // Protected routes with enhanced security
 Route::middleware([
