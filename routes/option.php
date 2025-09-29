@@ -6,11 +6,13 @@ use App\Http\Controllers\Api\Academics\StudentController;
 use App\Http\Controllers\Api\Academics\SubjectController;
 use App\Http\Controllers\Api\Evaluations\GradeController;
 use App\Http\Controllers\Api\Evaluations\RecommendationController;
+use App\Http\Controllers\Api\Finances\RegistrationController;
 use App\Http\Controllers\Api\Locations\DistrictController;
 use App\Http\Controllers\Api\Locations\ProvinceController;
 use App\Http\Controllers\Api\Locations\RegencyController;
 use App\Http\Controllers\Api\Locations\VillageController;
 use App\Http\Controllers\Api\Options\SelectRegionController;
+use App\Http\Controllers\Api\Options\SelectRegistrationController;
 use App\Http\Controllers\Api\Settings\RoleController;
 use App\Http\Controllers\Api\Settings\UserController;
 use Illuminate\Support\Facades\Route;
@@ -148,6 +150,13 @@ Route::prefix('options')->name('options.')->group(function () {
 
         // Show spesific data
         Route::get('village/{id}', 'village')->name('village');
+      });
+
+      Route::controller(SelectRegistrationController::class)->group(function () {
+        Route::get('registrations', 'registrations')->name('registrations');
+
+        // Show specific registration data
+        Route::get('registration/{registration}', 'registration')->name('registration');
       });
     });
 });

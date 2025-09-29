@@ -2,6 +2,9 @@
 
 namespace App\Http\Resources\Finances;
 
+use App\Enums\Finances\PaymentSystem;
+use App\Enums\Finances\ProgramType;
+use App\Enums\Finances\StudentCategory;
 use Illuminate\Http\Request;
 use App\Http\Resources\Utils\DateTimeResource;
 
@@ -14,6 +17,7 @@ class RegistrationResource extends JsonResource
   public function toArray(Request $request): array
   {
     return [
+      'id' => $this->id,
       'uuid' => $this->uuid,
       'student_id' => $this->student_id,
       'student' => new StudentResource($this->whenLoaded('student')),
@@ -21,9 +25,12 @@ class RegistrationResource extends JsonResource
       'registration_batch' => new RegistrationBatchResource($this->whenLoaded('registrationBatch')),
       'registration_number' => $this->registration_number,
       'shipping_address' => $this->shipping_address,
-      'student_category' => $this->student_category,
-      'payment_system' => $this->payment_system,
-      'program_type' => $this->program_type,
+      // 'student_category' => $this->student_category,
+      'student_category' => StudentCategory::tryFrom($this->student_category)?->label(),
+      // 'payment_system' => $this->payment_system,
+      'payment_system' => PaymentSystem::tryFrom($this->payment_system)?->label(),
+      // 'program_type' => $this->program_type,
+      'program_type' => ProgramType::tryFrom($this->program_type)?->label(),
       'tutorial_service' => $this->tutorial_service,
       'semester' => $this->semester,
       'interested_spp' => $this->interested_spp,
