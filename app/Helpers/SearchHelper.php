@@ -39,8 +39,6 @@ class SearchHelper
     });
   }
 
-
-
   public static function applySearchQuery(
     Builder $query,
     Request $request,

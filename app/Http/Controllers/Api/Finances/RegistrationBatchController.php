@@ -13,73 +13,66 @@ use App\Models\RegistrationBatch;
 
 class RegistrationBatchController extends Controller
 {
-    protected RegistrationBatchService $registrationBatchService;
+  /**
+   * The Registration Batch Service instance used by this controller.
+   */
+  protected $registrationBatchService;
 
-    // public function __construct(RegistrationBatchService $registrationBatchService)
-    // {
-    //     $this->registrationBatchService = $registrationBatchService;
-    // }
+  /**
+   * Create a new controller instance.
+   *
+   * @return void
+   */
+  public function __construct(
+    RegistrationBatchService $registrationBatchService
+  ) {
+    $this->registrationBatchService = $registrationBatchService;
+  }
 
-    public function index(Request $request)
-    {
-        $query = SearchHelper::applySearchQuery(
-            query: RegistrationBatch::query(),
-            request: $request,
-            searchableFields: [
-                'name',
-                'description',
-                'notes'
-            ],
-            sortableFields: [
-                'name',
-                'start_date',
-                'end_date',
-                'created_at'
-            ],
-            filterFields: []
-        );
+  public function index(Request $request)
+  {
+    $query = SearchHelper::applySearchQuery(
+      query: $this->registrationBatchService->query(),
+      request: $request,
+      searchableFields: [
+        'name',
+        'description',
+        'notes'
+      ],
+      sortableFields: [
+        'name',
+        'start_date',
+        'end_date',
+        'created_at'
+      ],
+      filterFields: []
+    );
 
-        $perPage = $request->input('per_page', 10);
-        $result = $query->latest();
+    $perPage = $request->input('per_page', 10);
+    $result = $query->latest();
 
-        return RegistrationBatchResource::collection(
-            $perPage == -1 ? $result->get() : $result->paginate($perPage)
-        );
-    }
+    return RegistrationBatchResource::collection(
+      $perPage == -1 ? $result->get() : $result->paginate($perPage)
+    );
+  }
 
-    public function store(RegistrationBatchRequest $request): JsonResponse
-    {
-        $validatedData = $request->validated();
+  public function store(RegistrationBatchRequest $request): JsonResponse
+  {
+    return $this->registrationBatchService->handleStore($request);
+  }
 
-        $registrationBatch = RegistrationBatch::create($validatedData);
+  public function show(RegistrationBatch $registrationBatch): RegistrationBatchResource
+  {
+    return new RegistrationBatchResource($registrationBatch);
+  }
 
-        return response()->json([
-            'message' => 'RegistrationBatch created successfully.',
-            'data' => new RegistrationBatchResource($registrationBatch),
-        ], 201);
-    }
+  public function update(RegistrationBatchRequest $request, RegistrationBatch $registrationBatch): JsonResponse
+  {
+    return $this->registrationBatchService->handleUpdate($request, $registrationBatch);
+  }
 
-    public function show(RegistrationBatch $registrationBatch): RegistrationBatchResource
-    {
-        return new RegistrationBatchResource($registrationBatch);
-    }
-
-    public function update(RegistrationBatchRequest $request, RegistrationBatch $registrationBatch): JsonResponse
-    {
-        $registrationBatch = $this->registrationBatchService->handleUpdate($request, $registrationBatch);
-
-        return response()->json([
-            'message' => 'RegistrationBatch updated successfully.',
-            'data' => new RegistrationBatchResource($registrationBatch),
-        ]);
-    }
-
-    public function destroy(RegistrationBatch $registrationBatch): JsonResponse
-    {
-        $this->registrationBatchService->handleDelete($registrationBatch);
-
-        return response()->json([
-            'message' => 'RegistrationBatch deleted successfully.'
-        ]);
-    }
+  public function destroy(RegistrationBatch $registrationBatch): JsonResponse
+  {
+    return $this->registrationBatchService->handleDelete($registrationBatch);
+  }
 }

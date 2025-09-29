@@ -127,6 +127,34 @@ class PermissionSeeder extends Seeder
     'billings.update',
     'billings.destroy',
     'billings.bulk',
+
+    // API Registrations
+    'registrations.index',
+    'registrations.store',
+    'registrations.show',
+    'registrations.update',
+    'registrations.destroy',
+
+    // API Invoices
+    'invoices.index',
+    'invoices.store',
+    'invoices.show',
+    'invoices.update',
+    'invoices.destroy',
+
+    // API Payments
+    'payments.index',
+    'payments.store',
+    'payments.show',
+    'payments.update',
+    'payments.destroy',
+
+    // API Registration Batches
+    'registration-batches.index',
+    'registration-batches.store',
+    'registration-batches.show',
+    'registration-batches.update',
+    'registration-batches.destroy',
   ];
 
   /**
@@ -146,6 +174,10 @@ class PermissionSeeder extends Seeder
     'grades' => 10,
     'recommendations' => 11,
     'billings' => 12,
+    'registrations' => 13,
+    'invoices' => 14,
+    'payments' => 15,
+    'registration-batches' => 16,
   ];
 
   /**

@@ -41,13 +41,13 @@
   ),
   'maatwebsite/excel' => 
   array (
-    'providers' => 
-    array (
-      0 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
-    ),
     'aliases' => 
     array (
       'Excel' => 'Maatwebsite\\Excel\\Facades\\Excel',
+    ),
+    'providers' => 
+    array (
+      0 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
     ),
   ),
   'nesbot/carbon' => 
@@ -80,14 +80,14 @@
   ),
   'yaza/laravel-repository-service' => 
   array (
+    'aliases' => 
+    array (
+      'LaravelEasyRepository' => 'LaravelEasyRepository\\LaravelEasyRepositoryFacade',
+    ),
     'providers' => 
     array (
       0 => 'LaravelEasyRepository\\LaravelEasyRepositoryServiceProvider',
       1 => 'LaravelEasyRepository\\RepositoryServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'LaravelEasyRepository' => 'LaravelEasyRepository\\LaravelEasyRepositoryFacade',
     ),
   ),
 );
