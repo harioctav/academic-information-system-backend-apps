@@ -117,4 +117,17 @@ return [
 
   'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+  /*
+  |--------------------------------------------------------------------------
+  | Session Lifetime
+  |--------------------------------------------------------------------------
+  |
+  | Here you may define the amount of minutes before a user session expires
+  | and users are asked to re-authenticate. By default, the timeout lasts
+  | for 120 minutes (2 hours).
+  |
+  */
+
+  'session_lifetime' => env('AUTH_SESSION_LIFETIME', 120),
+
 ];

@@ -75,4 +75,17 @@ class RegistrationBatchController extends Controller
   {
     return $this->registrationBatchService->handleDelete($registrationBatch);
   }
+
+  /**
+   * Remove multiple resources from storage.
+   */
+  public function bulkDestroy(Request $request): JsonResponse
+  {
+    $request->validate([
+      'ids' => 'required|array',
+      'ids.*' => 'exists:registration_batches,uuid'
+    ]);
+
+    return $this->registrationBatchService->handleBulkDelete($request->ids);
+  }
 }

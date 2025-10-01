@@ -116,27 +116,21 @@ class RegistrationController extends Controller
     ]);
   }
 
-
   public function destroy(Registration $registration): JsonResponse
   {
-    $this->registrationService->handleDelete($registration);
-
-    return response()->json([
-      'message' => 'Registration deleted successfully.'
-    ]);
+    return $this->registrationService->handleDelete($registration);
   }
 
+  /**
+   * Remove multiple resources from storage.
+   */
   public function bulkDestroy(Request $request): JsonResponse
   {
     $request->validate([
       'ids' => 'required|array',
-      'ids.*' => 'exists:registrations,uuid',
+      'ids.*' => 'exists:registrations,uuid'
     ]);
 
-    $this->registrationService->handleBulkDelete($request->ids);
-
-    return response()->json([
-      'message' => 'Registrations deleted successfully.'
-    ]);
+    return $this->registrationService->handleBulkDelete($request->ids);
   }
 }

@@ -134,6 +134,7 @@ class PermissionSeeder extends Seeder
     'registrations.show',
     'registrations.update',
     'registrations.destroy',
+    'registrations.bulk',
 
     // API Invoices
     'invoices.index',
@@ -148,6 +149,8 @@ class PermissionSeeder extends Seeder
     'payments.show',
     'payments.update',
     'payments.destroy',
+    'payments.bulk',
+    'payments.status',
 
     // API Registration Batches
     'registration-batches.index',
@@ -155,6 +158,7 @@ class PermissionSeeder extends Seeder
     'registration-batches.show',
     'registration-batches.update',
     'registration-batches.destroy',
+    'registration-batches.bulk',
   ];
 
   /**

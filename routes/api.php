@@ -282,7 +282,8 @@ Route::middleware([
         ->name('payments.')
         ->controller(PaymentController::class)
         ->group(function () {
-          // Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+          Route::put('status/{payment}', 'status')->name('status');
+          Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
         });
       Route::apiResource('payments', PaymentController::class);
 
@@ -300,7 +301,7 @@ Route::middleware([
         ->name('registration-batches.')
         ->controller(RegistrationBatchController::class)
         ->group(function () {
-          // Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+          Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
         });
       Route::apiResource('registration-batches', RegistrationBatchController::class);
 
@@ -309,7 +310,7 @@ Route::middleware([
         ->name('registrations.')
         ->controller(RegistrationController::class)
         ->group(function () {
-          // Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+          Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
         });
       Route::apiResource('registrations', RegistrationController::class);
     });

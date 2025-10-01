@@ -2,10 +2,12 @@
 
 namespace App\Services\RegistrationBatch;
 
+use App\Enums\WhereOperator;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\RegistrationBatch\RegistrationBatchRepository;
 use App\Http\Resources\Finances\RegistrationBatchResource;
 use App\Models\RegistrationBatch;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class RegistrationBatchServiceImplement extends ServiceApi implements RegistrationBatchService
@@ -83,6 +85,35 @@ class RegistrationBatchServiceImplement extends ServiceApi implements Registrati
 
       return $this->setMessage($this->delete_message)->toJson();
     } catch (\Exception $e) {
+      return $this->setMessage($e->getMessage())->toJson();
+    }
+  }
+
+  public function handleBulkDelete(array $uuid)
+  {
+    DB::beginTransaction();
+    try {
+      $registrationBatches = $this->getWhere(
+        wheres: [
+          'uuid' => [
+            'operator' => WhereOperator::In->value,
+            'value' => $uuid
+          ]
+        ]
+      )->get();
+
+      $deleted = 0;
+
+      foreach ($registrationBatches as $registrationBatch) {
+        $registrationBatch->delete();
+        $deleted++;
+      }
+
+      DB::commit();
+
+      return $this->setMessage("Berhasil menghapus {$deleted} Data {$this->title}")->toJson();
+    } catch (\Exception $e) {
+      DB::rollBack();
       return $this->setMessage($e->getMessage())->toJson();
     }
   }

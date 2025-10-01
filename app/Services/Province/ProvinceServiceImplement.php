@@ -143,6 +143,7 @@ class ProvinceServiceImplement extends ServiceApi implements ProvinceService
        */
       return $this->setMessage("Berhasil menghapus {$deleted} Data {$this->title}")->toJson();
     } catch (\Exception $e) {
+      DB::rollBack();
       return $this->setMessage($e->getMessage())->toJson();
     }
   }
