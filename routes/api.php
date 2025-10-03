@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Finances\RegistrationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\NotificationController;
@@ -19,10 +20,13 @@ use App\Http\Controllers\Api\Locations\ProvinceController;
 use App\Http\Controllers\Api\Auth\ForgotPasswordController;
 use App\Http\Controllers\Api\Academics\MajorSubjectController;
 use App\Http\Controllers\Api\Evaluations\RecommendationController;
+use App\Http\Controllers\Api\Finances\InvoiceController;
 use App\Http\Controllers\Api\Settings\PermissionCategoryController;
 use App\Http\Controllers\Api\Finances\PaymentController;
+use App\Http\Controllers\Api\Finances\RegistrationBatchController;
 
 require_once __DIR__ . '/api/finance.php';
+
 // Auth routes with rate limiting
 Route::prefix('auth')
   ->controller(AuthController::class)
@@ -95,16 +99,16 @@ Route::middleware([
 });
 
 // Payments
-  Route::prefix('payments')
-    ->name('payments.')
-    ->controller(PaymentController::class)
-    ->group(function () {
-      Route::get('/', 'index')->name('index');
-      Route::post('/', 'store')->name('store');
-      Route::get('{payment}', 'show')->name('show');
-      Route::put('{payment}', 'update')->name('update');
-      Route::delete('{payment}', 'destroy')->name('destroy');
-    });
+Route::prefix('payments')
+  ->name('payments.')
+  ->controller(PaymentController::class)
+  ->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::post('/', 'store')->name('store');
+    Route::get('{payment}', 'show')->name('show');
+    Route::put('{payment}', 'update')->name('update');
+    Route::delete('{payment}', 'destroy')->name('destroy');
+  });
 
 // Protected routes with enhanced security
 Route::middleware([
@@ -272,5 +276,42 @@ Route::middleware([
           Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
         });
       Route::apiResource('billings', BillingController::class);
+
+      // Payments Menu
+      Route::prefix('payments')
+        ->name('payments.')
+        ->controller(PaymentController::class)
+        ->group(function () {
+          Route::put('status/{payment}', 'status')->name('status');
+          Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+        });
+      Route::apiResource('payments', PaymentController::class);
+
+      // Invoices Menu
+      Route::prefix('invoices')
+        ->name('invoices.')
+        ->controller(InvoiceController::class)
+        ->group(function () {
+          // Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+        });
+      Route::apiResource('invoices', InvoiceController::class);
+
+      // Registrations Batch Menu
+      Route::prefix('registration-batches')
+        ->name('registration-batches.')
+        ->controller(RegistrationBatchController::class)
+        ->group(function () {
+          Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+        });
+      Route::apiResource('registration-batches', RegistrationBatchController::class);
+
+      // Registrations Menu
+      Route::prefix('registrations')
+        ->name('registrations.')
+        ->controller(RegistrationController::class)
+        ->group(function () {
+          Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
+        });
+      Route::apiResource('registrations', RegistrationController::class);
     });
 });

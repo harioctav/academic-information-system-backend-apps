@@ -15,9 +15,9 @@ enum PaymentStatus: string
   public function label(): string|null
   {
     return match ($this) {
-      self::Pending->value => 'Pending',
-      self::Confirmed->value => 'Confirmed',
-      self::Rejected->value => 'Rejected',
+      self::Pending => 'Pending',
+      self::Confirmed => 'Confirmed',
+      self::Rejected => 'Rejected',
     };
   }
 }

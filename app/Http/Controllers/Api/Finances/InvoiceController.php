@@ -10,56 +10,55 @@ use App\Http\Resources\Finances\InvoiceResource;
 
 class InvoiceController extends Controller
 {
-    protected InvoiceService $invoiceService;
+  protected InvoiceService $invoiceService;
 
-    public function __construct(InvoiceService $invoiceService)
-    {
-        $this->invoiceService = $invoiceService;
-    }
+  public function __construct(InvoiceService $invoiceService)
+  {
+    $this->invoiceService = $invoiceService;
+  }
 
-    public function index()
-    {
-        $invoices = $this->invoiceService
-            ->query()
-            ->with(['student', 'billing', 'details'])
-            ->latest()
-            ->get();
+  public function index()
+  {
+    $invoices = $this->invoiceService
+      ->query()
+      ->with(['student', 'billing', 'details'])
+      ->latest()
+      ->get();
 
-        return InvoiceResource::collection($invoices);
-    }
+    return InvoiceResource::collection($invoices);
+  }
 
-    public function store(InvoiceStoreRequest $request)
-    {
-        $invoice = $this->invoiceService->handleStore($request->validated());
+  public function store(InvoiceStoreRequest $request)
+  {
+    $invoice = $this->invoiceService->handleStore($request->validated());
 
-        return new InvoiceResource($invoice);
-    }
+    return new InvoiceResource($invoice);
+  }
 
-    public function show(string $uuid)
-    {
-        $invoice = $this->invoiceService->handleShow($uuid);
+  public function show(string $uuid)
+  {
+    $invoice = $this->invoiceService->handleShow($uuid);
 
-        return new InvoiceResource($invoice);
-    }
+    return new InvoiceResource($invoice);
+  }
 
-    public function update(InvoiceUpdateRequest $request, string $uuid)
-    {
-        $invoice = $this->invoiceService->handleShow($uuid); // Ambil invoice by UUID
-        $updatedInvoice = $this->invoiceService->handleUpdate($request->validated(), $invoice);
+  public function update(InvoiceUpdateRequest $request, string $uuid)
+  {
+    $invoice = $this->invoiceService->handleShow($uuid); // Ambil invoice by UUID
+    $updatedInvoice = $this->invoiceService->handleUpdate($request->validated(), $invoice);
 
-        return new InvoiceResource($updatedInvoice);
-    }
+    return new InvoiceResource($updatedInvoice);
+  }
 
-    public function showByBilling(string $uuid)
-    {
-        $invoices = $this->invoiceService->handleShowByBilling($uuid);
-        return InvoiceResource::collection($invoices);
-    }
+  public function showByBilling(string $uuid)
+  {
+    $invoices = $this->invoiceService->handleShowByBilling($uuid);
+    return InvoiceResource::collection($invoices);
+  }
 
-    public function showByNim(string $nim)
-    {
-        $invoices = $this->invoiceService->handleShowByNim($nim);
-        return InvoiceResource::collection($invoices);
-    }
-
+  public function showByNim(string $nim)
+  {
+    $invoices = $this->invoiceService->handleShowByNim($nim);
+    return InvoiceResource::collection($invoices);
+  }
 }

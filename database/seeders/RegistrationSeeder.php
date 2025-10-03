@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Finances\PaymentSystem;
+use App\Enums\Finances\ProgramType;
+use App\Enums\Finances\StudentCategory;
 use App\Helpers\SeederProgressBar;
 use App\Models\Registration;
 use App\Models\RegistrationBatch;
@@ -71,10 +74,10 @@ class RegistrationSeeder extends Seeder
         $sequence = $faker->unique()->numberBetween(1, 9999);
         $registrationNumber = 'REG-' . $year . '-' . str_pad($sequence, 4, '0', STR_PAD_LEFT);
 
-        // Random registration data
-        $studentCategories = ['maba', 'mahasiswa_lama', 'pindahan', 'alih_kredit'];
-        $paymentSystems = ['sipas', 'bank_transfer', 'virtual_account', 'e_wallet'];
-        $programTypes = ['spp', 'non_spp', 'beasiswa', 'cicilan'];
+        // Random registration data using enums
+        $studentCategories = array_column(StudentCategory::cases(), 'value');
+        $paymentSystems = array_column(PaymentSystem::cases(), 'value');
+        $programTypes = array_column(ProgramType::cases(), 'value');
 
         $registration = Registration::create([
           'uuid' => Str::uuid(),
@@ -87,7 +90,7 @@ class RegistrationSeeder extends Seeder
           'program_type' => $faker->randomElement($programTypes),
           'tutorial_service' => $faker->boolean(70), // 70% chance true
           'semester' => $faker->numberBetween(1, 8),
-          'interested_spp' => $faker->boolean(80), // 80% chance true
+          'interested_spp' => $faker->boolean(10), // 80% chance true
           'created_at' => $faker->dateTimeBetween('-1 year', 'now'),
           'updated_at' => now(),
         ]);

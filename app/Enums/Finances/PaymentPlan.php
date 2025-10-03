@@ -14,8 +14,8 @@ enum PaymentPlan: string
   public function label(): string|null
   {
     return match ($this) {
-      self::Cicil->value => 'Cicil',
-      self::Lunas->value => 'Lunas',
+      self::Cicil => 'Cicil',
+      self::Lunas => 'Lunas',
     };
   }
 }
