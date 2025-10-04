@@ -6,6 +6,7 @@ use App\Helpers\SearchHelper;
 use App\Models\Payment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Finances\PaymentRequest;
+use App\Http\Requests\Finances\PaymentUpdateRequest;
 use App\Http\Requests\Finances\PaymentStatusRequest;
 use App\Http\Resources\Finances\PaymentResource;
 use App\Services\Payment\PaymentService;
@@ -67,7 +68,7 @@ class PaymentController extends Controller
     return new PaymentResource($payment);
   }
 
-  public function update(PaymentRequest $request, Payment $payment): JsonResponse
+  public function update(PaymentUpdateRequest $request, Payment $payment): JsonResponse
   {
     return $this->paymentService->handleUpdate($request, $payment);
   }

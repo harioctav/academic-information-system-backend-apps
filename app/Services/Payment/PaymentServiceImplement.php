@@ -80,18 +80,18 @@ class PaymentServiceImplement extends ServiceApi implements PaymentService
     try {
       $data = $request->validated();
 
-      // Handle file upload for proof_of_payment if provided
-      if ($request->hasFile('proof_of_payment')) {
-        $result = $this->upload(
-          file: $request->file('proof_of_payment'),
-          path: 'image/proof_of_payments',
-        );
+      // If proof_of_payment (base64 string) exists, decode & store it
+      if (!empty($data['proof_of_payment'])) {
+          $photoPath = $this->handleBase64Upload(
+              $data['proof_of_payment'], 
+              'image/proof_of_payments'
+          );
 
-        if ($result['success']) {
-          $data['proof_of_payment'] = $result['path'];
-        } else {
-          return $this->setMessage($this->error_message)->toJson();
-        }
+          if ($photoPath) {
+              $data['proof_of_payment'] = $photoPath;
+          } else {
+              return $this->setMessage('Invalid proof_of_payment file')->toJson(422);
+          }
       }
 
       $payment->update($data);
@@ -163,5 +163,23 @@ class PaymentServiceImplement extends ServiceApi implements PaymentService
     } catch (\Exception $e) {
       return $this->setMessage($e->getMessage())->toJson();
     }
+  }
+
+  protected function handleBase64Upload(?string $base64, string $directory = 'payments'): ?string
+  {
+      if (!$base64 || !preg_match('/^data:image\/(\w+);base64,/', $base64, $type)) {
+          return null;
+      }
+
+      $data = substr($base64, strpos($base64, ',') + 1);
+      $data = base64_decode($data);
+
+      $extension = strtolower($type[1]);
+      $filename = $directory . '/' . uniqid() . '.' . $extension;
+
+
+      Storage::disk('public')->put($filename, $data);
+
+      return $filename;
   }
 }
