@@ -98,18 +98,6 @@ Route::middleware([
     });
 });
 
-// Payments
-Route::prefix('payments')
-  ->name('payments.')
-  ->controller(PaymentController::class)
-  ->group(function () {
-    Route::get('/', 'index')->name('index');
-    Route::post('/', 'store')->name('store');
-    Route::get('{payment}', 'show')->name('show');
-    Route::put('{payment}', 'update')->name('update');
-    Route::delete('{payment}', 'destroy')->name('destroy');
-  });
-
 // Protected routes with enhanced security
 Route::middleware([
   'auth:api',

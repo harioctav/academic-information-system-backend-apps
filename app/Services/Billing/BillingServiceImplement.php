@@ -74,6 +74,9 @@ class BillingServiceImplement extends ServiceApi implements BillingService
 
       $billing = $this->mainRepository->create($data);
 
+      // Load relationships to ensure consistent data
+      $billing->load(['student', 'registration']);
+
       return $this->setMessage($this->create_message)
         ->setData(new BillingResource($billing))
         ->toJson();
@@ -86,6 +89,9 @@ class BillingServiceImplement extends ServiceApi implements BillingService
   {
     try {
       $billing->update($request->validated());
+
+      // Reload the model with relationships to ensure consistent data
+      $billing->load(['student', 'registration']);
 
       return $this->setMessage($this->update_message)
         ->setData(new BillingResource($billing))

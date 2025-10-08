@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Academics\StudentController;
 use App\Http\Controllers\Api\Academics\SubjectController;
 use App\Http\Controllers\Api\Evaluations\GradeController;
 use App\Http\Controllers\Api\Evaluations\RecommendationController;
+use App\Http\Controllers\Api\Finances\BillingController;
 use App\Http\Controllers\Api\Finances\RegistrationBatchController;
 use App\Http\Controllers\Api\Finances\RegistrationController;
 use App\Http\Controllers\Api\Locations\DistrictController;
@@ -148,6 +149,13 @@ Route::prefix('options')->name('options.')->group(function () {
         ->group(function () {
           Route::get('registration-batches', 'index')->name('index');
           Route::get('registration-batches/{registrationBatch}', 'show')->name('show');
+        });
+
+      Route::controller(BillingController::class)
+        ->name('billings.')
+        ->group(function () {
+          Route::get('billings', 'index')->name('index');
+          Route::get('billings/{billing}', 'show')->name('show');
         });
     });
 

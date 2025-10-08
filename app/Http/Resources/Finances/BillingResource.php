@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Finances;
 
+use App\Enums\ActiveType;
+use App\Enums\Finances\SettlementStatus;
 use Illuminate\Http\Request;
 use App\Http\Resources\Utils\DateTimeResource;
 
