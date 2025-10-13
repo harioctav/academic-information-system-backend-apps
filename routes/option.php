@@ -157,6 +157,13 @@ Route::prefix('options')->name('options.')->group(function () {
           Route::get('billings', 'index')->name('index');
           Route::get('billings/{billing}', 'show')->name('show');
         });
+
+      Route::controller(RegistrationController::class)
+        ->name('registrations.')
+        ->group(function () {
+          Route::get('registrations', 'index')->name('index');
+          Route::get('registrations/{registration}', 'show')->name('show');
+        });
     });
 
   // Select Dropdowns

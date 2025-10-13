@@ -18,5 +18,6 @@ interface RegistrationBatchService extends BaseService
   public function handleStore($request);
   public function handleUpdate($request, RegistrationBatch $registrationBatch);
   public function handleDelete(RegistrationBatch $registrationBatch);
+  public function handleChangeStatus(RegistrationBatch $registrationBatch);
   public function handleBulkDelete(array $uuid);
 }

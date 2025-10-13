@@ -158,6 +158,7 @@ class PermissionSeeder extends Seeder
     'registration-batches.show',
     'registration-batches.update',
     'registration-batches.destroy',
+    'registration-batches.status',
     'registration-batches.bulk',
   ];
 

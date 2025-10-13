@@ -76,6 +76,11 @@ class RegistrationBatchController extends Controller
     return $this->registrationBatchService->handleDelete($registrationBatch);
   }
 
+  public function status(RegistrationBatch $registrationBatch): JsonResponse
+  {
+    return $this->registrationBatchService->handleChangeStatus($registrationBatch);
+  }
+
   /**
    * Remove multiple resources from storage.
    */

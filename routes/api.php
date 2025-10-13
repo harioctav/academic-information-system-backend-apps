@@ -289,6 +289,7 @@ Route::middleware([
         ->name('registration-batches.')
         ->controller(RegistrationBatchController::class)
         ->group(function () {
+          Route::patch('status/{registrationBatch}', 'status')->name('status');
           Route::delete('bulk-delete', 'bulkDestroy')->name('bulk');
         });
       Route::apiResource('registration-batches', RegistrationBatchController::class);

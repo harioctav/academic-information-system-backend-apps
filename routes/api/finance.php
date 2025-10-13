@@ -2,8 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Finances\RegistrationController;
-use App\Http\Controllers\Api\Finances\RegistrationBatchController;
-use App\Http\Controllers\Api\Finances\BillingController;
 use App\Http\Controllers\Api\Finances\InvoiceController;
 use App\Http\Controllers\Api\Finances\PaymentController;
 use App\Models\Payment;

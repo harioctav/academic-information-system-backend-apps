@@ -246,6 +246,7 @@ class UserServiceImplement extends ServiceApi implements UserService
 
       return $this->setMessage($this->status_change_message)->toJson();
     } catch (\Exception $e) {
+      DB::rollBack();
       $this->exceptionResponse($e);
       return null;
     }

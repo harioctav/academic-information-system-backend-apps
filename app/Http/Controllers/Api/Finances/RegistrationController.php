@@ -24,6 +24,7 @@ class RegistrationController extends Controller
   {
     $this->registrationService = $registrationService;
   }
+
   # ==================== PUBIC ==================== #
   public function showBatch($uuid): JsonResponse
   {

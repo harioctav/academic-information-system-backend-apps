@@ -55,7 +55,6 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
       $payload['registration_number'] = $this->generateRegistrationNumber();
       $result = $this->mainRepository->create($payload);
 
-
       return $this->setMessage($this->create_message)
         ->setData(new RegistrationResource($result))
         ->toJson();

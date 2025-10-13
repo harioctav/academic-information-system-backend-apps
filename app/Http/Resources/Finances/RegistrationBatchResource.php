@@ -18,6 +18,7 @@ class RegistrationBatchResource extends JsonResource
       'start_date' => $this->start_date->format('Y-m-d'),
       'end_date' => $this->end_date->format('Y-m-d'),
       'notes' => $this->notes,
+      'status' => $this->status,
       'created_at' => DateTimeResource::make($this->created_at),
       'updated_at' => DateTimeResource::make($this->updated_at)
     ];
