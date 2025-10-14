@@ -5,6 +5,7 @@ namespace App\Services\Student;
 use App\Enums\Academics\SubjectNote;
 use App\Enums\Evaluations\GradeType;
 use App\Enums\Evaluations\RecommendationNote;
+use App\Enums\GeneralConstant;
 use App\Enums\WhereOperator;
 use App\Helpers\Helper;
 use App\Http\Resources\Academics\StudentResource;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Response;
 use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 class StudentServiceImplement extends ServiceApi implements StudentService
@@ -76,6 +78,50 @@ class StudentServiceImplement extends ServiceApi implements StudentService
       orderBy: $orderBy,
       orderByType: $orderByType
     );
+  }
+
+  public function getStudentByNim(string $nim)
+  {
+    $student = $this->mainRepository->getWhere(
+      wheres: [
+        'nim' => $nim
+      ]
+    )->first();
+
+    if (!$student) {
+      return Response::json([
+        'code' => HttpFoundationResponse::HTTP_NOT_FOUND,
+        'message' => 'Data mahasiswa tidak ditemukan. Silahkan cek kembali NIM yang anda masukkan.',
+      ], HttpFoundationResponse::HTTP_NOT_FOUND);
+    }
+
+    // Validasi status aktivitas mahasiswa
+    if ($student->status_activity === GeneralConstant::InActive) {
+      return Response::json([
+        'code' => HttpFoundationResponse::HTTP_FORBIDDEN,
+        'message' => 'Mahasiswa saat ini sedang tidak aktif.',
+      ], HttpFoundationResponse::HTTP_FORBIDDEN);
+    }
+
+    return [
+      'nim' => $student->nim,
+      'name' => $student->name,
+      'phone' => $student->phone,
+      'major' => $student->major?->name,
+      'address_line' => ($student->province?->name ?? '') . ' ' .
+        ($student->regency?->name ?? '') . ' ' .
+        ($student->district?->name ?? '') . ' ' .
+        ($student->village?->name ?? '') . ' ' .
+        (optional($student->domicileAddress)->address ?? ''),
+      'address' => [
+        'province' => $student->province?->name,
+        'regency' => $student->regency?->name,
+        'district' => $student->district?->name,
+        'village' => $student->village?->name,
+        'pos_code' => $student->village?->pos_code,
+        'detail' => optional($student->domicileAddress)->address,
+      ],
+    ];
   }
 
   public function getAcademicInfo(\App\Models\Student $student)

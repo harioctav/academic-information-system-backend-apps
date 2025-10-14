@@ -91,14 +91,17 @@ class RegistrationRequest extends FormRequest
   {
     return [
       'registration_batch_id' => 'Batch Pendaftaran',
+      'registration_batch_uuid' => 'Batch Pendaftaran',
       'student_id' => 'Mahasiswa',
+      'nim' => 'NIM Mahasiswa',
       'shipping_address' => 'Alamat Pengiriman',
       'student_category' => 'Kategori Mahasiswa',
       'payment_system' => 'Sistem Pembayaran',
       'program_type' => 'Jenis Program',
       'tutorial_service' => 'Layanan Tutorial',
       'semester' => 'Semester',
-      'interested_spp' => 'Tertarik SPP'
+      'interested_spp' => 'Tertarik SPP',
+      'is_update' => 'Status Update'
     ];
   }
 }

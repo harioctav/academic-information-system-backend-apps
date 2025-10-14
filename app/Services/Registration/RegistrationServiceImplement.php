@@ -5,12 +5,16 @@ namespace App\Services\Registration;
 use App\Enums\WhereOperator;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Registration\RegistrationRepository;
+use App\Repositories\RegistrationBatch\RegistrationBatchRepository;
 use App\Http\Resources\Finances\RegistrationResource;
 use App\Models\Student;
 use App\Models\Registration;
 use App\Models\RegistrationBatch;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 class RegistrationServiceImplement extends ServiceApi implements RegistrationService
 {
@@ -21,10 +25,14 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
   protected string $delete_message = "Data Pendaftaran berhasil dihapus";
 
   protected RegistrationRepository $mainRepository;
+  protected RegistrationBatchRepository $registrationBatchRepository;
 
-  public function __construct(RegistrationRepository $mainRepository)
-  {
+  public function __construct(
+    RegistrationRepository $mainRepository,
+    RegistrationBatchRepository $registrationBatchRepository
+  ) {
     $this->mainRepository = $mainRepository;
+    $this->registrationBatchRepository = $registrationBatchRepository;
   }
 
   public function query()
@@ -66,21 +74,36 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
   public function handleRegistration($request)
   {
     try {
+      DB::beginTransaction();
+
       $payload = $request->validated();
 
       $student = Student::where('nim', $payload['nim'])->first();
+
       if (!$student) {
-        return $this->setMessage("Student with NIM {$payload['nim']} not found")->toJson();
+        DB::rollBack();
+        return Response::json([
+          'code' => HttpFoundationResponse::HTTP_NOT_FOUND,
+          'message' => 'Data mahasiswa tidak ditemukan. Silahkan cek kembali NIM yang anda masukkan.',
+        ], HttpFoundationResponse::HTTP_NOT_FOUND);
       }
 
-      $batch = RegistrationBatch::where('uuid', $payload['registration_batch_uuid'])->first();
+      $batch = $this->registrationBatchRepository->getWhere(
+        wheres: [
+          'uuid' => $payload['registration_batch_uuid']
+        ]
+      )->first();
+
       if (!$batch) {
-        return $this->setMessage("Registration batch not found")->toJson();
+        DB::rollBack();
+        return Response::json([
+          'code' => HttpFoundationResponse::HTTP_NOT_FOUND,
+          'message' => 'Data pendaftaran tidak ditemukan. Silahkan cek kembali UUID yang anda masukkan.',
+        ], HttpFoundationResponse::HTTP_NOT_FOUND);
       }
 
       $payload['student_id'] = $student->id;
       $payload['registration_batch_id'] = $batch->id;
-
       $isUpdate = $payload['is_update'] ?? false;
 
       unset($payload['nim'], $payload['registration_batch_uuid'], $payload['is_update']);
@@ -91,11 +114,17 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
           ->first();
 
         if (!$registration) {
-          return $this->setMessage("Registration data not found for update")->toJson();
+          DB::rollBack();
+          return Response::json([
+            'code' => HttpFoundationResponse::HTTP_NOT_FOUND,
+            'message' => 'Data pendaftaran tidak ditemukan. Silahkan cek kembali UUID yang anda masukkan.',
+          ], HttpFoundationResponse::HTTP_NOT_FOUND);
         }
 
         // Update data registrasi
         $registration->update($payload);
+
+        DB::commit();
 
         return $this->setMessage("Registration updated successfully")
           ->setData(new RegistrationResource($registration))
@@ -107,7 +136,11 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
           ->exists();
 
         if ($exists) {
-          return $this->setMessage("Anda sudah registrasi")->toJson();
+          DB::rollBack();
+          return Response::json([
+            'code' => HttpFoundationResponse::HTTP_FORBIDDEN,
+            'message' => 'Anda sudah registrasi. Silahkan hubungi Admin untuk melakukan perubahan data.',
+          ], HttpFoundationResponse::HTTP_FORBIDDEN);
         }
 
         // Kalau belum ada, lanjut insert data baru
@@ -117,11 +150,14 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
 
         $result = $this->mainRepository->create($payload);
 
+        DB::commit();
+
         return $this->setMessage($this->create_message)
           ->setData(new RegistrationResource($result))
           ->toJson();
       }
     } catch (\Exception $e) {
+      DB::rollBack();
       return $this->setMessage($e->getMessage())->toJson();
     }
   }
@@ -216,7 +252,11 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
 
   public function getBatchByUuid(string $uuid): array
   {
-    $batch = RegistrationBatch::where('uuid', $uuid)->first();
+    $batch = $this->registrationBatchRepository->getWhere(
+      wheres: [
+        'uuid' => $uuid
+      ]
+    )->first();
 
     if (!$batch) {
       return [
@@ -227,8 +267,8 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
     }
 
     $startDate = Carbon::parse($batch->start_date);
-    $endDate   = Carbon::parse($batch->end_date);
-    $today     = Carbon::today();
+    $endDate = Carbon::parse($batch->end_date);
+    $today = Carbon::today();
 
     if ($today->lt($startDate)) {
       return [
@@ -249,14 +289,14 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
     }
 
     return [
-      'uuid'        => $batch->uuid,
-      'name'        => $batch->name,
+      'uuid' => $batch->uuid,
+      'name' => $batch->name,
       'description' => $batch->description,
-      'notes'       => $batch->notes,
-      'start_date'  => $startDate->format('d-m-Y'),
-      'end_date'    => $endDate->format('d-m-Y'),
-      'created_at'  => Carbon::parse($batch->created_at)->format('d-m-Y H:i:s'),
-      'updated_at'  => Carbon::parse($batch->updated_at)->format('d-m-Y H:i:s'),
+      'notes' => $batch->notes,
+      'start_date' => $startDate->format('d-m-Y'),
+      'end_date' => $endDate->format('d-m-Y'),
+      'created_at' => Carbon::parse($batch->created_at)->format('d-m-Y H:i:s'),
+      'updated_at' => Carbon::parse($batch->updated_at)->format('d-m-Y H:i:s'),
     ];
   }
 }

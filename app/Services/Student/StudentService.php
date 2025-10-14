@@ -16,6 +16,7 @@ interface StudentService extends BaseService
     $orderByType = null
   );
   public function getAcademicInfo(Student $student);
+  public function getStudentByNim(string $nim);
   public function handleStore($request);
   public function handleUpdate($request, Student $student);
   public function handleDestroy(Student $student);

@@ -160,4 +160,9 @@ class StudentController extends Controller
   {
     return $this->studentService->handleImport($request);
   }
+
+  public function getByNim(string $nim)
+  {
+    return $this->studentService->getStudentByNim($nim);
+  }
 }
