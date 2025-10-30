@@ -15,6 +15,7 @@ use Faker\Factory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
 
 class StudentSeeder extends Seeder
 {
@@ -24,82 +25,91 @@ class StudentSeeder extends Seeder
 
     $faker = Factory::create('id_ID');
 
-    $majorIds = Major::pluck('id')->toArray();
+    // Preload majors with codes to avoid DB hit in the loop
+    $majorIdToCode = Major::pluck('code', 'id')->toArray();
+    $majorIds = array_keys($majorIdToCode);
     $villageIds = Village::pluck('id')->toArray();
+
+    // Reduce memory during seeding
+    DB::disableQueryLog();
 
     DB::beginTransaction();
 
-    SeederProgressBar::withProgressBar($this->command, 350, function () use ($majorIds, $villageIds, $faker) {
-      $registrationYear = $faker->numberBetween(2020, 2024);
-      $registrationPeriod = $faker->randomElement(['GANJIL', 'GENAP']);
-      $initialRegistrationPeriod = "{$registrationYear} {$registrationPeriod}";
+    Model::withoutEvents(function () use ($majorIds, $majorIdToCode, $villageIds, $faker) {
+      SeederProgressBar::withProgressBar($this->command, 350, function () use ($majorIds, $majorIdToCode, $villageIds, $faker) {
+        $registrationYear = $faker->numberBetween(2020, 2024);
+        $registrationPeriod = $faker->randomElement(['GANJIL', 'GENAP']);
+        $initialRegistrationPeriod = "{$registrationYear} {$registrationPeriod}";
 
-      $major = Major::find($faker->randomElement($majorIds));
-      $randomNumber = str_pad($faker->unique()->numberBetween(1, 999), 3, '0', STR_PAD_LEFT);
-      $nim = "{$major->code}{$registrationYear}{$randomNumber}";
+        $majorId = $faker->randomElement($majorIds);
+        $majorCode = $majorIdToCode[$majorId] ?? 'XX';
+        $randomNumber = str_pad($faker->unique()->numberBetween(1, 999), 3, '0', STR_PAD_LEFT);
+        $nim = "{$majorCode}{$registrationYear}{$randomNumber}";
 
-      $phonePrefix = "628";
+        $phonePrefix = "628";
 
-      $student = Student::create([
-        'uuid' => Str::uuid(),
-        'major_id' => $major->id,
-        'nim' => $nim,
-        'nik' => $faker->unique()->nik(),
-        'name' => "{$faker->firstName()} {$faker->lastName()}",
-        'email' => $faker->unique()->safeEmail(),
-        'birth_date' => $faker->date(),
-        'birth_place' => $faker->city(),
-        'gender' => $faker->randomElement(
-          array_filter(
-            GenderType::cases(),
-            fn($gender) => $gender !== GenderType::Unknown
-          )
-        ),
-        'phone' => "{$phonePrefix}{$faker->unique()->numerify('##########')}",
-        'religion' => $faker->randomElement(
-          array_filter(
-            ReligionType::cases(),
-            fn($religion) => $religion !== ReligionType::Unknown
-          )
-        ),
-        'initial_registration_period' => $initialRegistrationPeriod,
-        'origin_department' => $faker->randomElement(['SMA', 'SMK', 'MA']),
-        'upbjj' => $faker->city(),
-        'status_registration' => $faker->randomElement(
-          array_filter(
-            StudentRegistrationStatus::cases(),
-            fn($status) => $status !== StudentRegistrationStatus::Unknown
-          )
-        ),
-        'status_activity' => $faker->boolean(80),
-        'parent_name' => "{$faker->firstName()} {$faker->lastName()}",
-        'parent_phone_number' => "{$phonePrefix}{$faker->unique()->numerify('##########')}",
-      ]);
-
-      $addresses = [
-        [
+        $student = Student::create([
           'uuid' => Str::uuid(),
-          'student_id' => $student->id,
-          'village_id' => $faker->randomElement($villageIds),
-          'type' => AddressType::Domicile->value,
-          'address' => $faker->streetAddress(),
-          'created_at' => now(),
-          'updated_at' => now(),
-        ],
-        [
-          'uuid' => Str::uuid(),
-          'student_id' => $student->id,
-          'village_id' => $faker->randomElement($villageIds),
-          'type' => AddressType::IdCard->value,
-          'address' => $faker->streetAddress(),
-          'created_at' => now(),
-          'updated_at' => now(),
-        ]
-      ];
+          'major_id' => $majorId,
+          'nim' => $nim,
+          'nik' => $faker->unique()->nik(),
+          'name' => "{$faker->firstName()} {$faker->lastName()}",
+          'email' => $faker->unique()->safeEmail(),
+          'birth_date' => $faker->date(),
+          'birth_place' => $faker->city(),
+          'gender' => $faker->randomElement(
+            array_filter(
+              GenderType::cases(),
+              fn($gender) => $gender !== GenderType::Unknown
+            )
+          ),
+          'phone' => "{$phonePrefix}{$faker->unique()->numerify('##########')}",
+          'religion' => $faker->randomElement(
+            array_filter(
+              ReligionType::cases(),
+              fn($religion) => $religion !== ReligionType::Unknown
+            )
+          ),
+          'initial_registration_period' => $initialRegistrationPeriod,
+          'origin_department' => $faker->randomElement(['SMA', 'SMK', 'MA']),
+          'upbjj' => $faker->city(),
+          'status_registration' => $faker->randomElement(
+            array_filter(
+              StudentRegistrationStatus::cases(),
+              fn($status) => $status !== StudentRegistrationStatus::Unknown
+            )
+          ),
+          'status_activity' => $faker->boolean(80),
+          'parent_name' => "{$faker->firstName()} {$faker->lastName()}",
+          'parent_phone_number' => "{$phonePrefix}{$faker->unique()->numerify('##########')}",
+        ]);
 
-      StudentAddress::insert($addresses);
+        $addresses = [
+          [
+            'uuid' => Str::uuid(),
+            'student_id' => $student->id,
+            'village_id' => $faker->randomElement($villageIds),
+            'type' => AddressType::Domicile->value,
+            'address' => $faker->streetAddress(),
+            'created_at' => now(),
+            'updated_at' => now(),
+          ],
+          [
+            'uuid' => Str::uuid(),
+            'student_id' => $student->id,
+            'village_id' => $faker->randomElement($villageIds),
+            'type' => AddressType::IdCard->value,
+            'address' => $faker->streetAddress(),
+            'created_at' => now(),
+            'updated_at' => now(),
+          ]
+        ];
 
-      return collect([$student]);
+        StudentAddress::insert($addresses);
+
+        // Return empty collection to avoid memory accumulation inside helper
+        return collect();
+      });
     });
 
     DB::commit();
