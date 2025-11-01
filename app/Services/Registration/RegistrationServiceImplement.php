@@ -162,11 +162,33 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
     }
   }
 
-  public function handleUpdate($request, Registration $registration): Registration
+  public function handleUpdate($request, Registration $registration)
   {
-    $registration->update($request->validated());
+    try {
+      DB::beginTransaction();
 
-    return $registration;
+      $payload = $request->validated();
+
+      $registration->update($payload);
+
+      DB::commit();
+
+      /**
+       * Returns a JSON response with a success message and the updated province resource.
+       *
+       * @param $request
+       * @param Registration $registration The registration to be updated.
+       * @return \Illuminate\Http\JsonResponse The JSON response.
+       */
+      return $this->setMessage($this->update_message)
+        ->setData(
+          new RegistrationResource($registration)
+        )
+        ->toJson();
+    } catch (\Exception $e) {
+      DB::rollBack();
+      return $this->setMessage($e->getMessage())->toJson();
+    }
   }
 
   public function handleDelete(Registration $registration)
@@ -188,7 +210,7 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
           'operator' => WhereOperator::In->value,
           'value' => $uuid
         ]
-      ])->get();
+      ]);
 
       $deleted = 0;
 

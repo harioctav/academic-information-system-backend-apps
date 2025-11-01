@@ -109,12 +109,7 @@ class RegistrationController extends Controller
 
   public function update(RegistrationRequest $request, Registration $registration): JsonResponse
   {
-    $registration = $this->registrationService->handleUpdate($request, $registration);
-
-    return response()->json([
-      'message' => 'Registration updated successfully.',
-      'data' => new RegistrationResource($registration),
-    ]);
+    return $registration = $this->registrationService->handleUpdate($request, $registration);
   }
 
   public function destroy(Registration $registration): JsonResponse
