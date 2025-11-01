@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'whatsapp' => [
+        'api_url' => env('WA_API_URL'),
+        'api_key' => env('WA_API_KEY'),
+        'api_token' => env('WA_API_TOKEN'),
+        'use_queue' => env('WA_NOTIFICATION_QUEUE', true), // Set to false to run synchronously (testing only)
+    ],
+
 ];

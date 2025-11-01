@@ -57,7 +57,6 @@ class RegistrationController extends Controller
     ]);
   }
 
-
   public function submit(RegistrationMhsRequest $request): JsonResponse
   {
     return $this->registrationService->handleRegistration($request);

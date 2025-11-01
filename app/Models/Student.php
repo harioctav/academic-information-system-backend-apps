@@ -13,12 +13,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 class Student extends Model
 {
-  use HasUuid;
+  use HasUuid, Notifiable;
 
   /**
    * The attributes that are mass assignable.
@@ -226,5 +227,15 @@ class Student extends Model
   public function getActive(): Collection
   {
     return $this->active()->get();
+  }
+
+  /**
+   * Route notifications for the WhatsApp channel.
+   *
+   * @return string
+   */
+  public function routeNotificationForWhatsApp(): string
+  {
+    return $this->phone;
   }
 }

@@ -31,10 +31,10 @@ class DatabaseSeeder extends Seeder
       DistrictSeeder::class,
       VillageSeeder::class,
       MajorSubjectSeeder::class,
-      StudentSeeder::class,
+      // StudentSeeder::class,
       RegistrationBatchSeeder::class,
-      RegistrationSeeder::class,
-      BillingSeeder::class,
+      // RegistrationSeeder::class,
+      // BillingSeeder::class,
     ];
 
     Model::withoutEvents(function () use ($seeders) {

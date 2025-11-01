@@ -3,6 +3,7 @@
 namespace App\Services\Registration;
 
 use App\Enums\WhereOperator;
+use App\Enums\UserRole;
 use LaravelEasyRepository\ServiceApi;
 use App\Repositories\Registration\RegistrationRepository;
 use App\Repositories\RegistrationBatch\RegistrationBatchRepository;
@@ -10,10 +11,15 @@ use App\Http\Resources\Finances\RegistrationResource;
 use App\Models\Student;
 use App\Models\Registration;
 use App\Models\RegistrationBatch;
+use App\Models\User;
+use App\Notifications\Finances\Registrations\StudentRegistrationSubmitted;
+use App\Notifications\Finances\Registrations\StudentSubmitRegistration;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Symfony\Component\HttpFoundation\Response as HttpFoundationResponse;
 
 class RegistrationServiceImplement extends ServiceApi implements RegistrationService
@@ -150,7 +156,42 @@ class RegistrationServiceImplement extends ServiceApi implements RegistrationSer
 
         $result = $this->mainRepository->create($payload);
 
+        // Load relationships untuk notifikasi
+        $result->load(['student', 'registrationBatch']);
+
         DB::commit();
+
+        // Kirim notifikasi WhatsApp ke mahasiswa
+        try {
+          $student->notify(new StudentSubmitRegistration($result));
+        } catch (\Exception $e) {
+          // Log error tapi jangan gagalkan response
+          Log::error('Failed to send WhatsApp notification to student', [
+            'student_id' => $student->id,
+            'error' => $e->getMessage()
+          ]);
+        }
+
+        // Kirim notifikasi database ke admin dan tim keuangan
+        try {
+          $adminUsers = User::whereHas('roles', function ($query) {
+            $query->whereIn('name', [
+              UserRole::SuperAdmin->value,
+              UserRole::FinanceTeam->value,
+              UserRole::StudentRegisTeam->value,
+            ]);
+          })->get();
+
+          if ($adminUsers->isNotEmpty()) {
+            Notification::send($adminUsers, new StudentRegistrationSubmitted($result));
+          }
+        } catch (\Exception $e) {
+          // Log error tapi jangan gagalkan response
+          Log::error('Failed to send notification to admin', [
+            'registration_id' => $result->id,
+            'error' => $e->getMessage()
+          ]);
+        }
 
         return $this->setMessage($this->create_message)
           ->setData(new RegistrationResource($result))

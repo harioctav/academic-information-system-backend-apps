@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Channels\WhatsAppChannel;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,5 +28,10 @@ class AppServiceProvider extends ServiceProvider
     Passport::refreshTokensExpireIn(now()->addDays(30));
     Passport::personalAccessTokensExpireIn(now()->addMonths(6));
     Passport::enablePasswordGrant();
+
+    // Register custom WhatsApp notification channel
+    Notification::extend('whatsapp', function ($app) {
+      return new WhatsAppChannel();
+    });
   }
 }
